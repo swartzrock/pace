@@ -1,4 +1,4 @@
-import { Utils } from './utils'
+import { StringUtils } from './stringutils'
 
 class Colors {
 	static set(s: string, fg: Xterm256): string {
@@ -18,16 +18,18 @@ class Colors {
 	static foregroundAndBackgroundColor(s: string, fg: Xterm256, bg: Xterm256): string {
 		const fgIndex = fg.valueOf()
 		const bgIndex = bg.valueOf()
-		return `${Colors.createForegroundColorCode(fgIndex)}${Colors.createBackgroundColorCode(bgIndex)}${s}${Colors.ANSI_RESET_COLOR}`
+		return `${Colors.createForegroundColorCode(fgIndex)}${Colors.createBackgroundColorCode(bgIndex)}${s}${
+			Colors.ANSI_RESET_COLOR
+		}`
 	}
 
 	// Evenly apply a vertical gradient to a text block
 	static setVerticalGradient(s: string, colors: Xterm256[]): string {
-		const lines = Utils.toLines(s)
+		const lines = StringUtils.toLines(s)
 		const coloredLines = lines.map((line: string, index: number) => {
 			return Colors.set(line, colors[Math.floor((index / lines.length) * colors.length)])
 		})
-		return Utils.toMultilineBlock(coloredLines)
+		return StringUtils.toMultilineBlock(coloredLines)
 	}
 
 	// Remove colors from a string

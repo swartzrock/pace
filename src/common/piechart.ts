@@ -1,5 +1,6 @@
 import { StringBuffer } from './stringbuffer'
 import { Utils } from './utils'
+import { StringUtils } from '../common/stringutils'
 
 type PieChartDetails = {
 	symbols: string
@@ -14,7 +15,9 @@ class PieChart {
 		const buffer = new StringBuffer()
 		for (const y of rows) {
 			for (const x of columns) {
-				const char = this.insideCircle(x, y, radius) ? this.getSymbolForPosition(details, x, y, emptyPie) : background
+				const char = this.insideCircle(x, y, radius)
+					? this.getSymbolForPosition(details, x, y, emptyPie)
+					: background
 				buffer.add(char)
 			}
 			buffer.newline()

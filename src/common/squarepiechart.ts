@@ -1,4 +1,5 @@
 import { Utils } from './utils'
+import { StringUtils } from '../common/stringutils'
 
 type SquarePieChartDetails = {
 	symbols: string[]
@@ -12,7 +13,9 @@ class SquarePieChart {
 		const matrix: string[][] = new Array(cells.length).fill('').map(() => new Array(cells.length).fill(''))
 		for (let y = 0; y < cells.length; y++) {
 			for (let x = 0; x < cells.length; x++) {
-				const char = this.insideCircle(cells[x], cells[y], radius) ? this.getSymbolForPosition(details, cells[x], cells[y], emptyPie) : background
+				const char = this.insideCircle(cells[x], cells[y], radius)
+					? this.getSymbolForPosition(details, cells[x], cells[y], emptyPie)
+					: background
 				matrix[y][x] = char
 			}
 		}
@@ -36,7 +39,11 @@ class SquarePieChart {
 		}
 	}
 
-	private getSymbolForCirclePercentage(details: SquarePieChartDetails, circlePercentage: number, empty: string): string {
+	private getSymbolForCirclePercentage(
+		details: SquarePieChartDetails,
+		circlePercentage: number,
+		empty: string
+	): string {
 		for (let i = 0; i < details.percentages.length; i++) {
 			const pct = details.percentages[i]
 			if (circlePercentage <= pct) {

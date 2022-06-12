@@ -7,13 +7,13 @@ import { SquarePieChart, SquarePieChartDetails } from '../common/squarepiechart'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { FigletFonts, Fonts } from '../common/fonts'
 
-class PieChart2 implements TimerRenderer {
+class PieChart3 implements TimerRenderer {
 	readonly CHART_FILL_CHAR = '\u2588'
 	readonly CHART_EMPTY_CHAR = '▎'
 	readonly CHART_FILL_COLORS = [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1]
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_007
 
-	readonly palette2: Xterm256[] = [
+	readonly timeRemainingGradient: Xterm256[] = [
 		Xterm256.CYAN_1,
 		Xterm256.CYAN_2,
 		Xterm256.MEDIUMSPRINGGREEN,
@@ -24,7 +24,13 @@ class PieChart2 implements TimerRenderer {
 
 	pieChart = new SquarePieChart()
 
-	sayHi = () => 'hello from pie'
+	// renderToMatrix(details: TimerDetails): TextPixel[][] {
+	//
+	// 	fill out more here
+	//
+	//
+	// 	return [['']]
+	// }
 
 	/**
 	 * Entrypoint - renders this pie chart to the console
@@ -44,7 +50,7 @@ class PieChart2 implements TimerRenderer {
 		let centeredPieChart = StringUtils.centerTextBlockHorizontallyOnScreen(pieChartTxt)
 
 		const timeRemainingFiglet = this.renderTimeRemainingFiglet(details)
-		const gradientTime = Colors.setVerticalGradient(timeRemainingFiglet, this.palette2)
+		const gradientTime = Colors.setVerticalGradient(timeRemainingFiglet, this.timeRemainingGradient)
 		centeredPieChart = StringUtils.centerTextBlockInTextBlock(gradientTime, centeredPieChart)
 
 		// Note - pie chart colorization must be done after the time has been rendered onto it
@@ -86,6 +92,6 @@ class PieChart2 implements TimerRenderer {
 	}
 }
 
-export { PieChart2 }
+type TextPixel = { color: Xterm256; text: string }
 
-// module.exports = { pie: PieChart2 };
+export { PieChart3 }
