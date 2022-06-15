@@ -1,12 +1,9 @@
-import { stdout } from 'process'
-import { clearLine, cursorTo } from 'readline'
 import { Colors, Xterm256 } from '../common/colors'
 
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { StringUtils } from '../common/stringutils'
 
 class SimpleBarTimerRenderer3 implements TimerRenderer {
-	// readonly PROG_BAR_LEN = 30
 	readonly BAR_COMPLETE_CHAR = '\u2588'
 	readonly BAR_INCOMPLETE_CHAR = '\u2591'
 	readonly BAR_COMPLETE_START_CHAR = '\u25d6'
@@ -14,6 +11,23 @@ class SimpleBarTimerRenderer3 implements TimerRenderer {
 	readonly RIGHT_MARGIN = 2
 
 	render(details: TimerDetails): void {
+		const fgColor: Xterm256 = this.fgColor(details.percentDone)
+		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
+		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
+
+		const matrix = this.renderMonoProgressBarMatrix(details)
+		StringUtils.StringMatrix.replaceAll(matrix, this.BAR_COMPLETE_CHAR, colorBarComplete)
+		StringUtils.StringMatrix.replaceAll(matrix, this.BAR_INCOMPLETE_CHAR, colorBarIncomplete)
+
+		const text = StringUtils.StringMatrix.toString(matrix)
+		console.log(text)
+	}
+
+	renderMonoProgressBarMatrix(details: TimerDetails): string[][] {
+		return StringUtils.TextBlocks.toString2dArray(this.renderMonoProgressBar(details))
+	}
+
+	renderMonoProgressBar(details: TimerDetails): string {
 		const progressBarDetailLength = this.renderBar('', '', '000:00', '99.9').length
 		const progressBarLength = process.stdout.columns - progressBarDetailLength - this.RIGHT_MARGIN
 
@@ -23,20 +37,14 @@ class SimpleBarTimerRenderer3 implements TimerRenderer {
 		const barCompleteStr = StringUtils.fillString(this.BAR_COMPLETE_CHAR, barCompleteLen)
 		const barIncompleteStr = StringUtils.fillString(this.BAR_INCOMPLETE_CHAR, barEmptyLen)
 
+		const timeElapsed = this.renderTimeElapsed(details)
 		const timeRemaining = this.renderTimeRemaining(details)
 
-		const pct = `${(details.percentDone * 100).toFixed(1)}`.padStart(4, ' ')
-		const text = this.renderBar(barCompleteStr, barIncompleteStr, timeRemaining, pct)
-
-		const color: Xterm256 = this.fgColor(details.percentDone)
-
-		clearLine(stdout, 0)
-		cursorTo(stdout, 0, 0)
-		console.log(Colors.foregroundColor(text, color))
+		return this.renderBar(barCompleteStr, barIncompleteStr, timeElapsed, timeRemaining)
 	}
 
-	renderBar(barComplete: string, barIncomplete: string, timeRemaining: string, percent: string): string {
-		return `${barComplete}${barIncomplete} | ${timeRemaining} | ${percent}% `
+	renderBar(barComplete: string, barIncomplete: string, timeElapsed: string, timeRemaining: string): string {
+		return `${timeElapsed} | ${barComplete}${barIncomplete} | ${timeRemaining} `
 	}
 
 	fgColor(percentDone: number): Xterm256 {
@@ -47,6 +55,13 @@ class SimpleBarTimerRenderer3 implements TimerRenderer {
 			return Xterm256.GREENYELLOW
 		}
 		return Xterm256.CHARTREUSE_2A
+	}
+
+	private renderTimeElapsed(details: TimerDetails): string {
+		const elapsedSeconds = Math.floor((new Date().getTime() - details.start.getTime()) / 1000)
+		const elapsedMinutes: number = Math.floor(elapsedSeconds / 60)
+		const elapsedSecondsInMinute: number = elapsedSeconds - elapsedMinutes * 60
+		return `${elapsedMinutes}:` + `${elapsedSecondsInMinute}`.padStart(2, '0')
 	}
 
 	private renderTimeRemaining(details: TimerDetails): string {

@@ -1,5 +1,4 @@
 import { Utils } from './utils'
-import { StringUtils } from '../common/stringutils'
 
 type SquarePieChartDetails = {
 	symbols: string[]

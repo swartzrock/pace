@@ -5,27 +5,22 @@ import { PieChart2 } from './renderers/pie2'
 import { ALL_RENDERERS, TimerDetails } from './renderers/timer-renderer'
 import { Utils } from './common/utils'
 import { StringUtils } from './common/stringutils'
+import { stdout } from 'process'
 
-const helloColor = Colors.foregroundAndBackgroundColor('Hello, World', Xterm256.SEAGREEN_2, Xterm256.DARKBLUE)
-console.log(helloColor)
+const block = `
+xxxxxxxxxxxx
+xxxxxxxxxxxx
+xxxxxxxxxxxx
+xxxxxxxxxxxx
+`
 
-console.log(Utils.randomElement(Object.values(ALL_RENDERERS)))
-console.log(Utils.randomElement([1, 2, 3]))
-console.log(Utils.randomElement([1]))
-console.log(Utils.randomElement([]))
-
-if (Utils.randomElement([])) {
-	console.log('so empty')
-}
-
-console.log(StringUtils.setCharAt('Jason', 'O', 0))
-console.log(StringUtils.setCharAt('Jason', 'O', 1))
-console.log(StringUtils.setCharAt('Jason', 'O', 2))
-console.log(StringUtils.setCharAt('Jason', 'O', 3))
-console.log(StringUtils.setCharAt('Jason', 'O', 4))
-
-// let k: keyof typeof allRends
-// for (k in allRends) {
-// 	console.log(k)
-// 	console.log(allRends[k])
+// const matrix = StringUtils.textBlockToMatrix(block)
+// for (let i = 0; i < matrix.length; i++) {
+// 	console.log('')
+// 	for (let j = 0; j < matrix[i].length; j++) {
+// 		stdout.write(`${matrix[i][j]},`)
+// 	}
 // }
+// console.log('')
+console.log(`${StringUtils.TextBlocks.addPadding(block, 5, 10, 'O')}`)
+// console.log(`matrix = ${StringUtils.textBlockToMatrix(block)}`)

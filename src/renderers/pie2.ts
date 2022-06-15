@@ -40,7 +40,7 @@ class PieChart2 implements TimerRenderer {
 			percentages: [details.percentDone, 1.0],
 		}
 		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
-		const pieChartTxt = StringUtils.horizDoubleTextBlock(squarePieChartTxt)
+		const pieChartTxt = StringUtils.TextBlocks.horizontallyDouble(squarePieChartTxt)
 		let centeredPieChart = StringUtils.centerTextBlockHorizontallyOnScreen(pieChartTxt)
 
 		const timeRemainingFiglet = this.renderTimeRemainingFiglet(details)
@@ -50,11 +50,11 @@ class PieChart2 implements TimerRenderer {
 		// Note - pie chart colorization must be done after the time has been rendered onto it
 		centeredPieChart = centeredPieChart.replaceAll(
 			this.CHART_FILL_CHAR,
-			Colors.set(this.CHART_FILL_CHAR, fillColor)
+			Colors.foregroundColor(this.CHART_FILL_CHAR, fillColor)
 		)
 		centeredPieChart = centeredPieChart.replaceAll(
 			this.CHART_EMPTY_CHAR,
-			Colors.set(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
+			Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
 		)
 
 		clearLine(stdout, 0)
@@ -70,7 +70,7 @@ class PieChart2 implements TimerRenderer {
 
 		const timeRemainingFont = FigletFonts.COLOSSAL
 		const timeRemainingFiglet = Fonts.render(timeRemainingFont, timeRemaining)
-		const timeRemainingPadded = StringUtils.setTextBlockPadding(timeRemainingFiglet, 1, 1, ' ')
+		const timeRemainingPadded = StringUtils.TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
 
 		return timeRemainingPadded
 	}

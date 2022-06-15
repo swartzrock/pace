@@ -1,9 +1,9 @@
 import { StringUtils } from './stringutils'
 
 class Colors {
-	static set(s: string, fg: Xterm256): string {
-		return Colors.foregroundColor(s, fg)
-	}
+	// static set(s: string, fg: Xterm256): string {
+	// 	return Colors.foregroundColor(s, fg)
+	// }
 
 	static foregroundColor(s: string, fg: Xterm256): string {
 		const colorIndex = fg.valueOf()
@@ -27,9 +27,9 @@ class Colors {
 	static setVerticalGradient(s: string, colors: Xterm256[]): string {
 		const lines = StringUtils.toLines(s)
 		const coloredLines = lines.map((line: string, index: number) => {
-			return Colors.set(line, colors[Math.floor((index / lines.length) * colors.length)])
+			return Colors.foregroundColor(line, colors[Math.floor((index / lines.length) * colors.length)])
 		})
-		return StringUtils.toMultilineBlock(coloredLines)
+		return StringUtils.toTextBlock(coloredLines)
 	}
 
 	// Remove colors from a string

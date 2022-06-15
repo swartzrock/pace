@@ -1,5 +1,3 @@
-import { stdout } from 'process'
-import { clearLine, cursorTo } from 'readline'
 import { Colors, Xterm256 } from '../common/colors'
 import { StringUtils } from '../common/stringutils'
 import { SquarePieChart, SquarePieChartDetails } from '../common/squarepiechart'
@@ -9,7 +7,7 @@ import { FigletFonts, Fonts } from '../common/fonts'
 
 class PieChart3 implements TimerRenderer {
 	readonly CHART_FILL_CHAR = '\u2588'
-	readonly CHART_EMPTY_CHAR = '▎'
+	readonly CHART_EMPTY_CHAR = 'z'
 	readonly CHART_FILL_COLORS = [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1]
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_007
 
@@ -24,61 +22,78 @@ class PieChart3 implements TimerRenderer {
 
 	pieChart = new SquarePieChart()
 
-	// renderToMatrix(details: TimerDetails): TextPixel[][] {
-	//
-	// 	fill out more here
-	//
-	//
-	// 	return [['']]
-	// }
+	renderToColorStringMatrix(details: TimerDetails): string[][] {
+		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone)
+		const matrix: string[][] = StringUtils.TextBlocks.toString2dArray(centeredMonoChart)
+
+		// const coloredFillChar = Colors.foregroundColor(this.CHART_FILL_CHAR, this.calcFillColor(details.percentDone))
+		const coloredEmptyChar = Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
+
+		StringUtils.StringMatrix.setVerticalGradientDithered(matrix, this.timeRemainingGradient, this.CHART_FILL_CHAR)
+		// StringUtils.StringMatrix.replaceAll(matrix, this.CHART_FILL_CHAR, coloredFillChar)
+		StringUtils.StringMatrix.replaceAll(matrix, this.CHART_EMPTY_CHAR, coloredEmptyChar)
+
+		const timeRemaining = this.renderTimeRemainingColoredFiglet(details)
+		const timeRemainingMatrix = StringUtils.TextBlocks.toString2dArray(timeRemaining)
+		StringUtils.StringMatrix.setVerticalGradient(timeRemainingMatrix, this.timeRemainingGradient)
+
+		StringUtils.StringMatrix.addCenteredForeground(matrix, timeRemainingMatrix)
+
+		return matrix
+	}
 
 	/**
 	 * Entrypoint - renders this pie chart to the console
 	 * @param details
 	 */
 	render(details: TimerDetails): void {
-		const radius = Math.floor(Math.min(process.stdout.rows, process.stdout.columns / 2) / 2) - 2
-		const fillColor = this.calcFillColor(details.percentDone)
+		const matrix = this.renderToColorStringMatrix(details)
+		console.log(StringUtils.StringMatrix.toString(matrix))
 
-		const symbols: string[] = [this.CHART_FILL_CHAR, this.CHART_EMPTY_CHAR]
-		const pieDetails: SquarePieChartDetails = {
-			symbols: symbols,
-			percentages: [details.percentDone, 1.0],
-		}
-		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
-		const pieChartTxt = StringUtils.horizDoubleTextBlock(squarePieChartTxt)
-		let centeredPieChart = StringUtils.centerTextBlockHorizontallyOnScreen(pieChartTxt)
+		/*
+		let centeredPieChart = this.renderMonochromeCenteredPieChart(details.percentDone)
 
-		const timeRemainingFiglet = this.renderTimeRemainingFiglet(details)
-		const gradientTime = Colors.setVerticalGradient(timeRemainingFiglet, this.timeRemainingGradient)
-		centeredPieChart = StringUtils.centerTextBlockInTextBlock(gradientTime, centeredPieChart)
+		const timeRemainingFiglet = this.renderTimeRemainingColoredFiglet(details)
+		centeredPieChart = StringUtils.centerTextBlockInTextBlock(timeRemainingFiglet, centeredPieChart)
 
 		// Note - pie chart colorization must be done after the time has been rendered onto it
 		centeredPieChart = centeredPieChart.replaceAll(
 			this.CHART_FILL_CHAR,
-			Colors.set(this.CHART_FILL_CHAR, fillColor)
+			Colors.foregroundColor(this.CHART_FILL_CHAR, this.calcFillColor(details.percentDone))
 		)
 		centeredPieChart = centeredPieChart.replaceAll(
 			this.CHART_EMPTY_CHAR,
-			Colors.set(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
+			Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
 		)
 
-		clearLine(stdout, 0)
-		cursorTo(stdout, 0, 0)
-
 		console.log(centeredPieChart)
+
+ */
 	}
 
-	private renderTimeRemainingFiglet(details: TimerDetails): string {
+	private renderMonochromeCenteredPieChart(percentDone: number): string {
+		const radius = Math.floor(Math.min(process.stdout.rows, process.stdout.columns / 2) / 2) - 2
+		const symbols: string[] = [this.CHART_FILL_CHAR, this.CHART_EMPTY_CHAR]
+		const pieDetails: SquarePieChartDetails = {
+			symbols: symbols,
+			percentages: [percentDone, 1.0],
+		}
+		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
+		const pieChartTxt = StringUtils.TextBlocks.horizontallyDouble(squarePieChartTxt)
+		return StringUtils.centerTextBlockHorizontallyOnScreen(pieChartTxt)
+	}
+
+	private renderTimeRemainingColoredFiglet(details: TimerDetails): string {
 		const remainingMinutes: number = Math.floor(details.remainingSeconds / 60)
 		const remainingSecondsInMinute: number = details.remainingSeconds - remainingMinutes * 60
 		const timeRemaining = `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
 
 		const timeRemainingFont = FigletFonts.COLOSSAL
 		const timeRemainingFiglet = Fonts.render(timeRemainingFont, timeRemaining)
-		const timeRemainingPadded = StringUtils.setTextBlockPadding(timeRemainingFiglet, 1, 1, ' ')
+		const timeRemainingPadded = StringUtils.TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
 
 		return timeRemainingPadded
+		// return Colors.foregroundColorVerticalGradient(timeRemainingPadded, this.timeRemainingGradient)
 	}
 
 	private calcFillColor(percentDone: number): Xterm256 {
@@ -91,7 +106,5 @@ class PieChart3 implements TimerRenderer {
 		return this.CHART_FILL_COLORS[index]
 	}
 }
-
-type TextPixel = { color: Xterm256; text: string }
 
 export { PieChart3 }

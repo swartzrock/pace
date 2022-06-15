@@ -1,8 +1,6 @@
 import { clearScreenDown, cursorTo } from 'readline'
 import { stdout } from 'process'
-import { Command, CommandHelp, Flags } from '@oclif/core'
-import { StringUtils } from '../common/stringutils'
-import { PieChart2 } from '../renderers/pie2'
+import { Command, Flags } from '@oclif/core'
 import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-renderer'
 import { Utils } from '../common/utils'
 
@@ -45,6 +43,8 @@ export default class Timer extends Command {
 	renderer: TimerRenderer | null = null
 
 	timerCallback() {
+		// Reset the console for drawing
+
 		const now = new Date()
 		const percentDone = Math.min(
 			1.0,
@@ -58,6 +58,9 @@ export default class Timer extends Command {
 		// console.log(`renderer = ${this.renderer}`)
 
 		const details = new TimerDetails(this.createdAt, this.endingAt, percentDone, remainingSeconds)
+
+		clearScreenDown(stdout)
+		cursorTo(stdout, 0, 0)
 		this.renderer!.render(details)
 		if (this.endingAt <= now) {
 			console.log('')
@@ -70,16 +73,11 @@ export default class Timer extends Command {
 
 		this.renderer = this.getRenderer(args.renderer)
 		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
-		this.log(
-			`you specified: pace timer ${args.duration} (${this.durationSeconds} seconds) with ${this.renderer} renderer`
-		)
 		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
 		this.start()
 	}
 
 	start() {
-		cursorTo(stdout, 0, 0)
-		clearScreenDown(stdout)
 		this.nodeTimer = setInterval(() => {
 			this.timerCallback()
 		}, this.refreshInterval)
