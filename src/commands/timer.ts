@@ -43,9 +43,23 @@ export default class Timer extends Command {
 	renderer: TimerRenderer | null = null
 
 	timerCallback() {
-		// Reset the console for drawing
-
 		const now = new Date()
+		const details = this.details(now)
+		const matrix = this.renderer!.render(details)
+		const matrixTxt = matrix.toString()
+
+		// Reset the console for drawing
+		clearScreenDown(stdout)
+		cursorTo(stdout, 0, 0)
+		console.log(matrixTxt)
+
+		if (this.endingAt <= now) {
+			console.log('')
+			clearInterval(this.nodeTimer)
+		}
+	}
+
+	private details(now: Date): TimerDetails {
 		const percentDone = Math.min(
 			1.0,
 			(now.getTime() - this.createdAt.getTime()) / (this.endingAt.getTime() - this.createdAt.getTime())
@@ -55,35 +69,27 @@ export default class Timer extends Command {
 			Math.floor((this.endingAt.getTime() - new Date().getTime()) / 1000)
 		)
 
-		// console.log(`renderer = ${this.renderer}`)
-
-		const details = new TimerDetails(this.createdAt, this.endingAt, percentDone, remainingSeconds)
-
-		clearScreenDown(stdout)
-		cursorTo(stdout, 0, 0)
-		this.renderer!.render(details)
-		if (this.endingAt <= now) {
-			console.log('')
-			clearInterval(this.nodeTimer)
-		}
+		return new TimerDetails(this.createdAt, this.endingAt, percentDone, remainingSeconds)
 	}
 
 	async run(): Promise<void> {
-		const { flags, args } = await this.parse(Timer)
+		const { args } = await this.parse(Timer)
 
 		this.renderer = this.getRenderer(args.renderer)
 		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
 		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
-		this.start()
-	}
 
-	start() {
 		this.nodeTimer = setInterval(() => {
 			this.timerCallback()
 		}, this.refreshInterval)
 	}
 
-	getRenderer(rendererArg: string): TimerRenderer {
+	/**
+	 * Returns the selected pace renderer, or a random one if the argument is missing
+	 * @param rendererArg the renderer argument from the command line
+	 * @private
+	 */
+	private getRenderer(rendererArg?: string): TimerRenderer {
 		let rendererClass = Utils.randomElement(Object.values(ALL_RENDERERS)) ?? ALL_RENDERERS.pie
 		if (rendererArg && rendererArg in ALL_RENDERERS) {
 			rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]
@@ -96,7 +102,7 @@ export default class Timer extends Command {
 	 * Returns the parsed duration (3m20s) as seconds (200)
 	 * @param durationFlag the command flag specifying duration as [\dm][\ds]
 	 */
-	parseDurationFlagToSeconds(durationFlag: string): number {
+	private parseDurationFlagToSeconds(durationFlag: string): number {
 		let totalSeconds = 0
 		let matches: RegExpMatchArray[] = Array.from(durationFlag.matchAll(/(\d+)m/g))
 		if (matches.length == 1) {

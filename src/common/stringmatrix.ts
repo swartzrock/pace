@@ -20,8 +20,8 @@ class StringMatrix {
 	}
 
 	/**
-	 * Overlay a matr
-	 * @param foreground
+	 * Overlay another matrix onto this one, centered. The overlay matrix may not be wider or taller than this matrix.
+	 * @param overlay the matrix to overlay
 	 */
 	overlayCentered(overlay: StringMatrix) {
 		const foreground = overlay.matrix
@@ -95,3 +95,5 @@ class StringMatrix {
 		return StringUtils.toLines(s).map((line) => line.split(''))
 	}
 }
+
+export { StringMatrix }

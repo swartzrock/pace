@@ -1,11 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { Colors, Xterm256 } from './common/colors'
-import { PieChart2 } from './renderers/pie2'
-import { ALL_RENDERERS, TimerDetails } from './renderers/timer-renderer'
-import { Utils } from './common/utils'
-import { StringUtils } from './common/stringutils'
-import { stdout } from 'process'
+import { TextBlocks } from './common/textblocks'
 
 const block = `
 xxxxxxxxxxxx
@@ -22,5 +17,5 @@ xxxxxxxxxxxx
 // 	}
 // }
 // console.log('')
-console.log(`${StringUtils.TextBlocks.addPadding(block, 5, 10, 'O')}`)
+console.log(`${TextBlocks.addPadding(block, 5, 10, 'O')}`)
 // console.log(`matrix = ${StringUtils.textBlockToMatrix(block)}`)
