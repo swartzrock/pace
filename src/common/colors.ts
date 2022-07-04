@@ -10,6 +10,11 @@ class Colors {
 		return `${Colors.createForegroundColorCode(colorIndex)}${s}${Colors.ANSI_RESET_COLOR}`
 	}
 
+	static backgroundColor(s: string, fg: Xterm256): string {
+		const colorIndex = fg.valueOf()
+		return `${Colors.createBackgroundColorCode(colorIndex)}${s}${Colors.ANSI_RESET_COLOR}`
+	}
+
 	private static createForegroundColorCode = (colorIndex: number): string => `\u001b[38;5;${colorIndex}m`
 	private static createBackgroundColorCode = (colorIndex: number): string => `\u001b[48;5;${colorIndex}m`
 
@@ -30,6 +35,35 @@ class Colors {
 			return Colors.foregroundColor(line, colors[Math.floor((index / lines.length) * colors.length)])
 		})
 		return StringUtils.toTextBlock(coloredLines)
+	}
+
+	private static colorCodes: string[]
+	private static colorNames: string[]
+
+	private static initColorCodeNames() {
+		if (!Colors.colorCodes || !Colors.colorNames) {
+			Colors.colorCodes = <string[]>Object.keys(Xterm256)
+			Colors.colorNames = <string[]>Object.values(Xterm256)
+		}
+	}
+
+	static colorName(color: Xterm256): string {
+		Colors.initColorCodeNames()
+		const colorIndex = Colors.colorCodes.indexOf(color.toString())
+		return this.colorNames[colorIndex]
+	}
+
+	static contrastColor(color: Xterm256): Xterm256 {
+		const xtermValue = color.valueOf()
+		if (xtermValue < 16) {
+			return xtermValue == 0 ? Xterm256.WHITE : Xterm256.BLACK
+		}
+		if (xtermValue > 231) {
+			return xtermValue < 244 ? Xterm256.WHITE : Xterm256.BLACK
+		}
+
+		const g = ((xtermValue - 16) % 36) / 6
+		return g > 1.9 ? Xterm256.BLACK : Xterm256.WHITE
 	}
 }
 
