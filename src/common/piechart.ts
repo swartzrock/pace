@@ -1,6 +1,5 @@
 import { StringBuffer } from './stringbuffer'
 import { Utils } from './utils'
-import { StringUtils } from '../common/stringutils'
 
 type PieChartDetails = {
 	symbols: string
