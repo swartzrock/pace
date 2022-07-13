@@ -3,6 +3,7 @@ import { stdout } from 'process'
 import { Command, Flags } from '@oclif/core'
 import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-renderer'
 import { Utils } from '../common/utils'
+import { StringMatrix } from '../common/stringmatrix'
 
 export default class Timer extends Command {
 	static description = 'Displays a progress timer'
@@ -34,7 +35,10 @@ export default class Timer extends Command {
 	]
 	static strict = true
 
-	readonly refreshInterval = 50
+	readonly TIMER_CALLBACK_INTERVAL_MS = 50
+
+	readonly ANSI_HIDE_CURSOR = '\u001b[?25l'
+	readonly ANSI_SHOW_CURSOR = '\u001b[?25h'
 
 	nodeTimer?: NodeJS.Timeout
 	createdAt = new Date()
@@ -44,14 +48,17 @@ export default class Timer extends Command {
 
 	timerCallback() {
 		const now = new Date()
-		const details = this.details(now)
-		const matrix = this.renderer!.render(details)
-		const matrixTxt = matrix.toString()
+		const details: TimerDetails = this.details(now)
+		const matrix: StringMatrix = this.renderer?.render(details) ?? new StringMatrix('')
+		const matrixTxt: string = matrix.toString()
 
 		// Reset the console for drawing
 		clearScreenDown(stdout)
 		cursorTo(stdout, 0, 0)
+		// TODO how to ensure cursor is shown if ctl-c?
+		stdout.write(this.ANSI_HIDE_CURSOR)
 		console.log(matrixTxt)
+		stdout.write(this.ANSI_SHOW_CURSOR)
 
 		if (this.endingAt <= now) {
 			console.log('')
@@ -81,7 +88,7 @@ export default class Timer extends Command {
 
 		this.nodeTimer = setInterval(() => {
 			this.timerCallback()
-		}, this.refreshInterval)
+		}, this.TIMER_CALLBACK_INTERVAL_MS)
 	}
 
 	/**
