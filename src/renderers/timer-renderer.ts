@@ -1,6 +1,7 @@
 import { Bar } from './bar'
 import { PieChart } from './pie'
 import { StringMatrix } from '../common/stringmatrix'
+import { Circles } from './circles'
 
 class TimerDetails {
 	constructor(public start: Date, public end: Date, public percentDone: number, public remainingSeconds: number) {}
@@ -13,6 +14,7 @@ interface TimerRenderer {
 const ALL_RENDERERS = {
 	pie: PieChart,
 	bar: Bar,
+	circles: Circles,
 }
 
 export { TimerDetails, TimerRenderer, ALL_RENDERERS }
