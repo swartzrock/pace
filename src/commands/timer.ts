@@ -1,23 +1,16 @@
-import { clearScreenDown, cursorTo } from 'readline'
-import { stdout } from 'process'
-import { Command, Flags } from '@oclif/core'
+import { Command } from '@oclif/core'
 import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-renderer'
 import { Utils } from '../common/utils'
 import { StringMatrix } from '../common/stringmatrix'
+import onExit from 'signal-exit'
+import { AnsiCursor } from '../common/ansicursor'
 
 export default class Timer extends Command {
 	static description = 'Displays a progress timer'
 
-	static examples = [
-		`pace timer -r pie -d 2.5m
-`,
-	]
+	static examples = [`pace timer 2.5m pie`]
 
-	static flags = {
-		help: Flags.help({ char: 'h' }),
-		// renderer: Flags.string({ name: 'renderer', char: 'r', description: 'Renderer', default: 'pie' }),
-		// duration: Flags.string({ name: 'duration', char: 'd', description: 'Duration', default: '20s' }),
-	}
+	static flags = {}
 
 	static args = [
 		{
@@ -37,9 +30,6 @@ export default class Timer extends Command {
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 50
 
-	readonly ANSI_HIDE_CURSOR = '\u001b[?25l'
-	readonly ANSI_SHOW_CURSOR = '\u001b[?25h'
-
 	nodeTimer?: NodeJS.Timeout
 	createdAt = new Date()
 	endingAt = new Date()
@@ -50,15 +40,8 @@ export default class Timer extends Command {
 		const now = new Date()
 		const details: TimerDetails = this.details(now)
 		const matrix: StringMatrix = this.renderer?.render(details) ?? new StringMatrix('')
-		const matrixTxt: string = matrix.toString()
 
-		// Reset the console for drawing
-		clearScreenDown(stdout)
-		cursorTo(stdout, 0, 0)
-		// TODO how to ensure cursor is shown if ctl-c?
-		stdout.write(this.ANSI_HIDE_CURSOR)
-		console.log(matrixTxt)
-		stdout.write(this.ANSI_SHOW_CURSOR)
+		AnsiCursor.renderTopLeft(matrix.toString())
 
 		if (this.endingAt <= now) {
 			console.log('')
@@ -82,9 +65,13 @@ export default class Timer extends Command {
 	async run(): Promise<void> {
 		const { args } = await this.parse(Timer)
 
-		this.renderer = this.getRenderer(args.renderer)
+		this.renderer = Timer.getRenderer(args.renderer)
 		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
 		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
+
+		// Hide the cursor now and restore it when the program exits
+		AnsiCursor.hideCursor()
+		onExit(() => AnsiCursor.showCursor())
 
 		this.nodeTimer = setInterval(() => {
 			this.timerCallback()
@@ -96,7 +83,7 @@ export default class Timer extends Command {
 	 * @param rendererArg the renderer argument from the command line
 	 * @private
 	 */
-	private getRenderer(rendererArg?: string): TimerRenderer {
+	static getRenderer(rendererArg?: string): TimerRenderer {
 		let rendererClass = Utils.randomElement(Object.values(ALL_RENDERERS)) ?? ALL_RENDERERS.pie
 		if (rendererArg && rendererArg in ALL_RENDERERS) {
 			rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]

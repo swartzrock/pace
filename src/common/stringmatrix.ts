@@ -5,8 +5,8 @@ import { Utils } from './utils'
 class StringMatrix {
 	matrix: string[][]
 
-	constructor(multiLineString: string) {
-		this.matrix = StringMatrix.multiLineStringtoString2dArray(multiLineString)
+	constructor(monochromeMultiLineString: string) {
+		this.matrix = StringMatrix.multiLineStringtoString2dArray(monochromeMultiLineString)
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
@@ -89,6 +89,10 @@ class StringMatrix {
 				prevColorIndex = colorIndex
 			}
 		}
+	}
+
+	static toStringMatrix(a: string[][]): StringMatrix {
+		return new StringMatrix(a.join('\n'))
 	}
 
 	private static multiLineStringtoString2dArray(s: string): string[][] {

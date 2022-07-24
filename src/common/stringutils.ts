@@ -14,6 +14,20 @@ class StringUtils {
 		return s.slice(0, i) + c + s.slice(i + 1, s.length)
 	}
 
+	static grouped(s: string, groupSize: number): string[] {
+		const result = new Array<string>()
+		for (let i = 0; i < s.length; i += groupSize) {
+			result.push(s.substring(i, i + groupSize))
+		}
+		return result
+	}
+
+	static newlineWrapToScreen(s: string, rightMargin?: number): string {
+		const actualRightMargin = rightMargin ?? 4
+		const cols = process.stdout.columns - actualRightMargin
+		return StringUtils.grouped(s, cols).join('\n')
+	}
+
 	/**
 	 * Return the real width of a string w/o color codes
 	 * from [ansi-regex](https://github.com/chalk/ansi-regex)
