@@ -21,8 +21,10 @@
 		"@oclif/plugin-help": "^5",
 		"@oclif/plugin-plugins": "^2.0.1",
 		"@types/figlet": "^1.5.4",
+		"@types/signal-exit": "^3.0.1",
 		"eslint-config-prettier": "^8.5.0",
-		"figlet": "^1.5.2"
+		"figlet": "^1.5.2",
+		"signal-exit": "^3.0.7"
 	},
 	"devDependencies": {
 		"@oclif/test": "^2",
