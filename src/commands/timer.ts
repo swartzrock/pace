@@ -52,11 +52,6 @@ export default class Timer extends Command {
 		}
 	}
 
-	private static exitWithError(msg: string): void {
-		console.log(msg)
-		process.exit(1)
-	}
-
 	private details(now: Date): TimerDetails {
 		const percentDone = Math.min(
 			1.0,
@@ -79,7 +74,7 @@ export default class Timer extends Command {
 
 	timerCallback() {
 		if (this.renderer === null) {
-			this.exitWithError('Error: No renderer found')
+			Timer.exitWithError('Error: No renderer found')
 		} else {
 			this.executeRenderer(this.renderer)
 		}
@@ -135,5 +130,10 @@ export default class Timer extends Command {
 		}
 
 		return totalSeconds
+	}
+
+	private static exitWithError(msg: string): void {
+		console.log(msg)
+		process.exit(1)
 	}
 }
