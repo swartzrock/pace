@@ -28,25 +28,33 @@ export default class Timer extends Command {
 	]
 	static strict = true
 
-	readonly TIMER_CALLBACK_INTERVAL_MS = 50
+	readonly TIMER_CALLBACK_INTERVAL_MS = 100
 
 	nodeTimer?: NodeJS.Timeout
 	createdAt = new Date()
 	endingAt = new Date()
 	durationSeconds = 0
 	renderer: TimerRenderer | null = null
+	iterations = 0
+	totalIterations = 0
 
-	timerCallback() {
+	private executeRenderer(renderer: TimerRenderer): void {
+		this.iterations++
 		const now = new Date()
 		const details: TimerDetails = this.details(now)
-		const matrix: StringMatrix = this.renderer?.render(details) ?? new StringMatrix('')
+		const matrix: StringMatrix = renderer.render(details)
 
 		AnsiCursor.renderTopLeft(matrix.toString())
 
-		if (this.endingAt <= now) {
+		if (now > this.endingAt) {
 			console.log('')
 			clearInterval(this.nodeTimer)
 		}
+	}
+
+	private static exitWithError(msg: string): void {
+		console.log(msg)
+		process.exit(1)
 	}
 
 	private details(now: Date): TimerDetails {
@@ -59,7 +67,22 @@ export default class Timer extends Command {
 			Math.floor((this.endingAt.getTime() - new Date().getTime()) / 1000)
 		)
 
-		return new TimerDetails(this.createdAt, this.endingAt, percentDone, remainingSeconds)
+		return new TimerDetails(
+			this.createdAt,
+			this.endingAt,
+			percentDone,
+			this.iterations,
+			this.totalIterations,
+			remainingSeconds
+		)
+	}
+
+	timerCallback() {
+		if (this.renderer === null) {
+			this.exitWithError('Error: No renderer found')
+		} else {
+			this.executeRenderer(this.renderer)
+		}
 	}
 
 	async run(): Promise<void> {
@@ -68,10 +91,13 @@ export default class Timer extends Command {
 		this.renderer = Timer.getRenderer(args.renderer)
 		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
 		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
+		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS)
 
 		// Hide the cursor now and restore it when the program exits
 		AnsiCursor.hideCursor()
 		onExit(() => AnsiCursor.showCursor())
+
+		this.timerCallback()
 
 		this.nodeTimer = setInterval(() => {
 			this.timerCallback()

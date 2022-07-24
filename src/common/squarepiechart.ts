@@ -12,10 +12,9 @@ class SquarePieChart {
 		const matrix: string[][] = new Array(cells.length).fill('').map(() => new Array(cells.length).fill(''))
 		for (let y = 0; y < cells.length; y++) {
 			for (let x = 0; x < cells.length; x++) {
-				const char = this.insideCircle(cells[x], cells[y], radius)
+				matrix[y][x] = this.insideCircle(cells[x], cells[y], radius)
 					? this.getSymbolForPosition(details, cells[x], cells[y], emptyPie)
 					: background
-				matrix[y][x] = char
 			}
 		}
 

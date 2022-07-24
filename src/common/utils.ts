@@ -25,6 +25,14 @@ class Utils {
 	static transpose<A>(matrix: Array<Array<A>>): Array<Array<A>> {
 		return matrix[0].map((col, i) => matrix.map((row) => row[i]))
 	}
+
+	static fill<A>(a: A, count: number): Array<A> {
+		const result = new Array<A>()
+		for (let i = 0; i < count; i++) {
+			result.push(a)
+		}
+		return result
+	}
 }
 
 export { Utils }

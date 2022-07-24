@@ -1,3 +1,5 @@
+import { Utils } from './utils'
+
 class StringUtils {
 	static readonly NEWLINE: string = '\n'
 
@@ -26,6 +28,52 @@ class StringUtils {
 		const actualRightMargin = rightMargin ?? 4
 		const cols = process.stdout.columns - actualRightMargin
 		return StringUtils.grouped(s, cols).join('\n')
+	}
+
+	static newlineWrapWithHorizMargin(s: string, width: number, horizMargin: number): string {
+		const padding = StringUtils.fillString(' ', horizMargin)
+		return StringUtils.grouped(s, width)
+			.map((row) => padding + row + padding)
+			.join('\n')
+	}
+
+	static newlineWrapWithMargins(
+		s: string,
+		width: number,
+		top: number,
+		left: number,
+		bottom: number,
+		right: number,
+		marginChar?: string
+	): string {
+		const DEFAULT_MARGIN_CHAR = ' '
+		marginChar = marginChar ?? DEFAULT_MARGIN_CHAR
+
+		const leftPadding = marginChar.repeat(left)
+		const rightPadding = marginChar.repeat(right)
+
+		const fullWidth = left + width + right
+		const verticalPaddingRow = StringUtils.fillString(marginChar, fullWidth)
+
+		const topPadding: string[] = Utils.fill(verticalPaddingRow, top)
+		const bottomPadding: string[] = Utils.fill(verticalPaddingRow, bottom)
+		const horizPaddedRows: string[] = StringUtils.grouped(s, width).map((row) => leftPadding + row + rightPadding)
+
+		return topPadding.concat(horizPaddedRows, bottomPadding).join(this.NEWLINE)
+		//
+		// return Arrays.concat(
+		// 	topPadding,
+		// 	StringUtils.grouped(s, width).map((row) => leftPadding + row + rightPadding)
+		// 	bottomPadding
+		// )
+		//
+		// const horizPadded = StringUtils.grouped(s, width)
+		// 	.map((row) => leftPadding + row + rightPadding)
+		//
+		//
+		// 	.join('\n')
+		//
+		// return topPadding + horizPadded + bottomPadding
 	}
 
 	/**

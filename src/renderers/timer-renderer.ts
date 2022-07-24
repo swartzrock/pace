@@ -4,7 +4,14 @@ import { StringMatrix } from '../common/stringmatrix'
 import { Circles } from './circles'
 
 class TimerDetails {
-	constructor(public start: Date, public end: Date, public percentDone: number, public remainingSeconds: number) {}
+	constructor(
+		public start: Date,
+		public end: Date,
+		public percentDone: number,
+		public iteration: number,
+		public totalIterations: number,
+		public remainingSeconds: number
+	) {}
 }
 
 interface TimerRenderer {

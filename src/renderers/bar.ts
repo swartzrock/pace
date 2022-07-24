@@ -20,14 +20,14 @@ class Bar implements TimerRenderer {
 		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
 		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
 
-		const matrix = new StringMatrix(this.renderMonoProgressBar(details))
+		const matrix = StringMatrix.fromMultilineMonochromeString(this.renderMonoProgressBar(details))
 		matrix.replaceAll(this.BAR_COMPLETE_CHAR, colorBarComplete)
 		matrix.replaceAll(this.BAR_INCOMPLETE_CHAR, colorBarIncomplete)
 		return matrix
 	}
 
 	private renderMonoProgressBar(details: TimerDetails): string {
-		const progressBarDetailLength = this.renderBar('', '', '000:00', '99.9').length
+		const progressBarDetailLength = Bar.renderBar('', '', '000:00', '99.9').length
 		const progressBarLength = process.stdout.columns - progressBarDetailLength - this.RIGHT_MARGIN
 
 		const barCompleteLen = Math.round(details.percentDone * progressBarLength)
@@ -39,10 +39,15 @@ class Bar implements TimerRenderer {
 		const timeElapsed = this.renderTimeElapsed(details)
 		const timeRemaining = this.renderTimeRemaining(details)
 
-		return this.renderBar(barCompleteStr, barIncompleteStr, timeElapsed, timeRemaining)
+		return Bar.renderBar(barCompleteStr, barIncompleteStr, timeElapsed, timeRemaining)
 	}
 
-	private renderBar(barComplete: string, barIncomplete: string, timeElapsed: string, timeRemaining: string): string {
+	private static renderBar(
+		barComplete: string,
+		barIncomplete: string,
+		timeElapsed: string,
+		timeRemaining: string
+	): string {
 		return `${timeElapsed} | ${barComplete}${barIncomplete} | ${timeRemaining} `
 	}
 
@@ -66,8 +71,7 @@ class Bar implements TimerRenderer {
 	private renderTimeRemaining(details: TimerDetails): string {
 		const remainingMinutes: number = Math.floor(details.remainingSeconds / 60)
 		const remainingSecondsInMinute: number = details.remainingSeconds - remainingMinutes * 60
-		const timeRemaining = `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
-		return timeRemaining
+		return `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
 	}
 }
 

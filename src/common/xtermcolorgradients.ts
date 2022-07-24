@@ -22,16 +22,12 @@ class MatrixGradient {
 		switch (this.start) {
 			case MatrixStart.TOP:
 				return Utils.transpose(this.matrix)[this.index].slice(0, this.len)
-				break
 			case MatrixStart.LEFT:
 				return this.matrix[this.index].slice(0, this.len)
-				break
 			case MatrixStart.BOTTOM:
 				return Utils.transpose(this.matrix)[this.index].reverse().slice(0, this.len)
-				break
 			case MatrixStart.RIGHT:
 				return this.matrix[this.index].reverse().slice(0, this.len)
-				break
 		}
 		return this.start
 	}
