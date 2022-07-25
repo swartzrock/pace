@@ -3,6 +3,7 @@ import { Colors, Xterm256 } from '../common/colors'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
+import { Rectangle } from '../common/Rectangle'
 
 class Circles implements TimerRenderer {
 	readonly CIRCLE_COMPLETE_CHAR = '\u2588'
@@ -20,27 +21,54 @@ class Circles implements TimerRenderer {
 	 * @param details information about the current timer in-progress
 	 */
 	render(details: TimerDetails): StringMatrix {
-		const horizMargin = 2
-		const cols = process.stdout.columns - horizMargin * 2
+		const boxMargin = 1
+		const horizMargin = 4 // include room for the box
+		const vertMargin = 3 // include room for the box
+
+		const cols = process.stdout.columns - horizMargin * 2 - boxMargin * 2
+
+		const maxRows = process.stdout.rows / 2 - vertMargin * 2 - boxMargin * 2
 		let rows = Math.floor(details.totalIterations / cols)
 		if (rows * cols < details.totalIterations) rows++
+		rows = Math.min(rows, maxRows)
 
-		const total = details.totalIterations
+		const total = rows * cols
 
 		const numFilled = Math.round(details.percentDone * total)
 		const text =
 			StringUtils.fillString(this.CIRCLE_COMPLETE_CHAR, numFilled) +
 			StringUtils.fillString(this.CIRCLE_INCOMPLETE_CHAR, total - numFilled)
 
-		const newlineText = StringUtils.newlineWrapWithMargins(text, cols, 1, horizMargin, 0, horizMargin, ' ')
-		const matrix = StringMatrix.fromMultilineMonochromeString(newlineText)
-		matrix.replaceAll(
-			this.CIRCLE_COMPLETE_CHAR,
-			Colors.foregroundColor(this.HALF_CIRCLE, this.calcFillColor(details.percentDone))
+		const newlineText = StringUtils.newlineWrapWithMargins(
+			text,
+			cols,
+			vertMargin,
+			horizMargin,
+			vertMargin,
+			horizMargin,
+			' '
 		)
-		matrix.replaceAll(this.CIRCLE_INCOMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, this.CHART_EMPTY_COLOR))
+		const stringMatrix = StringMatrix.fromMultilineMonochromeString(newlineText)
+		const fillColor = this.calcFillColor(details.percentDone)
+		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
+		stringMatrix.replaceAll(
+			this.CIRCLE_INCOMPLETE_CHAR,
+			Colors.foregroundColor(this.HALF_CIRCLE, this.CHART_EMPTY_COLOR)
+		)
 
-		return matrix
+		const boxRect = new Rectangle(
+			horizMargin - 2,
+			vertMargin - 2,
+			stringMatrix.cols() - horizMargin + 1,
+			stringMatrix.rows() - vertMargin + 1
+		)
+
+		stringMatrix.addDoubleLineBox(boxRect, fillColor)
+
+		const timeRemainingText = ` ${details.timeRemainingText()} remaining `
+		stringMatrix.setHorizontallyCenteredString(timeRemainingText, vertMargin - 2)
+
+		return stringMatrix
 	}
 
 	private calcFillColor(percentDone: number): Xterm256 {

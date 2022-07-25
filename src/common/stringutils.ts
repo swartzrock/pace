@@ -60,20 +60,6 @@ class StringUtils {
 		const horizPaddedRows: string[] = StringUtils.grouped(s, width).map((row) => leftPadding + row + rightPadding)
 
 		return topPadding.concat(horizPaddedRows, bottomPadding).join(this.NEWLINE)
-		//
-		// return Arrays.concat(
-		// 	topPadding,
-		// 	StringUtils.grouped(s, width).map((row) => leftPadding + row + rightPadding)
-		// 	bottomPadding
-		// )
-		//
-		// const horizPadded = StringUtils.grouped(s, width)
-		// 	.map((row) => leftPadding + row + rightPadding)
-		//
-		//
-		// 	.join('\n')
-		//
-		// return topPadding + horizPadded + bottomPadding
 	}
 
 	/**

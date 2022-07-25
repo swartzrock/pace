@@ -1,19 +1,35 @@
 import { StringUtils } from './stringutils'
 import { Colors, Xterm256 } from './colors'
 import { Utils } from './utils'
+import { Rectangle } from './Rectangle'
 
 class StringMatrix {
 	constructor(public matrix: string[][]) {}
 
-	// constructor(monochromeMultiLineString: string) {
-	// 	this.matrix = StringMatrix.multiLineStringtoString2dArray(monochromeMultiLineString)
-	// }
-	//
 	static fromMultilineMonochromeString(s: string) {
 		return new StringMatrix(StringMatrix.multiLineStringtoString2dArray(s))
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
+
+	rows = () => this.matrix.length
+	cols = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
+	setCell(s: string, col: number, row: number) {
+		this.matrix[row][col] = s
+	}
+
+	setString(s: string, col: number, row: number) {
+		const availableRoom = this.cols() - col
+		s = s.substring(0, availableRoom)
+		for (let i = 0; i < s.length; i++) {
+			this.setCell(s.charAt(i), i + col, row)
+		}
+	}
+
+	setHorizontallyCenteredString(s: string, row: number) {
+		const startCol = this.cols() / 2 - s.length / 2
+		this.setString(s, startCol, row)
+	}
 
 	replaceAll(src: string, dest: string): void {
 		for (const row of this.matrix) {
@@ -93,6 +109,37 @@ class StringMatrix {
 				prevColorIndex = colorIndex
 			}
 		}
+	}
+
+	addDoubleLineBox(bounds: Rectangle, color: Xterm256): void {
+		const DOUBLE_BOX_TOP_LEFT = '╔'
+		const DOUBLE_BOX_TOP_RIGHT = '╗'
+		const DOUBLE_BOX_BOTTOM_LEFT = '╚'
+		const DOUBLE_BOX_BOTTOM_RIGHT = '╝'
+
+		const DOUBLE_BOX_HORIZONTAL = '═'
+		const DOUBLE_BOX_VERTICAL = '║'
+
+		const topLeft = Colors.foregroundColor(DOUBLE_BOX_TOP_LEFT, color)
+		const topRight = Colors.foregroundColor(DOUBLE_BOX_TOP_RIGHT, color)
+		const bottomLeft = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_LEFT, color)
+		const bottomRight = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_RIGHT, color)
+
+		const horizontal = Colors.foregroundColor(DOUBLE_BOX_HORIZONTAL, color)
+		const vertical = Colors.foregroundColor(DOUBLE_BOX_VERTICAL, color)
+
+		for (let i = bounds.left; i < bounds.right; i++) {
+			this.setCell(horizontal, i, bounds.top)
+			this.setCell(horizontal, i, bounds.bottom)
+		}
+		for (let i = bounds.top; i < bounds.bottom; i++) {
+			this.setCell(vertical, bounds.left, i)
+			this.setCell(vertical, bounds.right, i)
+		}
+		this.setCell(topLeft, bounds.left, bounds.top)
+		this.setCell(topRight, bounds.right, bounds.top)
+		this.setCell(bottomLeft, bounds.left, bounds.bottom)
+		this.setCell(bottomRight, bounds.right, bounds.bottom)
 	}
 
 	private static multiLineStringtoString2dArray(s: string): string[][] {
