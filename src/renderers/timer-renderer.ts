@@ -12,6 +12,12 @@ class TimerDetails {
 		public totalIterations: number,
 		public remainingSeconds: number
 	) {}
+
+	timeRemainingText(): string {
+		const remainingMinutes: number = Math.floor(this.remainingSeconds / 60)
+		const remainingSecondsInMinute: number = this.remainingSeconds - remainingMinutes * 60
+		return `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
+	}
 }
 
 interface TimerRenderer {

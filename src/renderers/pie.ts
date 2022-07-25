@@ -37,7 +37,7 @@ class PieChart implements TimerRenderer {
 		centeredMonoChartMatrix.replaceAll(this.CHART_FILL_CHAR, coloredFillChar)
 		centeredMonoChartMatrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
 
-		const timeRemaining = this.renderTimeRemainingColoredFiglet(details)
+		const timeRemaining = PieChart.renderTimeRemainingColoredFiglet(details)
 		const timeRemainingMatrix = StringMatrix.fromMultilineMonochromeString(timeRemaining)
 		timeRemainingMatrix.setVerticalGradient(this.timeRemainingGradient)
 		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)
@@ -57,11 +57,8 @@ class PieChart implements TimerRenderer {
 		return TextBlocks.centerHorizontallyOnScreen(pieChartTxt)
 	}
 
-	private renderTimeRemainingColoredFiglet(details: TimerDetails): string {
-		const remainingMinutes: number = Math.floor(details.remainingSeconds / 60)
-		const remainingSecondsInMinute: number = details.remainingSeconds - remainingMinutes * 60
-		const timeRemaining = `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
-
+	private static renderTimeRemainingColoredFiglet(details: TimerDetails): string {
+		const timeRemaining = details.timeRemainingText()
 		const timeRemainingFont = FigletFonts.COLOSSAL
 		const timeRemainingFiglet = Fonts.render(timeRemainingFont, timeRemaining)
 		return TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
