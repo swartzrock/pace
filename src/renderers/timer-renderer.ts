@@ -2,6 +2,7 @@ import { Bar } from './bar'
 import { PieChart } from './pie'
 import { StringMatrix } from '../common/stringmatrix'
 import { Circles } from './circles'
+import { Colossal } from './colossal'
 
 class TimerDetails {
 	constructor(
@@ -28,6 +29,7 @@ const ALL_RENDERERS = {
 	pie: PieChart,
 	bar: Bar,
 	circles: Circles,
+	colossal: Colossal,
 }
 
 export { TimerDetails, TimerRenderer, ALL_RENDERERS }
