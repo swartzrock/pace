@@ -4,6 +4,7 @@ import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Rectangle } from '../common/Rectangle'
+import { RenderUtils } from './renderutils'
 
 class Circles implements TimerRenderer {
 	readonly CIRCLE_COMPLETE_CHAR = '\u2588'
@@ -49,7 +50,7 @@ class Circles implements TimerRenderer {
 			' '
 		)
 		const stringMatrix = StringMatrix.fromMultilineMonochromeString(newlineText)
-		const fillColor = this.calcFillColor(details.percentDone)
+		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone)
 		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
 		stringMatrix.replaceAll(
 			this.CIRCLE_INCOMPLETE_CHAR,
@@ -69,16 +70,6 @@ class Circles implements TimerRenderer {
 		stringMatrix.setHorizontallyCenteredString(timeRemainingText, vertMargin - 2)
 
 		return stringMatrix
-	}
-
-	private calcFillColor(percentDone: number): Xterm256 {
-		let index = 0
-		if (percentDone > 0.9) {
-			index = 2
-		} else if (percentDone > 0.7) {
-			index = 1
-		}
-		return this.CHART_FILL_COLORS[index]
 	}
 }
 

@@ -42,8 +42,9 @@ class StringMatrix {
 	/**
 	 * Overlay another matrix onto this one, centered. The overlay matrix may not be wider or taller than this matrix.
 	 * @param overlay the matrix to overlay
+	 * @param transparentChar if specific, characters matching this char will not be copied
 	 */
-	overlayCentered(overlay: StringMatrix) {
+	overlayCentered(overlay: StringMatrix, transparentChar?: string) {
 		const foreground = overlay.matrix
 		const background = this.matrix
 
@@ -66,17 +67,25 @@ class StringMatrix {
 
 		for (let fgRow = 0; fgRow < fgHeight; fgRow++) {
 			for (let fgCol = 0; fgCol < fgWidth; fgCol++) {
-				background[fgRow + firstBgRow][fgCol + firstBgCol] = foreground[fgRow][fgCol]
+				const fg = foreground[fgRow][fgCol]
+				if (fg !== transparentChar) {
+					background[fgRow + firstBgRow][fgCol + firstBgCol] = fg
+				}
 			}
 		}
 	}
 
-	setVerticalGradient(colors: Xterm256[], exactMatch?: string) {
+	/**
+	 * Sets the vertical gradient, skipping blank spaces
+	 * @param colors the array of colors making up the gradient, applied first through last
+	 */
+	setVerticalGradient(colors: Xterm256[]) {
+		const BLANK = ' '
 		const a = this.matrix
 		for (let row = 0; row < a.length; row++) {
 			const rowColor = colors[Math.floor((row / a.length) * colors.length)]
 			for (let col = 0; col < a[row].length; col++) {
-				if (!exactMatch || exactMatch === a[row][col]) {
+				if (a[row][col] !== BLANK) {
 					a[row][col] = Colors.foregroundColor(a[row][col], rowColor)
 				}
 			}
