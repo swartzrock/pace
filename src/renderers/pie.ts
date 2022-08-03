@@ -32,10 +32,10 @@ class PieChart implements TimerRenderer {
 	 * @param details information about the current timer in-progress
 	 */
 	render(details: TimerDetails): StringMatrix {
-		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone)
+		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone())
 		const centeredMonoChartMatrix = StringMatrix.fromMultilineMonochromeString(centeredMonoChart)
 
-		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone)
+		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		const coloredFillChar = Colors.foregroundColor(this.CHART_FILL_CHAR, fillColor)
 		const coloredEmptyChar = Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
 

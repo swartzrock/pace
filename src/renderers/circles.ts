@@ -35,7 +35,7 @@ class Circles implements TimerRenderer {
 
 		const total = rows * cols
 
-		const numFilled = Math.round(details.percentDone * total)
+		const numFilled = Math.round(details.percentDone() * total)
 		const text =
 			StringUtils.fillString(this.CIRCLE_COMPLETE_CHAR, numFilled) +
 			StringUtils.fillString(this.CIRCLE_INCOMPLETE_CHAR, total - numFilled)
@@ -50,7 +50,7 @@ class Circles implements TimerRenderer {
 			' '
 		)
 		const stringMatrix = StringMatrix.fromMultilineMonochromeString(newlineText)
-		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone)
+		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
 		stringMatrix.replaceAll(
 			this.CIRCLE_INCOMPLETE_CHAR,

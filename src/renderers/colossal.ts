@@ -40,7 +40,7 @@ class Colossal implements TimerRenderer {
 			cols + horizMargin - boxOffset,
 			rows + vertMargin - boxOffset
 		)
-		const boxColor = RenderUtils.getGreenYellowRedColor(details.percentDone)
+		const boxColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		timeRemainingMatrix.addDoubleLineBox(boxBounds, boxColor)
 
 		return timeRemainingMatrix

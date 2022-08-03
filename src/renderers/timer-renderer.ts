@@ -7,11 +7,9 @@ import { Slant } from './slant'
 
 class TimerDetails {
 	constructor(
-		public start: Date,
-		public end: Date,
-		public percentDone: number,
 		public iteration: number,
 		public totalIterations: number,
+		public elapsedSeconds: number,
 		public remainingSeconds: number
 	) {}
 
@@ -19,6 +17,10 @@ class TimerDetails {
 		const remainingMinutes: number = Math.floor(this.remainingSeconds / 60)
 		const remainingSecondsInMinute: number = this.remainingSeconds - remainingMinutes * 60
 		return `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
+	}
+
+	percentDone() {
+		return this.iteration / this.totalIterations
 	}
 }
 

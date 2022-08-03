@@ -16,7 +16,7 @@ class Bar implements TimerRenderer {
 	 * @param details information about the current timer in-progress
 	 */
 	render(details: TimerDetails): StringMatrix {
-		const fgColor: Xterm256 = this.fgColor(details.percentDone)
+		const fgColor: Xterm256 = this.fgColor(details.percentDone())
 		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
 		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
 
@@ -30,7 +30,7 @@ class Bar implements TimerRenderer {
 		const progressBarDetailLength = Bar.renderBar('', '', '000:00', '99.9').length
 		const progressBarLength = process.stdout.columns - progressBarDetailLength - this.RIGHT_MARGIN
 
-		const barCompleteLen = Math.round(details.percentDone * progressBarLength)
+		const barCompleteLen = Math.round(details.percentDone() * progressBarLength)
 		const barEmptyLen = progressBarLength - barCompleteLen
 
 		const barCompleteStr = StringUtils.fillString(this.BAR_COMPLETE_CHAR, barCompleteLen)
@@ -62,9 +62,8 @@ class Bar implements TimerRenderer {
 	}
 
 	private renderTimeElapsed(details: TimerDetails): string {
-		const elapsedSeconds = Math.floor((new Date().getTime() - details.start.getTime()) / 1000)
-		const elapsedMinutes: number = Math.floor(elapsedSeconds / 60)
-		const elapsedSecondsInMinute: number = elapsedSeconds - elapsedMinutes * 60
+		const elapsedMinutes: number = Math.floor(details.elapsedSeconds / 60)
+		const elapsedSecondsInMinute: number = details.elapsedSeconds - elapsedMinutes * 60
 		return `${elapsedMinutes}:` + `${elapsedSecondsInMinute}`.padStart(2, '0')
 	}
 

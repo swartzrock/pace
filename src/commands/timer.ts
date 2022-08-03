@@ -1,6 +1,5 @@
 import { Command } from '@oclif/core'
 import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-renderer'
-import { Utils } from '../common/utils'
 import { StringMatrix } from '../common/stringmatrix'
 import onExit from 'signal-exit'
 import { AnsiCursor } from '../common/ansicursor'
@@ -30,8 +29,8 @@ export default class Timer extends Command {
 		},
 		{
 			name: 'renderer',
-			required: false,
-			description: 'the timer renderer, or leave blank for a random one',
+			required: true,
+			description: `the timer renderer:\n ${Timer.rendererNames()}`,
 			hidden: false,
 		},
 	]
@@ -70,8 +69,7 @@ export default class Timer extends Command {
 		}
 
 		this.iterations++
-		const now = new Date()
-		const details: TimerDetails = this.details(now)
+		const details: TimerDetails = this.details()
 		const matrix: StringMatrix = renderer.render(details)
 
 		// If pause has been started, render a PAUSED message on top of the rendering
@@ -82,37 +80,30 @@ export default class Timer extends Command {
 
 		AnsiCursor.renderTopLeft(matrix.toString())
 
-		if (now > this.endingAt) {
+		if (this.iterations >= this.totalIterations) {
 			this.endTimer()
 		}
 	}
 
 	private static addPausedMessage(matrix: StringMatrix): void {
-		const message = '   ' + '       \n  PAUSED  \n          '
-		const overlay = StringMatrix.fromMultilineMonochromeString(message)
-		overlay.addDoubleLineBox(new Rectangle(0, 0, 9, 2), Xterm256.RED_1)
-		matrix.overlayCentered(overlay, '\u2500')
+		if (matrix.rows() < 3) {
+			const pausedMatrix = StringMatrix.fromMultilineMonochromeString('PAUSED')
+			matrix.overlayCentered(pausedMatrix, '\u2500')
+		} else {
+			const message = '   ' + '       \n  PAUSED  \n          '
+			const pausedMatrix = StringMatrix.fromMultilineMonochromeString(message)
+			pausedMatrix.addDoubleLineBox(new Rectangle(0, 0, 9, 2), Xterm256.RED_1)
+			matrix.overlayCentered(pausedMatrix, '\u2500')
+		}
 	}
 
-	private details(now: Date): TimerDetails {
-		const percentDone = Math.min(
-			1.0,
-			(now.getTime() - this.createdAt.getTime()) / (this.endingAt.getTime() - this.createdAt.getTime())
-		)
-		const remainingSeconds: number = Math.max(
-			0,
-			Math.floor((this.endingAt.getTime() - new Date().getTime()) / 1000)
-		)
-		// const elapsedSeconds = Math.floor((now.getTime() - this.createdAt.getTime()) / 1000)
+	private details(): TimerDetails {
+		const iterationsPerSecond = 1000 / this.TIMER_CALLBACK_INTERVAL_MS
 
-		return new TimerDetails(
-			this.createdAt,
-			this.endingAt,
-			percentDone,
-			this.iterations,
-			this.totalIterations,
-			remainingSeconds
-		)
+		const totalSeconds = this.totalIterations / iterationsPerSecond
+		const elapsed = Math.floor(this.iterations / iterationsPerSecond)
+		const remaining = Math.floor(totalSeconds - elapsed)
+		return new TimerDetails(this.iterations, this.totalIterations, elapsed, remaining)
 	}
 
 	timerCallback() {
@@ -123,15 +114,20 @@ export default class Timer extends Command {
 		}
 	}
 
-	// private setDuration(seconds: number): void {
-	// 	this.durationSeconds = seconds
-	// 	this.endingAt = new Date(this.createdAt.getTime() + seconds * 1000)
-	// }
+	private static rendererNames(): string {
+		const rendererKeys: string[] = <string[]>Object.keys(ALL_RENDERERS)
+		rendererKeys.sort()
+		return rendererKeys.join(', ')
+	}
 
 	async run(): Promise<void> {
 		const { args } = await this.parse(Timer)
 
 		this.renderer = Timer.getRenderer(args.renderer)
+		if (!this.renderer) {
+			this.log(`Please select one of these renderers: ${Timer.rendererNames()}`)
+			this.exit(1)
+		}
 		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
 		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
 		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS)
@@ -163,13 +159,13 @@ export default class Timer extends Command {
 	 * @param rendererArg the renderer argument from the command line
 	 * @private
 	 */
-	static getRenderer(rendererArg?: string): TimerRenderer {
-		let rendererClass = Utils.randomElement(Object.values(ALL_RENDERERS)) ?? ALL_RENDERERS.pie
-		if (rendererArg && rendererArg in ALL_RENDERERS) {
-			rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]
+	static getRenderer(rendererArg: string): TimerRenderer | null {
+		if (rendererArg in ALL_RENDERERS) {
+			const rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]
+			return new rendererClass()
 		}
 
-		return new rendererClass()
+		return null
 	}
 
 	/**
