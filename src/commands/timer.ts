@@ -6,18 +6,15 @@ import { AnsiCursor } from '../common/ansicursor'
 import { Xterm256 } from '../common/colors'
 import { Rectangle } from '../common/Rectangle'
 import * as readline from 'readline'
+import { IntervalIterator } from '../common/intervalIterator'
 
-enum TimerState {
-	RUN,
-	PAUSE_STARTED_SHOW_MSG,
-	PAUSED,
-}
-
-export default class Timer extends Command {
+/**
+ * Timer is the main entrypoint for the pace timer
+ */
+class Timer extends Command {
 	static description = 'Displays a progress timer'
 
 	static examples = [`pace timer 2.5m pie`]
-
 	static flags = {}
 
 	static args = [
@@ -30,7 +27,7 @@ export default class Timer extends Command {
 		{
 			name: 'renderer',
 			required: true,
-			description: `the timer renderer:\n ${Timer.rendererNames()}`,
+			description: `the timer renderer:\n ${Timer.getAvailableRenderNamesText()}`,
 			hidden: false,
 		},
 	]
@@ -38,53 +35,109 @@ export default class Timer extends Command {
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 100
 
-	nodeTimer?: NodeJS.Timeout
-	createdAt = new Date()
-	endingAt = new Date()
+	// nodeTimer?: NodeJS.Timeout
+	intervalIterator?: IntervalIterator
 	durationSeconds = 0
 	renderer: TimerRenderer | null = null
-	iterations = 0
 	totalIterations = 0
+	matrix: StringMatrix = StringMatrix.fromMultilineMonochromeString('')
+	isPaused = false
 
-	timerState = TimerState.RUN
+	/**
+	 * Entry point for the timer command
+	 */
+	async run(): Promise<void> {
+		const { args } = await this.parse(Timer)
 
-	private togglePaused(): void {
-		if (this.timerState == TimerState.RUN) {
-			this.timerState = TimerState.PAUSE_STARTED_SHOW_MSG
-		} else if (this.timerState == TimerState.PAUSED) {
-			this.timerState = TimerState.RUN
+		this.renderer = Timer.getRenderer(args.renderer)
+		if (!this.renderer) {
+			this.log(`Please select one of these renderers: ${Timer.getAvailableRenderNamesText()}`)
+			this.exit(1)
 		}
+
+		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
+		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS) + 1
+
+		// Hide the cursor now and restore it when the program exits
+		AnsiCursor.hideCursor()
+		onExit(() => AnsiCursor.showCursor())
+
+		this.listenForKeyEvents()
+
+		this.intervalIterator = new IntervalIterator(
+			this.TIMER_CALLBACK_INTERVAL_MS,
+			this.totalIterations,
+			(iteration: number) => this.timerCallback(iteration),
+			() => Timer.finish()
+		)
+		this.intervalIterator.start()
 	}
 
-	private endTimer(): void {
-		console.log('')
-		clearInterval(this.nodeTimer)
-		process.exit(0)
+	/**
+	 * Tell readline to send keypress events, and monitor them
+	 * for ctrl-c (exit) and space (pause)
+	 * @private
+	 */
+	private listenForKeyEvents(): void {
+		readline.emitKeypressEvents(process.stdin)
+		process.stdin.setRawMode(true)
+		process.stdin.on('keypress', (str, key) => {
+			if (key.ctrl && key.name === 'c') {
+				process.exit() // eslint-disable-line no-process-exit
+			}
+			if (str === ' ') {
+				if (!this.isPaused) {
+					this.intervalIterator?.pause()
+					Timer.addPausedMessage(this.matrix)
+					AnsiCursor.renderTopLeft(this.matrix.toString())
+				} else {
+					this.intervalIterator?.resume()
+				}
+
+				this.isPaused = !this.isPaused
+			}
+		})
 	}
 
-	private renderTimerToConsole(renderer: TimerRenderer): void {
-		// If we're already paused with a pause message, just return
-		if (this.timerState == TimerState.PAUSED) {
+	/**
+	 * Executed every X ms to update the console with a new render
+	 * @param iteration the current 1-based iteration
+	 * @private
+	 */
+	private timerCallback(iteration: number) {
+		if (this.renderer === null) {
+			this.log(`Please select one of these renderers: ${Timer.getAvailableRenderNamesText()}`)
+			process.exit(1)
 			return
 		}
 
-		this.iterations++
-		const details: TimerDetails = this.details()
-		const matrix: StringMatrix = renderer.render(details)
+		const details: TimerDetails = this.buildTimerDetails(iteration)
+		this.matrix = this.renderer.render(details)
 
-		// If pause has been started, render a PAUSED message on top of the rendering
-		if (this.timerState == TimerState.PAUSE_STARTED_SHOW_MSG) {
-			Timer.addPausedMessage(matrix)
-			this.timerState = TimerState.PAUSED
-		}
-
-		AnsiCursor.renderTopLeft(matrix.toString())
-
-		if (this.iterations >= this.totalIterations) {
-			this.endTimer()
-		}
+		AnsiCursor.renderTopLeft(this.matrix.toString())
 	}
 
+	/**
+	 * Builds information about the current status in the timer
+	 * for use in rendering
+	 * @param iteration the current 1-based iteration
+	 * @private
+	 */
+	private buildTimerDetails(iteration: number): TimerDetails {
+		const iterationsPerSecond = 1000 / this.TIMER_CALLBACK_INTERVAL_MS
+
+		const totalSeconds = this.totalIterations / iterationsPerSecond
+		const elapsed = Math.floor(iteration / iterationsPerSecond)
+		const remaining = Math.floor(totalSeconds - elapsed)
+		return new TimerDetails(iteration, this.totalIterations, elapsed, remaining)
+	}
+
+	/**
+	 * Add a PAUSED message to the given StringMatrix.
+	 * If the matrix is tall enough, add a nice bounding double box
+	 * @param matrix the matrix on which to render the paused message
+	 * @private
+	 */
 	private static addPausedMessage(matrix: StringMatrix): void {
 		if (matrix.rows() < 3) {
 			const pausedMatrix = StringMatrix.fromMultilineMonochromeString('PAUSED')
@@ -97,61 +150,14 @@ export default class Timer extends Command {
 		}
 	}
 
-	private details(): TimerDetails {
-		const iterationsPerSecond = 1000 / this.TIMER_CALLBACK_INTERVAL_MS
-
-		const totalSeconds = this.totalIterations / iterationsPerSecond
-		const elapsed = Math.floor(this.iterations / iterationsPerSecond)
-		const remaining = Math.floor(totalSeconds - elapsed)
-		return new TimerDetails(this.iterations, this.totalIterations, elapsed, remaining)
-	}
-
-	timerCallback() {
-		if (this.renderer === null) {
-			Timer.exitWithError('Error: No renderer found')
-		} else {
-			this.renderTimerToConsole(this.renderer)
-		}
-	}
-
-	private static rendererNames(): string {
+	/**
+	 * Returns a list of the available renderer names as text for the help msg
+	 * @private
+	 */
+	private static getAvailableRenderNamesText(): string {
 		const rendererKeys: string[] = <string[]>Object.keys(ALL_RENDERERS)
 		rendererKeys.sort()
 		return rendererKeys.join(', ')
-	}
-
-	async run(): Promise<void> {
-		const { args } = await this.parse(Timer)
-
-		this.renderer = Timer.getRenderer(args.renderer)
-		if (!this.renderer) {
-			this.log(`Please select one of these renderers: ${Timer.rendererNames()}`)
-			this.exit(1)
-		}
-		this.durationSeconds = this.parseDurationFlagToSeconds(args.duration)
-		this.endingAt = new Date(this.createdAt.getTime() + this.durationSeconds * 1000)
-		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS)
-
-		// Hide the cursor now and restore it when the program exits
-		AnsiCursor.hideCursor()
-		onExit(() => AnsiCursor.showCursor())
-
-		readline.emitKeypressEvents(process.stdin)
-		process.stdin.setRawMode(true)
-		process.stdin.on('keypress', (str, key) => {
-			if (key.ctrl && key.name === 'c') {
-				process.exit() // eslint-disable-line no-process-exit
-			}
-			if (str === ' ') {
-				this.togglePaused()
-			}
-		})
-
-		this.timerCallback()
-
-		this.nodeTimer = setInterval(() => {
-			this.timerCallback()
-		}, this.TIMER_CALLBACK_INTERVAL_MS)
 	}
 
 	/**
@@ -172,7 +178,7 @@ export default class Timer extends Command {
 	 * Returns the parsed duration (3m20s) as seconds (200)
 	 * @param durationFlag the command flag specifying duration as [\dm][\ds]
 	 */
-	private parseDurationFlagToSeconds(durationFlag: string): number {
+	private static parseDurationFlagToSeconds(durationFlag: string): number {
 		let totalSeconds = 0
 		let matches: RegExpMatchArray[] = Array.from(durationFlag.matchAll(/(\d+)m/g))
 		if (matches.length == 1) {
@@ -187,8 +193,14 @@ export default class Timer extends Command {
 		return totalSeconds
 	}
 
-	private static exitWithError(msg: string): void {
-		console.log(msg)
-		process.exit(1)
+	/**
+	 * Clean up and exit
+	 * `process.exit` is required since we're monitoring readline for pausing
+	 */
+	private static finish(): void {
+		console.log('')
+		process.exit(0)
 	}
 }
+
+export { Timer }
