@@ -11,9 +11,10 @@ import { RenderUtils } from './renderutils'
 class Colossal implements TimerRenderer {
 	readonly doubleColorGradient = XtermColorGradients.doubleColorGradientOrExit(Xterm256.BLUE_1, Xterm256.BLUEVIOLET)
 	readonly timeRemainingGradient = this.doubleColorGradient.concat(this.doubleColorGradient.reverse())
+	readonly MAX_COLOSSAL_WIDTH = 60 // 48
 
 	/**
-	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
+	 * This renderer displays a large countdown timer in the Colossal Figlet font
 	 * @param details information about the current timer in-progress
 	 */
 	render(details: TimerDetails): StringMatrix {
@@ -25,20 +26,28 @@ class Colossal implements TimerRenderer {
 		let timeRemaining = Colossal.renderTimeRemainingFiglet(details)
 		const timeRemainingLines = timeRemaining.split(StringUtils.NEWLINE)
 		const rows = timeRemainingLines.length
-		const cols = timeRemainingLines[0].length
-		const horizMargin = 2
-		const vertMargin = 2
-		timeRemaining = TextBlocks.setPadding(timeRemaining, horizMargin, vertMargin, ' ')
+		const maxRowWidth = TextBlocks.maxRowWidth(timeRemaining)
+
+		const horizPadding = 4
+		const vertPadding = 2
+
+		const padding = new Rectangle(
+			horizPadding,
+			vertPadding,
+			this.MAX_COLOSSAL_WIDTH - maxRowWidth + horizPadding,
+			vertPadding
+		)
+		timeRemaining = TextBlocks.setAllPadding(timeRemaining, padding, ' ')
 
 		const timeRemainingMatrix = StringMatrix.fromMultilineMonochromeString(timeRemaining)
 		timeRemainingMatrix.setVerticalGradient(gradient)
 
 		const boxOffset = 1
 		const boxBounds = new Rectangle(
-			horizMargin - boxOffset - 1,
-			vertMargin - boxOffset - 1,
-			cols + horizMargin - boxOffset,
-			rows + vertMargin - boxOffset
+			horizPadding - boxOffset - 1,
+			vertPadding - boxOffset - 1,
+			this.MAX_COLOSSAL_WIDTH - horizPadding - boxOffset,
+			rows + vertPadding - boxOffset
 		)
 		const boxColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		timeRemainingMatrix.addDoubleLineBox(boxBounds, boxColor)
