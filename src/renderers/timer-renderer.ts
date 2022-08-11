@@ -16,7 +16,7 @@ class TimerDetails {
 	timeRemainingText(): string {
 		const remainingMinutes: number = Math.floor(this.remainingSeconds / 60)
 		const remainingSecondsInMinute: number = this.remainingSeconds - remainingMinutes * 60
-		return `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
+		return `${remainingMinutes}:`.padStart(3, '0') + `${remainingSecondsInMinute}`.padStart(2, '0')
 	}
 
 	percentDone() {
