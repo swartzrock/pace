@@ -2,6 +2,7 @@ import { Command } from '@oclif/core'
 import { FigletFonts, Fonts } from '../../common/fonts'
 import { Colors, Xterm256 } from '../../common/colors'
 import { XtermColorGradients } from '../../common/xtermcolorgradients'
+import { TextBlocks } from '../../common/textblocks'
 
 export default class AllFonts extends Command {
 	static description = 'Displays all Figlet Fonts with the given input'
@@ -28,12 +29,23 @@ export default class AllFonts extends Command {
 		const text = '23 Quick foxes'
 		const gradient = XtermColorGradients.singleColorGradientOrExit(Xterm256.GREEN_1, Xterm256.CYAN_1)
 
-		const figFontKeys: FigletFonts[] = <FigletFonts[]>Object.keys(FigletFonts)
+		const figFontNames: string[] = <FigletFonts[]>Object.keys(FigletFonts)
 		const figFontValues: FigletFonts[] = <FigletFonts[]>Object.values(FigletFonts)
-		for (let i = 0; i < figFontKeys.length; i++) {
-			console.log(`:: ${figFontKeys[i]} ::`)
+		for (let i = 0; i < figFontNames.length; i++) {
+			const maxDigitWidth = this.maxDigitWidth(figFontValues[i])
+			console.log(`:: ${figFontNames[i]} (55:55 = ${maxDigitWidth} chars) ::`)
 			console.log(Colors.setVerticalGradient(Fonts.render(figFontValues[i], text), gradient))
 			console.log()
 		}
+	}
+
+	maxDigitWidth(font: FigletFonts): number {
+		let maxWidth = 0
+		for (let i = 0; i < 10; i++) {
+			const text = `${i}${i}:${i}${i}`
+			const digitWidth = TextBlocks.maxRowWidth(Fonts.render(font, text))
+			maxWidth = Math.max(maxWidth, digitWidth)
+		}
+		return maxWidth
 	}
 }
