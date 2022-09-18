@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import { Colossal } from '../../src/renderers/colossal'
 import { TimerDetails } from '../../src/renderers/timer-renderer'
-import { Logger } from '../../src/common/logger'
+import { Loggy } from '../../src/common/loggy'
 
 describe('colossal', () => {
 	test('centered', () => {
@@ -15,6 +15,6 @@ describe('colossal', () => {
 		expect(matrix.matrix[2][1]).toBe(' ')
 		expect(matrix.matrix[2][2]).not.toBe(' ')
 
-		Logger.raw(matrix)
+		Loggy.raw(matrix)
 	})
 })
