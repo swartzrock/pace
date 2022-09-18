@@ -2,23 +2,34 @@ import { StringUtils } from './stringutils'
 import { Colors, Xterm256 } from './colors'
 import { Utils } from './utils'
 import { Rectangle } from './Rectangle'
+import { TextBlocks } from './textblocks'
 
 class StringMatrix {
 	constructor(public matrix: string[][]) {}
 
-	static fromMultilineMonochromeString(s: string) {
-		return new StringMatrix(StringMatrix.multiLineStringtoString2dArray(s))
+	static fromMultilineMonochromeString(s: string): StringMatrix {
+		return new StringMatrix(TextBlocks.toString2dArray(s))
+	}
+
+	static createUniformMatrix(cols: number, rows: number, fillChar: string): StringMatrix {
+		const lines: string[] = []
+		for (let i = 0; i < rows; i++) {
+			lines.push(StringUtils.fillString(fillChar, cols))
+		}
+		const matrix: string[][] = lines.map((line) => line.split(''))
+		return new StringMatrix(matrix)
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
 
-	rows = () => this.matrix.length
-	cols = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
+	rows: () => number = () => this.matrix.length
+	cols: () => number = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
+
 	setCell(s: string, col: number, row: number) {
 		this.matrix[row][col] = s
 	}
 
-	setString(s: string, col: number, row: number) {
+	setMonochromeString(s: string, col: number, row: number) {
 		const availableRoom = this.cols() - col
 		s = s.substring(0, availableRoom)
 		for (let i = 0; i < s.length; i++) {
@@ -26,9 +37,17 @@ class StringMatrix {
 		}
 	}
 
-	setHorizontallyCenteredString(s: string, row: number) {
+	setStringWithColor(s: string, color: Xterm256, col: number, row: number) {
+		const availableRoom = this.cols() - col
+		s = s.substring(0, availableRoom)
+		for (let i = 0; i < s.length; i++) {
+			this.setCell(Colors.foregroundColor(s.charAt(i), color), i + col, row)
+		}
+	}
+
+	setHorizontallyCenteredMonochromeString(s: string, row: number) {
 		const startCol = this.cols() / 2 - s.length / 2
-		this.setString(s, startCol, row)
+		this.setMonochromeString(s, startCol, row)
 	}
 
 	replaceAll(src: string, dest: string): void {
@@ -151,9 +170,72 @@ class StringMatrix {
 		this.setCell(bottomRight, bounds.right, bounds.bottom)
 	}
 
-	private static multiLineStringtoString2dArray(s: string): string[][] {
-		return StringUtils.toLines(s).map((line) => line.split(''))
+	padLeft(padding: number, fillChar?: string) {
+		fillChar ??= ' '
+		for (const row of this.matrix) {
+			row.unshift(...Utils.fill(fillChar, padding))
+		}
 	}
+
+	padRight(padding: number, fillChar?: string) {
+		fillChar ??= ' '
+		for (const row of this.matrix) {
+			row.push(...Utils.fill(fillChar, padding))
+		}
+	}
+
+	padTop(padding: number, fillChar?: string) {
+		fillChar ??= ' '
+		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), padding)
+		this.matrix = topPadding.concat(this.matrix)
+	}
+
+	padBottom(padding: number, fillChar?: string) {
+		fillChar ??= ' '
+		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), padding)
+		this.matrix = this.matrix.concat(bottomPadding)
+	}
+
+	setWidthCentered(cols: number, fillChar?: string) {
+		fillChar ??= ' '
+		if (cols < this.cols()) {
+			for (const row of this.matrix) {
+				row.length = cols
+			}
+		} else if (cols > this.cols()) {
+			const diff = cols - this.cols()
+			const leftPadding = Math.floor(diff / 2)
+			const rightPadding = diff - leftPadding
+			this.padLeft(leftPadding, fillChar)
+			this.padRight(rightPadding, fillChar)
+		}
+	}
+
+	addVertPadding(top: number, bottom: number, fillChar?: string) {
+		fillChar ??= ' '
+		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), top)
+		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), bottom)
+		this.matrix = topPadding.concat(this.matrix, bottomPadding)
+	}
+
+	// fit the matrix to fit the current terminal window
+	// Note: this does NOT work in tests
+	fitToWindow(fillChar?: string) {
+		const screenRowsCorrection = -3
+		this.fitTo(process.stdout.columns, process.stdout.rows + screenRowsCorrection, fillChar)
+	}
+
+	fitTo(cols: number, rows: number, fillChar?: string) {
+		fillChar ??= ' '
+		this.setWidthCentered(cols, fillChar)
+
+		const diffRows = rows - this.rows()
+		const topMargin = Math.floor(diffRows / 2)
+		const bottomMargin = diffRows - topMargin
+		this.addVertPadding(topMargin, bottomMargin, fillChar)
+	}
+
+	rowString: (row: number) => string = (row: number) => this.matrix[row].join('')
 }
 
 export { StringMatrix }
