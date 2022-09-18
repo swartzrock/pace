@@ -1,3 +1,5 @@
+import * as _ from 'lodash'
+
 class Utils {
 	static halfInt = (n: number): number => Math.floor(n / 2)
 
@@ -27,9 +29,9 @@ class Utils {
 	}
 
 	static fill<A>(a: A, count: number): Array<A> {
-		const result = new Array<A>()
+		const result = new Array<A>(count)
 		for (let i = 0; i < count; i++) {
-			result.push(a)
+			result[i] = _.clone(a)
 		}
 		return result
 	}
