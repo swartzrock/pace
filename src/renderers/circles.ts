@@ -67,7 +67,7 @@ class Circles implements TimerRenderer {
 		stringMatrix.addDoubleLineBox(boxRect, fillColor)
 
 		const timeRemainingText = ` ${details.timeRemainingText()} remaining `
-		stringMatrix.setHorizontallyCenteredString(timeRemainingText, vertMargin - 2)
+		stringMatrix.setHorizontallyCenteredMonochromeString(timeRemainingText, vertMargin - 2)
 
 		return stringMatrix
 	}
