@@ -3,7 +3,14 @@ import { Utils } from './utils'
 class StringUtils {
 	static readonly NEWLINE: string = '\n'
 
-	static fillString = (fill: string, length: number): string => ''.padStart(length, fill)
+	static fillString(fill: string, length: number): string {
+		let buf = ''
+		for (let i = 0; i < length; i++) {
+			buf = buf + fill
+		}
+		return buf
+	}
+
 	static toLines = (s: string): string[] => s.split(StringUtils.NEWLINE)
 	static toTextBlock = (a: string[]): string => a.join(StringUtils.NEWLINE)
 	static firstPrintableChar = (s: string): number => s.search(/\S/)
@@ -22,6 +29,12 @@ class StringUtils {
 			result.push(s.substring(i, i + groupSize))
 		}
 		return result
+	}
+
+	static centered(s: string, length: number, fillChar: string): string {
+		const leftPad = length / 2 - s.length / 2
+		const rightPad = length - (leftPad + s.length)
+		return StringUtils.fillString(fillChar, leftPad) + s + StringUtils.fillString(fillChar, rightPad)
 	}
 
 	static newlineWrapToScreen(s: string, rightMargin?: number): string {
