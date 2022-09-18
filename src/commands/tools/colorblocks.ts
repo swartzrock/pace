@@ -27,7 +27,7 @@ export default class ColorBlocks extends Command {
 		const BLOCK_WIDTH = 22
 		const colorName = Colors.colorName(color)
 		const fgColor = Colors.contrastColor(color)
-		const fgColorText = `${colorName.toLowerCase()} `.padEnd(BLOCK_WIDTH, ' ')
+		const fgColorText = `${colorName} `.padEnd(BLOCK_WIDTH, ' ')
 		return Colors.foregroundAndBackgroundColor(fgColorText, fgColor, color)
 	}
 
