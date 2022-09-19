@@ -3,13 +3,17 @@ import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-r
 import { StringMatrix } from '../common/stringmatrix'
 import onExit from 'signal-exit'
 import { AnsiCursor } from '../common/ansicursor'
-import { Xterm256 } from '../common/colors'
+import { Colors, Xterm256 } from '../common/colors'
 import { Rectangle } from '../common/Rectangle'
 import * as readline from 'readline'
 import { IntervalIterator } from '../common/intervalIterator'
+import { Utils } from '../common/utils'
+import { XtermColorGradients } from '../common/xtermcolorgradients'
 
 /**
  * Timer is the main entrypoint for the pace timer
+ * TODO preview mode shows all renderers at 66%.... if they support isPreviewable(), eg a sandglass renderer
+ * may require all previous iterations
  */
 class Timer extends Command {
 	static description = 'Displays a progress timer'
@@ -26,7 +30,7 @@ class Timer extends Command {
 		},
 		{
 			name: 'renderer',
-			required: true,
+			required: false,
 			description: `the timer renderer:\n ${Timer.getAvailableRenderNamesText()}`,
 			hidden: false,
 		},
@@ -34,14 +38,17 @@ class Timer extends Command {
 	static strict = true
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 100
+	readonly STATUS_BAR_ITERATIONS = 50
+	readonly STATUS_BAR_BG_GRADIENT = XtermColorGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
-	// nodeTimer?: NodeJS.Timeout
-	intervalIterator?: IntervalIterator
-	durationSeconds = 0
 	renderer: TimerRenderer | null = null
-	totalIterations = 0
+	intervalIterator?: IntervalIterator
 	matrix: StringMatrix = StringMatrix.fromMultilineMonochromeString('')
+	durationSeconds = 0
+	totalIterations = 0
 	isPaused = false
+	statusBarMsg = ''
+	rendererName = ''
 
 	/**
 	 * Entry point for the timer command
@@ -49,14 +56,23 @@ class Timer extends Command {
 	async run(): Promise<void> {
 		const { args } = await this.parse(Timer)
 
-		this.renderer = Timer.getRenderer(args.renderer)
-		if (!this.renderer) {
+		this.renderer = this.getRenderer(args.renderer)
+		if (!this.renderer || !this.rendererName) {
 			this.log(`Please select one of these renderers: ${Timer.getAvailableRenderNamesText()}`)
 			this.exit(1)
 		}
 
 		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
 		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS) + 1
+
+		// Set the status bar message
+		const durationMinutes = Math.floor(this.durationSeconds / 60)
+		const durationMinSeconds = this.durationSeconds - durationMinutes * 60
+		const totalDuration =
+			durationMinutes > 0
+				? `${durationMinutes} minutes and ${durationMinSeconds} seconds`
+				: `${durationMinSeconds} seconds`
+		this.statusBarMsg = `Starting a countdown timer for ${totalDuration} with the '${this.rendererName}' renderer.`
 
 		// Hide the cursor now and restore it when the program exits
 		AnsiCursor.hideCursor()
@@ -113,8 +129,39 @@ class Timer extends Command {
 
 		const details: TimerDetails = this.buildTimerDetails(iteration)
 		this.matrix = this.renderer.render(details)
-
+		this.matrix.fitToWindow()
+		this.writeStatusBarMsg(iteration)
 		AnsiCursor.renderTopLeft(this.matrix.toString())
+	}
+
+	/**
+	 * Adds a bar at the bottom of the screen with a status message, if
+	 * the status message exists and the current iteration is less than the max iterations for showing this.
+	 *
+	 * @param iteration the current iteration
+	 * @private
+	 */
+	private writeStatusBarMsg(iteration: number) {
+		if (iteration >= this.STATUS_BAR_ITERATIONS) {
+			return
+		}
+
+		const statusFg = Xterm256.SKYBLUE_1
+		let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
+
+		// If the status bar is more than half over, use a darkening gradient bg
+		if (iteration > this.STATUS_BAR_ITERATIONS / 2) {
+			const statusBarPctDone = iteration / (this.STATUS_BAR_ITERATIONS / 2) - 1
+
+			const bgIndex = Math.floor(statusBarPctDone * this.STATUS_BAR_BG_GRADIENT.length)
+			statusBg = this.STATUS_BAR_BG_GRADIENT[bgIndex]
+		}
+
+		// todo check if we're exceeding the max rows on screen
+		this.matrix.padBottom(1, Colors.backgroundColor(' ', statusBg))
+
+		const statusMsgLeft = Math.floor((this.matrix.cols() - this.statusBarMsg.length) / 2)
+		this.matrix.setStringWithColors(this.statusBarMsg, statusFg, statusBg, statusMsgLeft, this.matrix.rows() - 1)
 	}
 
 	/**
@@ -138,7 +185,7 @@ class Timer extends Command {
 	 * @param matrix the matrix on which to render the paused message
 	 * @private
 	 */
-	private static addPausedMessage(matrix: StringMatrix): void {
+	public static addPausedMessage(matrix: StringMatrix): void {
 		if (matrix.rows() < 3) {
 			const pausedMatrix = StringMatrix.fromMultilineMonochromeString('PAUSED')
 			matrix.overlayCentered(pausedMatrix, '\u2500')
@@ -146,7 +193,7 @@ class Timer extends Command {
 			const message = '   ' + '       \n  PAUSED  \n          '
 			const pausedMatrix = StringMatrix.fromMultilineMonochromeString(message)
 			pausedMatrix.addDoubleLineBox(new Rectangle(0, 0, 9, 2), Xterm256.RED_1)
-			matrix.overlayCentered(pausedMatrix, '\u2500')
+			matrix.overlayCentered(pausedMatrix, '\u2530')
 		}
 	}
 
@@ -165,8 +212,17 @@ class Timer extends Command {
 	 * @param rendererArg the renderer argument from the command line
 	 * @private
 	 */
-	static getRenderer(rendererArg: string): TimerRenderer | null {
-		if (rendererArg in ALL_RENDERERS) {
+	getRenderer(rendererArg?: string): TimerRenderer | null {
+		if (!rendererArg) {
+			const renderKey = Utils.randomElement(Object.keys(ALL_RENDERERS))
+			const rendererClass = ALL_RENDERERS[renderKey as keyof typeof ALL_RENDERERS]
+			if (renderKey && rendererClass) {
+				this.rendererName = renderKey
+				return new rendererClass()
+			}
+		}
+		if (rendererArg && rendererArg in ALL_RENDERERS) {
+			this.rendererName = rendererArg
 			const rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]
 			return new rendererClass()
 		}
