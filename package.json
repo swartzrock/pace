@@ -20,7 +20,7 @@
 		"@oclif/core": "^1",
 		"@oclif/plugin-help": "^5",
 		"@oclif/plugin-plugins": "^2.0.1",
-		"@types/figlet": "^1.5.4",
+		"@types/figlet": "^1.5.5",
 		"@types/lodash": "^4.14.185",
 		"@types/signal-exit": "^3.0.1",
 		"eslint-config-prettier": "^8.5.0",
