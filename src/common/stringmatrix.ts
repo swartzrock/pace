@@ -37,11 +37,11 @@ class StringMatrix {
 		}
 	}
 
-	setStringWithColor(s: string, color: Xterm256, col: number, row: number) {
+	setStringWithColors(s: string, fg: Xterm256, bg: Xterm256, col: number, row: number) {
 		const availableRoom = this.cols() - col
 		s = s.substring(0, availableRoom)
 		for (let i = 0; i < s.length; i++) {
-			this.setCell(Colors.foregroundColor(s.charAt(i), color), i + col, row)
+			this.setCell(Colors.foregroundAndBackgroundColor(s.charAt(i), fg, bg), i + col, row)
 		}
 	}
 
@@ -169,6 +169,14 @@ class StringMatrix {
 		this.setCell(bottomLeft, bounds.left, bounds.bottom)
 		this.setCell(bottomRight, bounds.right, bounds.bottom)
 	}
+
+	// fill(s: string, r: Rectangle) {
+	// 	for (let row = r.top; row <= Math.min(this.rows() - 1, r.bottom); row++) {
+	// 		for (let col = r.left; col <= Math.min(this.cols() - 1, r.right); col++) {
+	// 			this.setCell(s, col, row)
+	// 		}
+	// 	}
+	// }
 
 	padLeft(padding: number, fillChar?: string) {
 		fillChar ??= ' '
