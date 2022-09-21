@@ -70,9 +70,9 @@ class Timer extends Command {
 		const durationMinSeconds = this.durationSeconds - durationMinutes * 60
 		const totalDuration =
 			durationMinutes > 0
-				? `${durationMinutes} minutes and ${durationMinSeconds} seconds`
-				: `${durationMinSeconds} seconds`
-		this.statusBarMsg = `Starting a countdown timer for ${totalDuration} with the '${this.rendererName}' renderer.`
+				? `${durationMinutes}-minute-${durationMinSeconds}-seconds`
+				: `${durationMinSeconds}-second`
+		this.statusBarMsg = `Starting a ${totalDuration} timer with the '${this.rendererName}' renderer.`
 
 		// Hide the cursor now and restore it when the program exits
 		AnsiCursor.hideCursor()
@@ -127,7 +127,11 @@ class Timer extends Command {
 			return
 		}
 
-		const details: TimerDetails = this.buildTimerDetails(iteration)
+		const details: TimerDetails = Timer.getTimerDetails(
+			iteration,
+			this.totalIterations,
+			this.TIMER_CALLBACK_INTERVAL_MS
+		)
 		this.matrix = this.renderer.render(details)
 		this.matrix.fitToWindow()
 		this.writeStatusBarMsg(iteration)
@@ -168,15 +172,22 @@ class Timer extends Command {
 	 * Builds information about the current status in the timer
 	 * for use in rendering
 	 * @param iteration the current 1-based iteration
+	 * @param totalIterations total number of iterations in the timer
+	 * @param callbackIntervalMs the callback interval for rendering the timer
 	 * @private
 	 */
-	private buildTimerDetails(iteration: number): TimerDetails {
-		const iterationsPerSecond = 1000 / this.TIMER_CALLBACK_INTERVAL_MS
+	public static getTimerDetails(
+		iteration: number,
+		totalIterations: number,
+		callbackIntervalMs: number
+	): TimerDetails {
+		const iterationsPerSecond = 1000 / callbackIntervalMs
 
-		const totalSeconds = this.totalIterations / iterationsPerSecond
-		const elapsed = Math.floor(iteration / iterationsPerSecond)
-		const remaining = Math.floor(totalSeconds - elapsed)
-		return new TimerDetails(iteration, this.totalIterations, elapsed, remaining)
+		const totalSeconds = totalIterations / iterationsPerSecond
+		const elapsedSecondsF = (iteration - 1) / iterationsPerSecond
+		const remainingSecondsF = totalSeconds - elapsedSecondsF
+
+		return new TimerDetails(iteration, totalIterations, Math.floor(elapsedSecondsF), Math.floor(remainingSecondsF))
 	}
 
 	/**

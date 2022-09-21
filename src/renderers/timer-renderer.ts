@@ -22,6 +22,12 @@ class TimerDetails {
 	percentDone() {
 		return this.iteration / this.totalIterations
 	}
+
+	toString(): string {
+		return `TimerDetails(${this.iteration}, ${this.totalIterations}, ${this.elapsedSeconds}, ${
+			this.remainingSeconds
+		} - ${this.timeRemainingText()})`
+	}
 }
 
 interface TimerRenderer {
