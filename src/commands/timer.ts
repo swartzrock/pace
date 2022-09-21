@@ -38,7 +38,7 @@ class Timer extends Command {
 	static strict = true
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 100
-	readonly STATUS_BAR_ITERATIONS = 50
+	readonly STATUS_BAR_ITERATIONS = 100 // ten seconds
 	readonly STATUS_BAR_BG_GRADIENT = XtermColorGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
@@ -72,7 +72,7 @@ class Timer extends Command {
 			durationMinutes > 0
 				? `${durationMinutes}-minute-${durationMinSeconds}-seconds`
 				: `${durationMinSeconds}-second`
-		this.statusBarMsg = `Starting a ${totalDuration} timer with the '${this.rendererName}' renderer.`
+		this.statusBarMsg = `Starting a ${totalDuration} timer with the '${this.rendererName}' renderer. Press <space> to pause. `
 
 		// Hide the cursor now and restore it when the program exits
 		AnsiCursor.hideCursor()
