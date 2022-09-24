@@ -11,7 +11,7 @@ class AnsiCursor {
 	static renderTopLeft(s: string): void {
 		cursorTo(stdout, 0, 0)
 		clearScreenDown(stdout)
-		console.log(s)
+		stdout.write(s)
 	}
 }
 
