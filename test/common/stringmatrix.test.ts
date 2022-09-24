@@ -1,7 +1,6 @@
 import { describe, expect, test } from '@jest/globals'
 import { StringMatrix } from '../../src/common/stringmatrix'
-import { TestUtils } from '../../src/common/testutils'
-import { Rectangle } from '../../src/common/Rectangle'
+import { Rectangle } from '../../src/common/rectangle'
 import { Colors, Xterm256 } from '../../src/common/colors'
 import { StringUtils } from '../../src/common/stringutils'
 import { Loggy } from '../../src/common/loggy'
@@ -18,7 +17,7 @@ describe('stringmatrix', () => {
 	test('setWidth', () => {
 		const expanded = StringMatrix.createUniformMatrix(4, 20, 's')
 		expect(expanded.rowString(0)).toBe('ssss')
-		expanded.setWidthCentered(10, 'w')
+		expanded.fitToWidthCentered(10, 'w')
 		expect(expanded.rowString(0)).toBe('wwwsssswww')
 	})
 
@@ -77,5 +76,29 @@ describe('stringmatrix', () => {
 		const matrix = StringMatrix.createUniformMatrix(20, 10, '.')
 		matrix.setHorizontallyCenteredMonochromeString('Hello', 2)
 		expect(matrix.rowString(2)).toBe('.......Hello........')
+	})
+
+	test('overlayCentered', () => {
+		const bg = StringMatrix.createUniformMatrix(20, 10, 'b')
+		const fg = StringMatrix.createUniformMatrix(10, 4, 'f')
+		bg.overlayCentered(fg)
+
+		expect(bg.rowString(2)).toBe('bbbbbbbbbbbbbbbbbbbb')
+		expect(bg.rowString(3)).toBe('bbbbbffffffffffbbbbb')
+		expect(bg.rowString(6)).toBe('bbbbbffffffffffbbbbb')
+		expect(bg.rowString(7)).toBe('bbbbbbbbbbbbbbbbbbbb')
+	})
+
+	test('padding', () => {
+		const matrix = StringMatrix.createUniformMatrix(10, 4, '.')
+		matrix.padLeft(4, 'l')
+		matrix.padRight(4, 'r')
+		matrix.padTop(4, 't')
+		matrix.padBottom(4, 'b')
+
+		expect(matrix.rowString(3)).toBe('tttttttttttttttttt')
+		expect(matrix.rowString(4)).toBe('llll..........rrrr')
+		expect(matrix.rowString(7)).toBe('llll..........rrrr')
+		expect(matrix.rowString(8)).toBe('bbbbbbbbbbbbbbbbbb')
 	})
 })

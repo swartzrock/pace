@@ -1,9 +1,10 @@
 import { StringUtils } from './stringutils'
 import { Colors, Xterm256 } from './colors'
 import { Utils } from './utils'
-import { Rectangle } from './Rectangle'
+import { Rectangle } from './rectangle'
 import { TextBlocks } from './textblocks'
 import { Loggy } from './loggy'
+import { Point } from './point'
 
 /**
  * A drawing canvas for rendering ansi displays, wrapping a string[][]
@@ -20,34 +21,56 @@ class StringMatrix {
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
-	rows: () => number = () => this.matrix.length
-	cols: () => number = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
+	rows = () => this.matrix.length
+	cols = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
+	size = () => new Point(this.cols(), this.rows())
+	getCell = (col: number, row: number) => this.matrix[row][col]
+	setCell = (s: string, col: number, row: number) => (this.matrix[row][col] = s)
 
-	setCell(s: string, col: number, row: number) {
-		this.matrix[row][col] = s
-	}
-
-	setMonochromeString(s: string, col: number, row: number) {
-		const availableRoom = this.cols() - col
+	/**
+	 * Overlay a monochrome string onto the matrix at the specified start location
+	 * @param s the monochrome string
+	 * @param start location
+	 */
+	setMonochromeString(s: string, start: Point) {
+		const availableRoom = this.cols() - start.col
 		s = s.substring(0, availableRoom)
 		for (let i = 0; i < s.length; i++) {
-			this.setCell(s.charAt(i), i + col, row)
+			this.setCell(s.charAt(i), i + start.col, start.row)
 		}
 	}
 
-	setFgBgString(s: string, fg: Xterm256, bg: Xterm256, col: number, row: number) {
-		const availableRoom = this.cols() - col
+	/**
+	 * Overlay a monochrome string, colored with the foreground and background colors,
+	 * onto the matrix at the specified start location
+	 * @param s the monochrome string
+	 * @param fg foreground color
+	 * @param bg background color
+	 * @param start location
+	 */
+	colorAndSetString(s: string, fg: Xterm256, bg: Xterm256, start: Point) {
+		const availableRoom = this.cols() - start.col
 		s = s.substring(0, availableRoom)
 		for (let i = 0; i < s.length; i++) {
-			this.setCell(Colors.foregroundAndBackgroundColor(s.charAt(i), fg, bg), i + col, row)
+			this.setCell(Colors.foregroundAndBackgroundColor(s.charAt(i), fg, bg), i + start.col, start.row)
 		}
 	}
 
+	/**
+	 * Overlay a monochrome string onto the matrix, horizontally centered
+	 * @param s the monochrome string
+	 * @param row the row in which the place the string
+	 */
 	setHorizontallyCenteredMonochromeString(s: string, row: number) {
 		const startCol = Math.floor(this.cols() / 2 - s.length / 2)
-		this.setMonochromeString(s, startCol, row)
+		this.setMonochromeString(s, new Point(startCol, row))
 	}
 
+	/**
+	 * Replace all cells containing the src string with the des string
+	 * @param src the string to replace
+	 * @param dest the replacement string
+	 */
 	replaceAll(src: string, dest: string): void {
 		for (const row of this.matrix) {
 			for (let i = 0; i < row.length; i++) {
@@ -57,36 +80,41 @@ class StringMatrix {
 	}
 
 	/**
-	 * Overlay another matrix onto this one, centered. The overlay matrix may not be wider or taller than this matrix.
+	 * Overlay another matrix onto this one, centered.
 	 * @param overlay the matrix to overlay
 	 * @param transparentChar if specific, characters matching this char will not be copied
 	 */
 	overlayCentered(overlay: StringMatrix, transparentChar?: string) {
-		const foreground = overlay.matrix
-		const background = this.matrix
-
-		const bgHeight = background.length
-		const fgHeight = foreground.length
-		if (bgHeight == 0 || fgHeight == 0 || bgHeight < fgHeight) {
-			Loggy.warn(`copyOverCentered(), background must be taller than foreground and nonzero height`)
+		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
+			Loggy.warn(`overlayCentered(), overlay is bigger than this matrix`)
 			return
 		}
 
-		const bgWidth = background[0].length
-		const fgWidth = foreground[0].length
-		if (bgWidth == 0 || fgWidth == 0 || bgWidth < fgWidth) {
-			Loggy.warn('copyOverCentered(), background must be wider than foreground and nonzero height')
+		const topLeft = new Point(
+			Utils.halfInt(this.cols()) - Utils.halfInt(overlay.cols()),
+			Utils.halfInt(this.rows()) - Utils.halfInt(overlay.rows())
+		)
+
+		this.overlayAt(overlay, topLeft, transparentChar)
+	}
+
+	/**
+	 * Overlay another matrix onto this one at the specified location.
+	 * @param overlay the matrix to overlay
+	 * @param topLeft the top-left corner on this matrix to overlay the other matrix
+	 * @param transparentChar if specific, characters matching this char will not be copied
+	 */
+	overlayAt(overlay: StringMatrix, topLeft: Point, transparentChar = ' ') {
+		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
+			Loggy.warn(`overlayAt(), overlay is bigger than this matrix`)
 			return
 		}
 
-		const firstBgRow = Utils.halfInt(bgHeight) - Utils.halfInt(fgHeight)
-		const firstBgCol = Utils.halfInt(bgWidth) - Utils.halfInt(fgWidth)
-
-		for (let fgRow = 0; fgRow < fgHeight; fgRow++) {
-			for (let fgCol = 0; fgCol < fgWidth; fgCol++) {
-				const fg = foreground[fgRow][fgCol]
-				if (fg !== transparentChar) {
-					background[fgRow + firstBgRow][fgCol + firstBgCol] = fg
+		for (let fgRow = 0; fgRow < overlay.rows(); fgRow++) {
+			for (let fgCol = 0; fgCol < overlay.cols(); fgCol++) {
+				const cell = overlay.getCell(fgCol, fgRow)
+				if (cell !== transparentChar) {
+					this.setCell(cell, fgCol + topLeft.col, fgRow + topLeft.row)
 				}
 			}
 		}
@@ -137,7 +165,12 @@ class StringMatrix {
 		}
 	}
 
-	addDoubleLineBox(bounds: Rectangle, color: Xterm256): void {
+	/**
+	 * Draw a double-line (unicode) box on this matrix
+	 * @param bounds the bounds of the box
+	 * @param fg the foreground color of the box
+	 */
+	addDoubleLineBox(bounds: Rectangle, fg: Xterm256): void {
 		const DOUBLE_BOX_TOP_LEFT = '╔'
 		const DOUBLE_BOX_TOP_RIGHT = '╗'
 		const DOUBLE_BOX_BOTTOM_LEFT = '╚'
@@ -146,13 +179,13 @@ class StringMatrix {
 		const DOUBLE_BOX_HORIZONTAL = '═'
 		const DOUBLE_BOX_VERTICAL = '║'
 
-		const topLeft = Colors.foregroundColor(DOUBLE_BOX_TOP_LEFT, color)
-		const topRight = Colors.foregroundColor(DOUBLE_BOX_TOP_RIGHT, color)
-		const bottomLeft = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_LEFT, color)
-		const bottomRight = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_RIGHT, color)
+		const topLeft = Colors.foregroundColor(DOUBLE_BOX_TOP_LEFT, fg)
+		const topRight = Colors.foregroundColor(DOUBLE_BOX_TOP_RIGHT, fg)
+		const bottomLeft = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_LEFT, fg)
+		const bottomRight = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_RIGHT, fg)
 
-		const horizontal = Colors.foregroundColor(DOUBLE_BOX_HORIZONTAL, color)
-		const vertical = Colors.foregroundColor(DOUBLE_BOX_VERTICAL, color)
+		const horizontal = Colors.foregroundColor(DOUBLE_BOX_HORIZONTAL, fg)
+		const vertical = Colors.foregroundColor(DOUBLE_BOX_VERTICAL, fg)
 
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.top, bounds.right, bounds.top))
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.bottom, bounds.right, bounds.bottom))
@@ -165,6 +198,11 @@ class StringMatrix {
 		this.setCell(bottomRight, bounds.right, bounds.bottom)
 	}
 
+	/**
+	 * Fill a rectangle in this matrix with the given string, replicated
+	 * @param s the string with which to fill the rectangle
+	 * @param r the bounds of the rectangle
+	 */
 	fill(s: string, r: Rectangle) {
 		for (let row = r.top; row <= Math.min(this.rows() - 1, r.bottom); row++) {
 			for (let col = r.left; col <= Math.min(this.cols() - 1, r.right); col++) {
@@ -173,34 +211,55 @@ class StringMatrix {
 		}
 	}
 
-	padLeft(padding: number, fillChar?: string) {
-		fillChar ??= ' '
+	/**
+	 * Add padding to the left of the matrix with the given fill char
+	 * @param padding how many columns
+	 * @param fillChar the fill character
+	 */
+	padLeft(padding: number, fillChar = ' ') {
 		for (const row of this.matrix) {
 			row.unshift(...Utils.fill(fillChar, padding))
 		}
 	}
 
-	padRight(padding: number, fillChar?: string) {
-		fillChar ??= ' '
+	/**
+	 * Add padding to the right of the matrix with the given fill char
+	 * @param padding how many columns
+	 * @param fillChar the fill character
+	 */
+	padRight(padding: number, fillChar = ' ') {
 		for (const row of this.matrix) {
 			row.push(...Utils.fill(fillChar, padding))
 		}
 	}
 
-	padTop(padding: number, fillChar?: string) {
-		fillChar ??= ' '
+	/**
+	 * Add padding to the top of the matrix with the given fill char
+	 * @param padding how many rows
+	 * @param fillChar the fill character
+	 */
+	padTop(padding: number, fillChar = ' ') {
 		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), padding)
 		this.matrix = topPadding.concat(this.matrix)
 	}
 
-	padBottom(padding: number, fillChar?: string) {
-		fillChar ??= ' '
+	/**
+	 * Add padding to the bottom of the matrix with the given fill char
+	 * @param padding how many rows
+	 * @param fillChar the fill character
+	 */
+	padBottom(padding: number, fillChar = ' ') {
 		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), padding)
 		this.matrix = this.matrix.concat(bottomPadding)
 	}
 
-	setWidthCentered(cols: number, fillChar?: string) {
-		fillChar ??= ' '
+	/**
+	 * Resize the matrix to the specified width. If the new width is larger,
+	 * the existing content will be centered.
+	 * @param cols new width
+	 * @param fillChar fill character
+	 */
+	fitToWidthCentered(cols: number, fillChar = ' ') {
 		if (cols < this.cols()) {
 			for (const row of this.matrix) {
 				row.length = cols
@@ -214,8 +273,7 @@ class StringMatrix {
 		}
 	}
 
-	addVertPadding(top: number, bottom: number, fillChar?: string) {
-		fillChar ??= ' '
+	addVertPadding(top: number, bottom: number, fillChar = ' ') {
 		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), top)
 		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), bottom)
 		this.matrix = topPadding.concat(this.matrix, bottomPadding)
@@ -223,13 +281,18 @@ class StringMatrix {
 
 	// fit the matrix to fit the current terminal window
 	// Note: this does NOT work in tests
-	fitToWindow(fillChar?: string) {
+	fitToWindow(fillChar = ' ') {
 		this.fitTo(process.stdout.columns, process.stdout.rows, fillChar)
 	}
 
-	fitTo(cols: number, rows: number, fillChar?: string) {
-		fillChar ??= ' '
-		this.setWidthCentered(cols, fillChar)
+	/**
+	 *
+	 * @param cols
+	 * @param rows
+	 * @param fillChar
+	 */
+	fitTo(cols: number, rows: number, fillChar = ' ') {
+		this.fitToWidthCentered(cols, fillChar)
 
 		const diffRows = rows - this.rows()
 		if (diffRows > 0) {
