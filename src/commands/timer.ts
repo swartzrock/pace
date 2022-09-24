@@ -13,6 +13,7 @@ import { XtermColorGradients } from '../common/xtermcolorgradients'
 /**
  * Timer is the main entrypoint for the pace timer
  * TODO preview mode shows all renderers at 66%.... if they support isPreviewable(), eg a sandglass renderer
+ * TODO move the main body to a TimerApp class that can be well tested and used for a preview command
  * may require all previous iterations
  */
 class Timer extends Command {
@@ -43,7 +44,7 @@ class Timer extends Command {
 
 	renderer: TimerRenderer | null = null
 	intervalIterator?: IntervalIterator
-	matrix: StringMatrix = StringMatrix.fromMultilineMonochromeString('')
+	matrix: StringMatrix = StringMatrix.createFromMultilineMonoString('')
 	durationSeconds = 0
 	totalIterations = 0
 	isPaused = false
@@ -161,11 +162,18 @@ class Timer extends Command {
 			statusBg = this.STATUS_BAR_BG_GRADIENT[bgIndex]
 		}
 
-		// todo check if we're exceeding the max rows on screen
-		this.matrix.padBottom(1, Colors.backgroundColor(' ', statusBg))
+		// Add the status bar background to the matrix
+		const statusBgFillChar = Colors.backgroundColor(' ', statusBg)
+		const rows = this.matrix.rows()
+		if (rows < process.stdout.rows) {
+			this.matrix.padBottom(1, statusBgFillChar)
+		} else {
+			const bounds = new Rectangle(0, rows - 1, this.matrix.cols() - 2, rows - 1)
+			this.matrix.fill(statusBgFillChar, bounds)
+		}
 
 		const statusMsgLeft = Math.floor((this.matrix.cols() - this.statusBarMsg.length) / 2)
-		this.matrix.setStringWithColors(this.statusBarMsg, statusFg, statusBg, statusMsgLeft, this.matrix.rows() - 1)
+		this.matrix.setFgBgString(this.statusBarMsg, statusFg, statusBg, statusMsgLeft, this.matrix.rows() - 1)
 	}
 
 	/**
@@ -198,11 +206,11 @@ class Timer extends Command {
 	 */
 	public static addPausedMessage(matrix: StringMatrix): void {
 		if (matrix.rows() < 3) {
-			const pausedMatrix = StringMatrix.fromMultilineMonochromeString('PAUSED')
+			const pausedMatrix = StringMatrix.createFromMultilineMonoString('PAUSED')
 			matrix.overlayCentered(pausedMatrix, '\u2500')
 		} else {
 			const message = '   ' + '       \n  PAUSED  \n          '
-			const pausedMatrix = StringMatrix.fromMultilineMonochromeString(message)
+			const pausedMatrix = StringMatrix.createFromMultilineMonoString(message)
 			pausedMatrix.addDoubleLineBox(new Rectangle(0, 0, 9, 2), Xterm256.RED_1)
 			matrix.overlayCentered(pausedMatrix, '\u2530')
 		}
@@ -265,7 +273,7 @@ class Timer extends Command {
 	 * `process.exit` is required since we're monitoring readline for pausing
 	 */
 	private static finish(): void {
-		console.log('')
+		// console.log('')
 		process.exit(0)
 	}
 }
