@@ -4,10 +4,11 @@ import { TestUtils } from '../../src/common/testutils'
 import { Rectangle } from '../../src/common/Rectangle'
 import { Colors, Xterm256 } from '../../src/common/colors'
 import { StringUtils } from '../../src/common/stringutils'
+import { Loggy } from '../../src/common/loggy'
 
 describe('stringmatrix', () => {
 	test('basic rows and cols', () => {
-		const matrix = StringMatrix.fromMultilineMonochromeString(
+		const matrix = StringMatrix.createFromMultilineMonoString(
 			'         hello\n           how\n           are\n         you22  '
 		)
 		expect(matrix.cols()).toBe(14)
@@ -15,14 +16,14 @@ describe('stringmatrix', () => {
 	})
 
 	test('setWidth', () => {
-		const expanded = TestUtils.simpleMatrix(4, 20, 's')
+		const expanded = StringMatrix.createUniformMatrix(4, 20, 's')
 		expect(expanded.rowString(0)).toBe('ssss')
 		expanded.setWidthCentered(10, 'w')
 		expect(expanded.rowString(0)).toBe('wwwsssswww')
 	})
 
 	test('addVertPadding', () => {
-		const padded = TestUtils.simpleMatrix(4, 4, 's')
+		const padded = StringMatrix.createUniformMatrix(4, 4, 's')
 		expect(padded.rowString(0)).toBe('ssss')
 		padded.addVertPadding(2, 0, 'p')
 		expect(padded.rowString(0)).toBe('pppp')
@@ -36,9 +37,10 @@ describe('stringmatrix', () => {
 		const height = 6
 		const bottomRow = height - 1
 		const boxColor = Xterm256.GREEN_1
-		const boxed = TestUtils.simpleMatrix(width, height, 's')
+		const boxed = StringMatrix.createUniformMatrix(width, height, 's')
 		const boxBounds = new Rectangle(1, 1, rightCol - 1, bottomRow - 1)
 		boxed.addDoubleLineBox(boxBounds, boxColor)
+		Loggy.raw(boxed)
 
 		const tlPipe = Colors.foregroundColor('╔', boxColor)
 		const trPipe = Colors.foregroundColor('╗', boxColor)
@@ -52,7 +54,7 @@ describe('stringmatrix', () => {
 	})
 
 	test('fitTo', () => {
-		const padded = TestUtils.simpleMatrix(4, 4, 's')
+		const padded = StringMatrix.createUniformMatrix(4, 4, 's')
 		padded.fitTo(8, 8, 'f')
 
 		expect(padded.rowString(0)).toBe('ffffffff')
@@ -71,4 +73,9 @@ describe('stringmatrix', () => {
 		expect(matrix.rows()).toBe(30)
 	})
 
+	test('setHorizontallyCenteredMonochromeString', () => {
+		const matrix = StringMatrix.createUniformMatrix(20, 10, '.')
+		matrix.setHorizontallyCenteredMonochromeString('Hello', 2)
+		expect(matrix.rowString(2)).toBe('.......Hello........')
+	})
 })

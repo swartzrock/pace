@@ -25,7 +25,7 @@ class Slant implements TimerRenderer {
 
 		const paddedTimeRemaining = TextBlocks.addAllPadding(timeRemaining, paddings, ' ')
 
-		const timeRemainingMatrix = StringMatrix.fromMultilineMonochromeString(paddedTimeRemaining)
+		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(paddedTimeRemaining)
 		timeRemainingMatrix.replaceAll(' ', '_')
 		timeRemainingMatrix.replaceAll('_', Colors.foregroundColor('_', Xterm256.CYAN_1))
 

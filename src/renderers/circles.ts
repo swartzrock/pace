@@ -49,7 +49,7 @@ class Circles implements TimerRenderer {
 			horizMargin,
 			' '
 		)
-		const stringMatrix = StringMatrix.fromMultilineMonochromeString(newlineText)
+		const stringMatrix = StringMatrix.createFromMultilineMonoString(newlineText)
 		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
 		stringMatrix.replaceAll(

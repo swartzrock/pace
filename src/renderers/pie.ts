@@ -33,7 +33,7 @@ class PieChart implements TimerRenderer {
 	 */
 	render(details: TimerDetails): StringMatrix {
 		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone())
-		const centeredMonoChartMatrix = StringMatrix.fromMultilineMonochromeString(centeredMonoChart)
+		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(centeredMonoChart)
 
 		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		const coloredFillChar = Colors.foregroundColor(this.CHART_FILL_CHAR, fillColor)
@@ -44,7 +44,7 @@ class PieChart implements TimerRenderer {
 		centeredMonoChartMatrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
 
 		const timeRemaining = PieChart.renderTimeRemainingFiglet(details)
-		const timeRemainingMatrix = StringMatrix.fromMultilineMonochromeString(timeRemaining)
+		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
 
 		timeRemainingMatrix.setVerticalGradient(PieChart.MONOCHROME_GRADIENT)
 		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix, ' ')

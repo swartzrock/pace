@@ -3,11 +3,15 @@ import { Colors, Xterm256 } from './colors'
 import { Utils } from './utils'
 import { Rectangle } from './Rectangle'
 import { TextBlocks } from './textblocks'
+import { Loggy } from './loggy'
 
+/**
+ * A drawing canvas for rendering ansi displays, wrapping a string[][]
+ */
 class StringMatrix {
 	constructor(public matrix: string[][]) {}
 
-	static fromMultilineMonochromeString(s: string): StringMatrix {
+	static createFromMultilineMonoString(s: string): StringMatrix {
 		return new StringMatrix(TextBlocks.toString2dArray(s))
 	}
 
@@ -16,7 +20,6 @@ class StringMatrix {
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
-
 	rows: () => number = () => this.matrix.length
 	cols: () => number = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
 
@@ -32,7 +35,7 @@ class StringMatrix {
 		}
 	}
 
-	setStringWithColors(s: string, fg: Xterm256, bg: Xterm256, col: number, row: number) {
+	setFgBgString(s: string, fg: Xterm256, bg: Xterm256, col: number, row: number) {
 		const availableRoom = this.cols() - col
 		s = s.substring(0, availableRoom)
 		for (let i = 0; i < s.length; i++) {
@@ -41,7 +44,7 @@ class StringMatrix {
 	}
 
 	setHorizontallyCenteredMonochromeString(s: string, row: number) {
-		const startCol = this.cols() / 2 - s.length / 2
+		const startCol = Math.floor(this.cols() / 2 - s.length / 2)
 		this.setMonochromeString(s, startCol, row)
 	}
 
@@ -65,14 +68,14 @@ class StringMatrix {
 		const bgHeight = background.length
 		const fgHeight = foreground.length
 		if (bgHeight == 0 || fgHeight == 0 || bgHeight < fgHeight) {
-			console.log(`copyOverCentered(), background must be taller than foreground and nonzero height`)
+			Loggy.warn(`copyOverCentered(), background must be taller than foreground and nonzero height`)
 			return
 		}
 
 		const bgWidth = background[0].length
 		const fgWidth = foreground[0].length
 		if (bgWidth == 0 || fgWidth == 0 || bgWidth < fgWidth) {
-			console.log('copyOverCentered(), background must be wider than foreground and nonzero height')
+			Loggy.warn('copyOverCentered(), background must be wider than foreground and nonzero height')
 			return
 		}
 
@@ -151,27 +154,24 @@ class StringMatrix {
 		const horizontal = Colors.foregroundColor(DOUBLE_BOX_HORIZONTAL, color)
 		const vertical = Colors.foregroundColor(DOUBLE_BOX_VERTICAL, color)
 
-		for (let i = bounds.left; i < bounds.right; i++) {
-			this.setCell(horizontal, i, bounds.top)
-			this.setCell(horizontal, i, bounds.bottom)
-		}
-		for (let i = bounds.top; i < bounds.bottom; i++) {
-			this.setCell(vertical, bounds.left, i)
-			this.setCell(vertical, bounds.right, i)
-		}
+		this.fill(horizontal, new Rectangle(bounds.left, bounds.top, bounds.right, bounds.top))
+		this.fill(horizontal, new Rectangle(bounds.left, bounds.bottom, bounds.right, bounds.bottom))
+		this.fill(vertical, new Rectangle(bounds.left, bounds.top, bounds.left, bounds.bottom))
+		this.fill(vertical, new Rectangle(bounds.right, bounds.top, bounds.right, bounds.bottom))
+
 		this.setCell(topLeft, bounds.left, bounds.top)
 		this.setCell(topRight, bounds.right, bounds.top)
 		this.setCell(bottomLeft, bounds.left, bounds.bottom)
 		this.setCell(bottomRight, bounds.right, bounds.bottom)
 	}
 
-	// fill(s: string, r: Rectangle) {
-	// 	for (let row = r.top; row <= Math.min(this.rows() - 1, r.bottom); row++) {
-	// 		for (let col = r.left; col <= Math.min(this.cols() - 1, r.right); col++) {
-	// 			this.setCell(s, col, row)
-	// 		}
-	// 	}
-	// }
+	fill(s: string, r: Rectangle) {
+		for (let row = r.top; row <= Math.min(this.rows() - 1, r.bottom); row++) {
+			for (let col = r.left; col <= Math.min(this.cols() - 1, r.right); col++) {
+				this.setCell(s, col, row)
+			}
+		}
+	}
 
 	padLeft(padding: number, fillChar?: string) {
 		fillChar ??= ' '

@@ -27,7 +27,7 @@ class Colossal implements TimerRenderer {
 
 		const timeRemaining = Colossal.renderTimeRemainingFiglet(details)
 
-		const timeRemainingMatrix = StringMatrix.fromMultilineMonochromeString(timeRemaining)
+		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
 		timeRemainingMatrix.padLeft(horizPadding)
 		timeRemainingMatrix.padRight(this.MAX_COLOSSAL_WIDTH - timeRemainingMatrix.cols() + horizPadding * 2)
 		timeRemainingMatrix.addVertPadding(vertPadding, vertPadding)

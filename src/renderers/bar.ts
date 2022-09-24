@@ -20,7 +20,7 @@ class Bar implements TimerRenderer {
 		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
 		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
 
-		const matrix = StringMatrix.fromMultilineMonochromeString(this.renderMonoProgressBar(details))
+		const matrix = StringMatrix.createFromMultilineMonoString(this.renderMonoProgressBar(details))
 		matrix.replaceAll(this.BAR_COMPLETE_CHAR, colorBarComplete)
 		matrix.replaceAll(this.BAR_INCOMPLETE_CHAR, colorBarIncomplete)
 		return matrix
