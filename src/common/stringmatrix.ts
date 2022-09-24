@@ -12,12 +12,7 @@ class StringMatrix {
 	}
 
 	static createUniformMatrix(cols: number, rows: number, fillChar: string): StringMatrix {
-		const lines: string[] = []
-		for (let i = 0; i < rows; i++) {
-			lines.push(StringUtils.fillString(fillChar, cols))
-		}
-		const matrix: string[][] = lines.map((line) => line.split(''))
-		return new StringMatrix(matrix)
+		return new StringMatrix(Utils.fill(Utils.fill(fillChar, cols), rows))
 	}
 
 	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
@@ -229,8 +224,7 @@ class StringMatrix {
 	// fit the matrix to fit the current terminal window
 	// Note: this does NOT work in tests
 	fitToWindow(fillChar?: string) {
-		const screenRowsCorrection = -3
-		this.fitTo(process.stdout.columns, process.stdout.rows + screenRowsCorrection, fillChar)
+		this.fitTo(process.stdout.columns, process.stdout.rows, fillChar)
 	}
 
 	fitTo(cols: number, rows: number, fillChar?: string) {
@@ -238,9 +232,11 @@ class StringMatrix {
 		this.setWidthCentered(cols, fillChar)
 
 		const diffRows = rows - this.rows()
-		const topMargin = Math.floor(diffRows / 2)
-		const bottomMargin = diffRows - topMargin
-		this.addVertPadding(topMargin, bottomMargin, fillChar)
+		if (diffRows > 0) {
+			const topMargin = Math.floor(diffRows / 2)
+			const bottomMargin = diffRows - topMargin
+			this.addVertPadding(topMargin, bottomMargin, fillChar)
+		}
 	}
 
 	rowString: (row: number) => string = (row: number) => this.matrix[row].join('')

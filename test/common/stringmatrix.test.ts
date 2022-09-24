@@ -63,4 +63,12 @@ describe('stringmatrix', () => {
 		expect(padded.rowString(6)).toBe('ffffffff')
 		expect(padded.rowString(7)).toBe('ffffffff')
 	})
+
+	test('verify createUniformMatrix works with color strings', () => {
+		const fillChar = Colors.foregroundColor('\u2588', Xterm256.GREEN_1)
+		const matrix = StringMatrix.createUniformMatrix(180, 30, fillChar)
+		expect(matrix.cols()).toBe(180)
+		expect(matrix.rows()).toBe(30)
+	})
+
 })
