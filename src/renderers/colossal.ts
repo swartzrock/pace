@@ -4,7 +4,7 @@ import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
 import { XtermColorGradients } from '../common/xtermcolorgradients'
-import { Rectangle } from '../common/Rectangle'
+import { Rectangle } from '../common/rectangle'
 import { RenderUtils } from './renderutils'
 
 class Colossal implements TimerRenderer {

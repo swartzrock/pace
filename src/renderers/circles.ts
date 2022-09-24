@@ -3,7 +3,7 @@ import { Colors, Xterm256 } from '../common/colors'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
-import { Rectangle } from '../common/Rectangle'
+import { Rectangle } from '../common/rectangle'
 import { RenderUtils } from './renderutils'
 
 class Circles implements TimerRenderer {

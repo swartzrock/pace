@@ -1,5 +1,5 @@
 import { StringUtils } from './stringutils'
-import { Rectangle } from './Rectangle'
+import { Rectangle } from './rectangle'
 
 /**
  * A collection of utilities for working with multiline strings

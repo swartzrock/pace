@@ -3,7 +3,7 @@ import { StringMatrix } from '../common/stringmatrix'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
-import { Rectangle } from '../common/Rectangle'
+import { Rectangle } from '../common/rectangle'
 
 class Slant implements TimerRenderer {
 	private static TIME_REMAINING_FONT = FigletFonts.SLANT_RELIEF
