@@ -4,11 +4,12 @@ import { StringMatrix } from '../common/stringmatrix'
 import onExit from 'signal-exit'
 import { AnsiCursor } from '../common/ansicursor'
 import { Colors, Xterm256 } from '../common/colors'
-import { Rectangle } from '../common/Rectangle'
+import { Rectangle } from '../common/rectangle'
 import * as readline from 'readline'
 import { IntervalIterator } from '../common/intervalIterator'
 import { Utils } from '../common/utils'
 import { XtermColorGradients } from '../common/xtermcolorgradients'
+import { Point } from '../common/point'
 
 /**
  * Timer is the main entrypoint for the pace timer
@@ -172,8 +173,12 @@ class Timer extends Command {
 			this.matrix.fill(statusBgFillChar, bounds)
 		}
 
-		const statusMsgLeft = Math.floor((this.matrix.cols() - this.statusBarMsg.length) / 2)
-		this.matrix.setFgBgString(this.statusBarMsg, statusFg, statusBg, statusMsgLeft, this.matrix.rows() - 1)
+		const startLoc = new Point(
+			Math.floor((this.matrix.cols() - this.statusBarMsg.length) / 2),
+			this.matrix.rows() - 1
+		)
+
+		this.matrix.colorAndSetString(this.statusBarMsg, statusFg, statusBg, startLoc)
 	}
 
 	/**
