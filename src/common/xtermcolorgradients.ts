@@ -466,7 +466,12 @@ class XtermColorGradients {
 
 	static singleColorGradientOrExit(start: Xterm256, end: Xterm256): Xterm256[] {
 		const result = this.findGradient(this.SINGLE_COLOR_GRADIENTS, start, end)
-		return result === undefined ? process.exit(1) : result
+		if (result === undefined) {
+			console.log(`singleColorGradientOrExit(${start}, ${end}), could not find this gradient, exiting.`, 1)
+			process.exit(1)
+		}
+
+		return result
 	}
 
 	/**
@@ -480,7 +485,11 @@ class XtermColorGradients {
 
 	static doubleColorGradientOrExit(start: Xterm256, end: Xterm256): Xterm256[] {
 		const result = this.findGradient(this.DOUBLE_COLOR_GRADIENTS, start, end)
-		return result === undefined ? process.exit(1) : result
+		if (result === undefined) {
+			console.log(`doubleColorGradientOrExit(${start}, ${end}), could not find this gradient, exiting.`, 1)
+			process.exit(1)
+		}
+		return result
 	}
 }
 
