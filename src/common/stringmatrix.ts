@@ -83,20 +83,22 @@ class StringMatrix {
 	/**
 	 * Overlay another matrix onto this one, centered.
 	 * @param overlay the matrix to overlay
-	 * @param transparentChar if specific, characters matching this char will not be copied
+	 * @param transparentChar if specified, characters matching this char will not be copied
+	 * @param retainColor if specified, the current color of this matrix will be retrained (requres overlay be monochromatic)
+	 * @param offset  if specified, offset the centered matrix by this amount
 	 */
-	overlayCentered(overlay: StringMatrix, transparentChar?: string) {
+	overlayCentered(overlay: StringMatrix, transparentChar = ' ', retainColor = false, offset = new Point(0, 0)) {
 		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
 			Loggy.warn(`overlayCentered(), overlay is bigger than this matrix`)
 			return
 		}
 
 		const topLeft = new Point(
-			Utils.halfInt(this.cols()) - Utils.halfInt(overlay.cols()),
-			Utils.halfInt(this.rows()) - Utils.halfInt(overlay.rows())
+			Utils.halfInt(this.cols()) - Utils.halfInt(overlay.cols()) + offset.col,
+			Utils.halfInt(this.rows()) - Utils.halfInt(overlay.rows()) + offset.row
 		)
 
-		this.overlayAt(overlay, topLeft, transparentChar)
+		this.overlayAt(overlay, topLeft, transparentChar, retainColor)
 	}
 
 	/**
