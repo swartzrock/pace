@@ -1,9 +1,8 @@
 import { StringUtils } from './stringutils'
+import { isNaN, parseInt } from 'lodash'
 
 class Colors {
-	// static set(s: string, fg: Xterm256): string {
-	// 	return Colors.foregroundColor(s, fg)
-	// }
+	static readonly ANSI_RESET_COLOR = '\u001b[0m'
 
 	static foregroundColor(s: string, fg: Xterm256): string {
 		const colorIndex = fg.valueOf()
@@ -14,11 +13,6 @@ class Colors {
 		const colorIndex = fg.valueOf()
 		return `${Colors.createBackgroundColorCode(colorIndex)}${s}${Colors.ANSI_RESET_COLOR}`
 	}
-
-	private static createForegroundColorCode = (colorIndex: number): string => `\u001b[38;5;${colorIndex}m`
-	private static createBackgroundColorCode = (colorIndex: number): string => `\u001b[48;5;${colorIndex}m`
-
-	static readonly ANSI_RESET_COLOR = '\u001b[0m'
 
 	static foregroundAndBackgroundColor(s: string, fg: Xterm256, bg: Xterm256): string {
 		const fgIndex = fg.valueOf()
@@ -65,6 +59,15 @@ class Colors {
 		const g = ((xtermValue - 16) % 36) / 6
 		return g > 1.9 ? Xterm256.BLACK : Xterm256.WHITE
 	}
+
+	static detectFgColor(s: string): number | null {
+		// eslint-disable-next-line no-control-regex
+		const fgColorIndex = parseInt(s.replace(/[\u001b]\[38;5;(\d+)m.*/, '$1'))
+		return isNaN(fgColorIndex) ? null : fgColorIndex
+	}
+
+	private static createForegroundColorCode = (colorIndex: number): string => `\u001b[38;5;${colorIndex}m`
+	private static createBackgroundColorCode = (colorIndex: number): string => `\u001b[48;5;${colorIndex}m`
 }
 
 enum Xterm256 {
