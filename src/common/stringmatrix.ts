@@ -5,6 +5,7 @@ import { Rectangle } from './rectangle'
 import { TextBlocks } from './textblocks'
 import { Loggy } from './loggy'
 import { Point } from './point'
+import { UnicodeChars } from './unicodechars'
 
 /**
  * A drawing canvas for rendering ansi displays, wrapping a string[][]
@@ -102,9 +103,10 @@ class StringMatrix {
 	 * Overlay another matrix onto this one at the specified location.
 	 * @param overlay the matrix to overlay
 	 * @param topLeft the top-left corner on this matrix to overlay the other matrix
-	 * @param transparentChar if specific, characters matching this char will not be copied
+	 * @param transparentChar if specified, characters matching this char will not be copied
+	 * @param retainColor if specified, the current color of this matrix will be retrained (requres overlay be monochromatic)
 	 */
-	overlayAt(overlay: StringMatrix, topLeft: Point, transparentChar = ' ') {
+	overlayAt(overlay: StringMatrix, topLeft: Point, transparentChar = ' ', retainColor = false) {
 		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
 			Loggy.warn(`overlayAt(), overlay is bigger than this matrix`)
 			return
@@ -112,9 +114,19 @@ class StringMatrix {
 
 		for (let fgRow = 0; fgRow < overlay.rows(); fgRow++) {
 			for (let fgCol = 0; fgCol < overlay.cols(); fgCol++) {
-				const cell = overlay.getCell(fgCol, fgRow)
-				if (cell !== transparentChar) {
-					this.setCell(cell, fgCol + topLeft.col, fgRow + topLeft.row)
+				let overlayCell = overlay.getCell(fgCol, fgRow)
+				if (overlayCell !== transparentChar) {
+					// If retaining color, detect the color of this matrix's cell and color the overlay cell
+					if (retainColor) {
+						const previousColorIndex = Colors.detectFgColor(
+							this.getCell(fgCol + topLeft.col, fgRow + topLeft.row)
+						)
+						if (previousColorIndex != null) {
+							overlayCell = Colors.foregroundColor(overlayCell, previousColorIndex)
+						}
+					}
+
+					this.setCell(overlayCell, fgCol + topLeft.col, fgRow + topLeft.row)
 				}
 			}
 		}
@@ -171,21 +183,13 @@ class StringMatrix {
 	 * @param fg the foreground color of the box
 	 */
 	addDoubleLineBox(bounds: Rectangle, fg: Xterm256): void {
-		const DOUBLE_BOX_TOP_LEFT = '╔'
-		const DOUBLE_BOX_TOP_RIGHT = '╗'
-		const DOUBLE_BOX_BOTTOM_LEFT = '╚'
-		const DOUBLE_BOX_BOTTOM_RIGHT = '╝'
+		const topLeft = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_TOP_LEFT, fg)
+		const topRight = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_TOP_RIGHT, fg)
+		const bottomLeft = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_BOTTOM_LEFT, fg)
+		const bottomRight = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_BOTTOM_RIGHT, fg)
 
-		const DOUBLE_BOX_HORIZONTAL = '═'
-		const DOUBLE_BOX_VERTICAL = '║'
-
-		const topLeft = Colors.foregroundColor(DOUBLE_BOX_TOP_LEFT, fg)
-		const topRight = Colors.foregroundColor(DOUBLE_BOX_TOP_RIGHT, fg)
-		const bottomLeft = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_LEFT, fg)
-		const bottomRight = Colors.foregroundColor(DOUBLE_BOX_BOTTOM_RIGHT, fg)
-
-		const horizontal = Colors.foregroundColor(DOUBLE_BOX_HORIZONTAL, fg)
-		const vertical = Colors.foregroundColor(DOUBLE_BOX_VERTICAL, fg)
+		const horizontal = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_HORIZONTAL, fg)
+		const vertical = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_VERTICAL, fg)
 
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.top, bounds.right, bounds.top))
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.bottom, bounds.right, bounds.bottom))
