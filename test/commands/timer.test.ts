@@ -19,7 +19,7 @@ describe('timer', () => {
 		verify(8, 20, 1)
 		verify(9, 20, 1) // 1.1
 		verify(10, 20, 1) // 1
-		verify(11, 20, 0) // .9
+		verify(11, 20, 1) // .9
 		verify(12, 20, 0) // .8
 		verify(13, 20, 0) // .7
 		verify(14, 20, 0) // .6
