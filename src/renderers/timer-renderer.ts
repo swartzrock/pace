@@ -4,6 +4,7 @@ import { StringMatrix } from '../common/stringmatrix'
 import { Circles } from './circles'
 import { Colossal } from './colossal'
 import { Slant } from './slant'
+import { ColorWheel } from './colorwheel'
 
 class TimerDetails {
 	constructor(
@@ -40,6 +41,7 @@ const ALL_RENDERERS = {
 	circles: Circles,
 	colossal: Colossal,
 	slant: Slant,
+	colorwheel: ColorWheel,
 }
 
 export { TimerDetails, TimerRenderer, ALL_RENDERERS }
