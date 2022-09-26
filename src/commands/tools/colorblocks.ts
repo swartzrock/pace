@@ -3,8 +3,9 @@ import { Colors, Xterm256 } from '../../common/colors'
 import { stdout } from 'process'
 import { Utils } from '../../common/utils'
 import { StringUtils } from '../../common/stringutils'
-import { XtermColorGradients } from '../../common/xtermcolorgradients'
+import { XtermGradients } from '../../common/xtermgradients'
 import { FigletFonts, Fonts } from '../../common/fonts'
+import { MatrixGradient } from '../../common/matrixgradients'
 
 export default class ColorBlocks extends Command {
 	static description = 'Displays an xterm color block pattern'
@@ -17,6 +18,9 @@ export default class ColorBlocks extends Command {
 	static flags = {}
 	static args = []
 	static strict = true
+
+	static readonly H1_GRADIENT = XtermGradients.DOUBLE_COLOR_GRADIENTS2.PURPLEB_TO_PURPLEA
+	static readonly H2_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS2.GREEN_1_TO_CYAN_1
 
 	async run(): Promise<void> {
 		this.displayAllGradients()
@@ -46,104 +50,102 @@ export default class ColorBlocks extends Command {
 		const startColorName = Colors.colorName(row[0])
 		const endColorName = Colors.colorName(row[row.length - 1])
 		const colorBlocks = row.map((c) => Colors.backgroundColor(colorBlockTxt, c)).join('')
-		return [`[Xterm256.${startColorName}, Xterm256.${endColorName}]`, `${colorBlocks}`]
+		return [`${startColorName}_TO_${endColorName}`, `${colorBlocks}`]
 	}
 
 	displayGradients(gradients: Xterm256[][]) {
 		const headings: string[][] = [
-			['START & END COLORS', 'GRADIENT'],
-			['==================', '========'],
+			['NAME', 'GRADIENT'],
+			['====', '========'],
 		]
 		const width = gradients[0].length == 12 ? 6 : 12
 		const matrix: string[][] = gradients.map((g) => this.renderGradientToDescAndBlocks(g, width))
 		headings.push(...matrix)
-		const combinedText = StringUtils.renderAlignedColumns(headings, 2)
+		const combinedText = StringUtils.renderAlignedColumns(headings, 4)
 		console.log(combinedText)
 	}
 
 	displayAllGradients() {
-		const singleTitleGradient = XtermColorGradients.singleColorGradientOrExit(Xterm256.GREEN_1, Xterm256.CYAN_1)
-		const doubleGradient = XtermColorGradients.doubleColorGradientOrExit(Xterm256.PURPLEA, Xterm256.PURPLEB)
-
 		console.log('')
 		console.log('')
 		console.log(
-			Colors.setVerticalGradient(Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Gradients'), doubleGradient) + '\n'
+			Colors.setVerticalGradient(
+				Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Gradients'),
+				ColorBlocks.H1_GRADIENT
+			) + '\n'
 		)
 
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'SINGLE COLOR GRADIENTS'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			) + '\n'
 		)
 
-		this.displayGradients(XtermColorGradients.SINGLE_COLOR_GRADIENTS.map((g) => g.get()))
+		this.displayGradients(Object.values(XtermGradients.SINGLE_COLOR_GRADIENTS2))
 
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'DOUBLE COLOR GRADIENTS'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			) + '\n'
 		)
 
-		this.displayGradients(XtermColorGradients.DOUBLE_COLOR_GRADIENTS.map((g) => g.get()))
+		this.displayGradients(Object.values(XtermGradients.DOUBLE_COLOR_GRADIENTS2))
 	}
 
 	displayAllPalettes() {
-		// ANSI_REGULAR
-
-		const singleTitleGradient = XtermColorGradients.singleColorGradientOrExit(Xterm256.GREEN_1, Xterm256.CYAN_1)
-		const doubleGradient = XtermColorGradients.doubleColorGradientOrExit(Xterm256.PURPLEA, Xterm256.PURPLEB)
-
 		console.log('\n\n\n')
 		console.log(
-			Colors.setVerticalGradient(Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Palettes'), doubleGradient) + '\n'
+			Colors.setVerticalGradient(
+				Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Palettes'),
+				ColorBlocks.H1_GRADIENT
+			) + '\n'
 		)
 
 		console.log('')
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'BLUE-GREEN PALETTE'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			)
 		)
 		console.log('')
 
-		this.displayPalette(Utils.transpose(XtermColorGradients.BLUE_GREEN_PALETTE))
+		this.displayPalette(Utils.transpose(MatrixGradient.BLUE_GREEN_PALETTE))
 
 		console.log('')
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'PURPLE-GREEN PALETTE'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			)
 		)
 		console.log('')
 
-		this.displayPalette(Utils.transpose(XtermColorGradients.PURPLE_GREEN_PALETTE))
+		this.displayPalette(Utils.transpose(MatrixGradient.PURPLE_GREEN_PALETTE))
 
 		console.log('')
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'RED-YELLOW PALETTE'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			)
 		)
 		console.log('')
 
-		this.displayPalette(Utils.transpose(XtermColorGradients.RED_YELLOW_PALETTE))
+		this.displayPalette(Utils.transpose(MatrixGradient.RED_YELLOW_PALETTE))
 
 		console.log('')
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'MONOCHROME PALETTE'),
-				singleTitleGradient
+				ColorBlocks.H2_GRADIENT
 			)
 		)
 		console.log('')
 
-		const monochromePalette = Utils.grouped(XtermColorGradients.MONOCHROME_GRADIENT, 6)
+		const monochromePalette = Utils.grouped(XtermGradients.MONOCHROME_GRADIENT, 6)
 		this.displayPalette(monochromePalette)
 
 		console.log('\n')

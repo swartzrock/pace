@@ -8,13 +8,17 @@ import { Rectangle } from '../common/rectangle'
 import * as readline from 'readline'
 import { IntervalIterator } from '../common/intervalIterator'
 import { Utils } from '../common/utils'
-import { XtermColorGradients } from '../common/xtermcolorgradients'
+import { XtermGradients } from '../common/xtermgradients'
 import { Point } from '../common/point'
 
 /**
  * Timer is the main entrypoint for the pace timer
+ * TODO create a clock w/ one hand showing remaining time... minutes and seconds?
  * TODO preview mode shows all renderers at 66%.... if they support isPreviewable(), eg a sandglass renderer
+ * TODO preview mode shows mini versions, shrunk, with 1px boxes?
  * TODO move the main body to a TimerApp class that can be well tested and used for a preview command
+ * TODO use color blocks COLOR PALETTES font and coloring to display time remaining as text, eg "EIGHT MIN..."
+ * TODO biggest text possible! ***
  * may require all previous iterations
  */
 class Timer extends Command {
@@ -41,7 +45,7 @@ class Timer extends Command {
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 100
 	readonly STATUS_BAR_ITERATIONS = 100 // ten seconds
-	readonly STATUS_BAR_BG_GRADIENT = XtermColorGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
+	readonly STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
 	intervalIterator?: IntervalIterator

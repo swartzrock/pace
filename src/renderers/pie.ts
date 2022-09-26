@@ -7,7 +7,7 @@ import { TextBlocks } from '../common/textblocks'
 import { RenderUtils } from './renderutils'
 import { Point } from '../common/point'
 import { UnicodeChars } from '../common/unicodechars'
-import { XtermColorGradients } from '../common/xtermcolorgradients'
+import { XtermGradients } from '../common/xtermgradients'
 
 class PieChart implements TimerRenderer {
 	readonly CHART_FILL_CHAR = UnicodeChars.BLOCK_FULL
@@ -16,12 +16,10 @@ class PieChart implements TimerRenderer {
 	readonly CHART_EMPTY_CHAR = 'z'
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_007
 
-	static TIME_REMAINING_GRADIENT: Xterm256[] = XtermColorGradients.doubleColorGradientOrExit(
-		Xterm256.PURPLEA,
-		Xterm256.PURPLEB
-	)
-		.slice(0, 7)
-		.reverse()
+	static TIME_REMAINING_GRADIENT: Xterm256[] = XtermGradients.DOUBLE_COLOR_GRADIENTS2.PURPLEB_TO_PURPLEA.slice(
+		0,
+		7
+	).reverse()
 
 	pieChart = new SquarePieChart()
 

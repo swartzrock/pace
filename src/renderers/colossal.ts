@@ -3,13 +3,13 @@ import { StringMatrix } from '../common/stringmatrix'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
-import { XtermColorGradients } from '../common/xtermcolorgradients'
+import { XtermGradients } from '../common/xtermgradients'
 import { Rectangle } from '../common/rectangle'
 import { RenderUtils } from './renderutils'
+import { Utils } from '../common/utils'
 
 class Colossal implements TimerRenderer {
-	readonly doubleColorGradient = XtermColorGradients.doubleColorGradientOrExit(Xterm256.BLUE_1, Xterm256.BLUEVIOLET)
-	readonly timeRemainingGradient = this.doubleColorGradient.concat(this.doubleColorGradient.reverse())
+	readonly timeRemainingGradient = Utils.concatReversed(XtermGradients.DOUBLE_COLOR_GRADIENTS2.BLUEVIOLET_TO_BLUE_1)
 	readonly MAX_COLOSSAL_WIDTH = 50
 
 	/**

@@ -1,5 +1,6 @@
 import { Xterm256 } from './colors'
 import { Utils } from './utils'
+import { XtermGradients } from './xtermgradients'
 
 enum MatrixStart {
 	TOP,
@@ -31,9 +32,7 @@ class MatrixGradient {
 		}
 		return this.start
 	}
-}
 
-class XtermColorGradients {
 	static readonly BLUE_GREEN_PALETTE: Xterm256[][] = [
 		[
 			Xterm256.GREY_000,
@@ -295,62 +294,6 @@ class XtermColorGradients {
 		],
 	]
 
-	static readonly GREYS_PALETTE: Xterm256[] = [
-		Xterm256.GREY_003,
-		Xterm256.GREY_007,
-		Xterm256.GREY_011,
-		Xterm256.GREY_015,
-		Xterm256.GREY_019,
-		Xterm256.GREY_023,
-		Xterm256.GREY_027,
-		Xterm256.GREY_030,
-		Xterm256.GREY_035,
-		Xterm256.GREY_039,
-		Xterm256.GREY_042,
-		Xterm256.GREY_046,
-		Xterm256.GREY_050,
-		Xterm256.GREY_054,
-		Xterm256.GREY_058,
-		Xterm256.GREY_062,
-		Xterm256.GREY_066,
-		Xterm256.GREY_070,
-		Xterm256.GREY_074,
-		Xterm256.GREY_078,
-		Xterm256.GREY_082,
-		Xterm256.GREY_085,
-		Xterm256.GREY_089,
-		Xterm256.GREY_093,
-	]
-
-	static readonly MONOCHROME_GRADIENT: Xterm256[] = [
-		Xterm256.GREY_000,
-		Xterm256.GREY_003,
-		Xterm256.GREY_007,
-		Xterm256.GREY_011,
-		Xterm256.GREY_015,
-		Xterm256.GREY_019,
-		Xterm256.GREY_023,
-		Xterm256.GREY_027,
-		Xterm256.GREY_030,
-		Xterm256.GREY_035,
-		Xterm256.GREY_039,
-		Xterm256.GREY_042,
-		Xterm256.GREY_046,
-		Xterm256.GREY_050,
-		Xterm256.GREY_054,
-		Xterm256.GREY_058,
-		Xterm256.GREY_062,
-		Xterm256.GREY_066,
-		Xterm256.GREY_070,
-		Xterm256.GREY_074,
-		Xterm256.GREY_078,
-		Xterm256.GREY_082,
-		Xterm256.GREY_085,
-		Xterm256.GREY_089,
-		Xterm256.GREY_093,
-		Xterm256.GREY_100,
-	]
-
 	static readonly DOUBLE_COLOR_GRADIENTS = [
 		new MatrixGradient(this.BLUE_GREEN_PALETTE, MatrixStart.LEFT, 0, 12),
 		new MatrixGradient(this.BLUE_GREEN_PALETTE, MatrixStart.LEFT, 1, 12),
@@ -446,51 +389,6 @@ class XtermColorGradients {
 		new MatrixGradient(this.RED_YELLOW_PALETTE, MatrixStart.TOP, 10, 6),
 		new MatrixGradient(this.RED_YELLOW_PALETTE, MatrixStart.TOP, 11, 6),
 	]
-
-	private static findGradient(palette: MatrixGradient[], start: Xterm256, end: Xterm256): Xterm256[] | undefined {
-		const gradients: Xterm256[][] = palette.map((g) => g.get())
-		const matching: Xterm256[][] = gradients.filter(
-			(a) => (a[0] == start && a[a.length - 1] == end) || (a[0] == end && a[a.length - 1] == start)
-		)
-		return matching.length > 0 ? matching[0] : undefined
-	}
-
-	/**
-	 * Returns the single color gradient with the given start and end colors
-	 * @param start the start color
-	 * @param end the end color
-	 */
-	static singleColorGradient(start: Xterm256, end: Xterm256): Xterm256[] | undefined {
-		return this.findGradient(this.SINGLE_COLOR_GRADIENTS, start, end)
-	}
-
-	static singleColorGradientOrExit(start: Xterm256, end: Xterm256): Xterm256[] {
-		const result = this.findGradient(this.SINGLE_COLOR_GRADIENTS, start, end)
-		if (result === undefined) {
-			console.log(`singleColorGradientOrExit(${start}, ${end}), could not find this gradient, exiting.`, 1)
-			process.exit(1)
-		}
-
-		return result
-	}
-
-	/**
-	 * Returns the double color gradient with the given start and end colors
-	 * @param start the start color
-	 * @param end the end color
-	 */
-	static doubleColorGradient(start: Xterm256, end: Xterm256): Xterm256[] | undefined {
-		return this.findGradient(this.DOUBLE_COLOR_GRADIENTS, start, end)
-	}
-
-	static doubleColorGradientOrExit(start: Xterm256, end: Xterm256): Xterm256[] {
-		const result = this.findGradient(this.DOUBLE_COLOR_GRADIENTS, start, end)
-		if (result === undefined) {
-			console.log(`doubleColorGradientOrExit(${start}, ${end}), could not find this gradient, exiting.`, 1)
-			process.exit(1)
-		}
-		return result
-	}
 }
 
-export { MatrixGradient, XtermColorGradients }
+export { MatrixGradient }

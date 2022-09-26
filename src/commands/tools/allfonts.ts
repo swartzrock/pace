@@ -1,7 +1,7 @@
 import { Command } from '@oclif/core'
 import { FigletFonts, Fonts } from '../../common/fonts'
 import { Colors, Xterm256 } from '../../common/colors'
-import { XtermColorGradients } from '../../common/xtermcolorgradients'
+import { XtermGradients } from '../../common/xtermgradients'
 import { TextBlocks } from '../../common/textblocks'
 
 export default class AllFonts extends Command {
@@ -27,7 +27,7 @@ export default class AllFonts extends Command {
 
 	async run(): Promise<void> {
 		const text = '23 Quick foxes'
-		const gradient = XtermColorGradients.singleColorGradientOrExit(Xterm256.GREEN_1, Xterm256.CYAN_1)
+		const gradient = XtermGradients.SINGLE_COLOR_GRADIENTS2.GREEN_1_TO_CYAN_1
 
 		const figFontNames: string[] = <FigletFonts[]>Object.keys(FigletFonts)
 		const figFontValues: FigletFonts[] = <FigletFonts[]>Object.values(FigletFonts)
