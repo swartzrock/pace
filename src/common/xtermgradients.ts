@@ -5,7 +5,7 @@ import { Xterm256 } from './colors'
  * Run `tools colorblocks` to see them all.
  */
 class XtermGradients {
-	static readonly SINGLE_COLOR_GRADIENTS2 = {
+	static readonly SINGLE_COLOR_GRADIENTS = {
 		DARKRED_A_TO_CHARTREUSE_2A: [52, 58, 64, 70, 76, 82],
 		DEEPPINK_4A_TO_SEAGREEN_2: [53, 59, 65, 71, 77, 83],
 		PURPLE_4A_TO_SEAGREEN_1A: [54, 60, 66, 72, 78, 84],
@@ -80,7 +80,7 @@ class XtermGradients {
 		RED_1_TO_MAGENTA_1: [196, 197, 198, 199, 200, 201],
 	}
 
-	static readonly DOUBLE_COLOR_GRADIENTS2 = {
+	static readonly DOUBLE_COLOR_GRADIENTS = {
 		DARKRED_A_TO_GREY_000: [52, 58, 64, 70, 76, 82, 46, 40, 34, 28, 22, 16],
 		DEEPPINK_4A_TO_NAVYBLUE: [53, 59, 65, 71, 77, 83, 47, 41, 35, 29, 23, 17],
 		PURPLE_4A_TO_DARKBLUE: [54, 60, 66, 72, 78, 84, 48, 42, 36, 30, 24, 18],

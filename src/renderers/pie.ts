@@ -16,7 +16,7 @@ class PieChart implements TimerRenderer {
 	readonly CHART_EMPTY_CHAR = 'z'
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_007
 
-	static TIME_REMAINING_GRADIENT: Xterm256[] = XtermGradients.DOUBLE_COLOR_GRADIENTS2.PURPLEB_TO_PURPLEA.slice(
+	static TIME_REMAINING_GRADIENT: Xterm256[] = XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLEB_TO_PURPLEA.slice(
 		0,
 		7
 	).reverse()
@@ -38,7 +38,8 @@ class PieChart implements TimerRenderer {
 		centeredMonoChartMatrix.replaceAll(this.CHART_FILL_CHAR, coloredFillChar)
 		centeredMonoChartMatrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
 
-		const timeRemaining = PieChart.renderTimeRemainingFiglet(details)
+		const timeRemainingFiglet = Fonts.render(FigletFonts.ANSI_REGULAR, details.timeRemainingText())
+		const timeRemaining = TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
 
 		// render the time-remaining shadow
 		const timeRemainingMatrixShadow = StringMatrix.createFromMultilineMonoString(timeRemaining)
@@ -64,13 +65,6 @@ class PieChart implements TimerRenderer {
 		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
 		const pieChartTxt = TextBlocks.horizontallyDouble(squarePieChartTxt)
 		return TextBlocks.centerHorizontallyOnScreen(pieChartTxt)
-	}
-
-	private static renderTimeRemainingFiglet(details: TimerDetails): string {
-		const timeRemaining = details.timeRemainingText()
-		const timeRemainingFont = FigletFonts.ANSI_REGULAR
-		const timeRemainingFiglet = Fonts.render(timeRemainingFont, timeRemaining)
-		return TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
 	}
 }
 

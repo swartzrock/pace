@@ -19,8 +19,8 @@ export default class ColorBlocks extends Command {
 	static args = []
 	static strict = true
 
-	static readonly H1_GRADIENT = XtermGradients.DOUBLE_COLOR_GRADIENTS2.PURPLEB_TO_PURPLEA
-	static readonly H2_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS2.GREEN_1_TO_CYAN_1
+	static readonly H1_GRADIENT = XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLEB_TO_PURPLEA
+	static readonly H2_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1
 
 	async run(): Promise<void> {
 		this.displayAllGradients()
@@ -82,7 +82,7 @@ export default class ColorBlocks extends Command {
 			) + '\n'
 		)
 
-		this.displayGradients(Object.values(XtermGradients.SINGLE_COLOR_GRADIENTS2))
+		this.displayGradients(Object.values(XtermGradients.SINGLE_COLOR_GRADIENTS))
 
 		console.log(
 			Colors.setVerticalGradient(
@@ -91,7 +91,7 @@ export default class ColorBlocks extends Command {
 			) + '\n'
 		)
 
-		this.displayGradients(Object.values(XtermGradients.DOUBLE_COLOR_GRADIENTS2))
+		this.displayGradients(Object.values(XtermGradients.DOUBLE_COLOR_GRADIENTS))
 	}
 
 	displayAllPalettes() {

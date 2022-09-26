@@ -27,7 +27,7 @@ export default class AllFonts extends Command {
 
 	async run(): Promise<void> {
 		const text = '23 Quick foxes'
-		const gradient = XtermGradients.SINGLE_COLOR_GRADIENTS2.GREEN_1_TO_CYAN_1
+		const gradient = XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1
 
 		const figFontNames: string[] = <FigletFonts[]>Object.keys(FigletFonts)
 		const figFontValues: FigletFonts[] = <FigletFonts[]>Object.values(FigletFonts)
