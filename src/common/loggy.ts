@@ -27,9 +27,9 @@ class Loggy {
 		transports: [new winston.transports.File({ filename: Loggy.RAW_LOG_FILE })],
 	})
 
-	static info = (a: any) => Loggy.mainLog.info(a)
-	static warn = (a: any) => Loggy.mainLog.warn(a)
-	static error = (a: any) => Loggy.mainLog.error(a)
+	static info = (a: unknown) => Loggy.mainLog.info(a)
+	static warn = (a: unknown) => Loggy.mainLog.warn(a)
+	static error = (a: unknown) => Loggy.mainLog.error(a)
 
 	static linefill = StringUtils.fillString('=', 20)
 
@@ -38,7 +38,7 @@ class Loggy {
 	 * info about the matrix will be printed
 	 * @param a
 	 */
-	static raw(a: any) {
+	static raw(a: unknown) {
 		if (a instanceof StringMatrix) {
 			const m: StringMatrix = a as StringMatrix
 			Loggy.rawLog.info(`Displaying ${m.cols()} x ${m.rows()} matrix:`)
