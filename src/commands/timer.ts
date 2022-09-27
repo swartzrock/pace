@@ -43,9 +43,9 @@ class Timer extends Command {
 	]
 	static strict = true
 
-	readonly TIMER_CALLBACK_INTERVAL_MS = 100
-	readonly STATUS_BAR_ITERATIONS = 100 // ten seconds
-	readonly STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
+	static TIMER_CALLBACK_INTERVAL_MS = 100
+	static STATUS_BAR_ITERATIONS = 100 // ten seconds
+	static STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
 	intervalIterator?: IntervalIterator
@@ -69,7 +69,7 @@ class Timer extends Command {
 		}
 
 		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
-		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS) + 1
+		this.totalIterations = this.durationSeconds * (1000 / Timer.TIMER_CALLBACK_INTERVAL_MS) + 1
 
 		// Set the status bar message
 		const durationMinutes = Math.floor(this.durationSeconds / 60)
@@ -87,7 +87,7 @@ class Timer extends Command {
 		this.listenForKeyEvents()
 
 		this.intervalIterator = new IntervalIterator(
-			this.TIMER_CALLBACK_INTERVAL_MS,
+			Timer.TIMER_CALLBACK_INTERVAL_MS,
 			this.totalIterations,
 			(iteration: number) => this.timerCallback(iteration),
 			() => Timer.finish()
@@ -133,12 +133,13 @@ class Timer extends Command {
 			return
 		}
 
-		const details: TimerDetails = Timer.getTimerDetails(
+		const details: TimerDetails = TimerDetails.newTimerDetails(
 			iteration,
 			this.totalIterations,
-			this.TIMER_CALLBACK_INTERVAL_MS
+			Timer.TIMER_CALLBACK_INTERVAL_MS
 		)
-		this.matrix = this.renderer.render(details)
+		const terminalDims = new Point(process.stdout.columns, process.stdout.rows)
+		this.matrix = this.renderer.render(details, terminalDims)
 		this.matrix.fitToWindow()
 		this.writeStatusBarMsg(iteration)
 		AnsiCursor.renderTopLeft(this.matrix.toString())
@@ -152,19 +153,19 @@ class Timer extends Command {
 	 * @private
 	 */
 	private writeStatusBarMsg(iteration: number) {
-		if (iteration >= this.STATUS_BAR_ITERATIONS) {
+		if (iteration >= Timer.STATUS_BAR_ITERATIONS) {
 			return
 		}
 
 		const statusFg = Xterm256.SKYBLUE_1
-		let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
+		let statusBg: Xterm256 = Timer.STATUS_BAR_BG_GRADIENT[0]
 
 		// If the status bar is more than half over, use a darkening gradient bg
-		if (iteration > this.STATUS_BAR_ITERATIONS / 2) {
-			const statusBarPctDone = iteration / (this.STATUS_BAR_ITERATIONS / 2) - 1
+		if (iteration > Timer.STATUS_BAR_ITERATIONS / 2) {
+			const statusBarPctDone = iteration / (Timer.STATUS_BAR_ITERATIONS / 2) - 1
 
-			const bgIndex = Math.floor(statusBarPctDone * this.STATUS_BAR_BG_GRADIENT.length)
-			statusBg = this.STATUS_BAR_BG_GRADIENT[bgIndex]
+			const bgIndex = Math.floor(statusBarPctDone * Timer.STATUS_BAR_BG_GRADIENT.length)
+			statusBg = Timer.STATUS_BAR_BG_GRADIENT[bgIndex]
 		}
 
 		// Add the status bar background to the matrix
@@ -183,28 +184,6 @@ class Timer extends Command {
 		)
 
 		this.matrix.colorAndSetString(this.statusBarMsg, statusFg, statusBg, startLoc)
-	}
-
-	/**
-	 * Builds information about the current status in the timer
-	 * for use in rendering
-	 * @param iteration the current 1-based iteration
-	 * @param totalIterations total number of iterations in the timer
-	 * @param callbackIntervalMs the callback interval for rendering the timer
-	 * @private
-	 */
-	public static getTimerDetails(
-		iteration: number,
-		totalIterations: number,
-		callbackIntervalMs: number
-	): TimerDetails {
-		const iterationsPerSecond = 1000 / callbackIntervalMs
-
-		const totalSeconds = totalIterations / iterationsPerSecond
-		const elapsedSecondsF = (iteration - 1) / iterationsPerSecond
-		const remainingSecondsF = totalSeconds - elapsedSecondsF
-
-		return new TimerDetails(iteration, totalIterations, Math.floor(elapsedSecondsF), Math.floor(remainingSecondsF))
 	}
 
 	/**
