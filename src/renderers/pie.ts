@@ -27,13 +27,13 @@ class PieChart implements TimerRenderer {
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
 	 */
-	render(details: TimerDetails): StringMatrix {
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
 		const coloredFillChar = Colors.foregroundColor(this.CHART_FILL_CHAR, fillColor)
 		const coloredEmptyChar = Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
 
 		// render the main pie chart
-		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone())
+		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone(), terminalDims)
 		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(centeredMonoChart)
 		centeredMonoChartMatrix.replaceAll(this.CHART_FILL_CHAR, coloredFillChar)
 		centeredMonoChartMatrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
@@ -55,8 +55,8 @@ class PieChart implements TimerRenderer {
 		return centeredMonoChartMatrix
 	}
 
-	private renderMonochromeCenteredPieChart(percentDone: number): string {
-		const radius = Math.floor(Math.min(process.stdout.rows, process.stdout.columns / 2) / 2) - 2
+	private renderMonochromeCenteredPieChart(percentDone: number, terminalDims: Point): string {
+		const radius = Math.floor(Math.min(process.stdout.rows, terminalDims.col / 2) / 2) - 2
 		const symbols: string[] = [this.CHART_FILL_CHAR, this.CHART_EMPTY_CHAR]
 		const pieDetails: SquarePieChartDetails = {
 			symbols: symbols,

@@ -1,11 +1,11 @@
 import { describe, expect, test } from '@jest/globals'
-import { Timer } from '../../src/commands/timer'
+import { TimerDetails } from '../../src/renderers/timer-renderer'
 
-describe('timer', () => {
+describe('timerdetails', () => {
 	test('timer details shows remaining seconds as floor', () => {
 		const callbackIntervalMs = 100
 		const verify = (i: number, total: number, seconds: number) => {
-			const details = Timer.getTimerDetails(i, total, callbackIntervalMs)
+			const details = TimerDetails.newTimerDetails(i, total, callbackIntervalMs)
 			expect(details.remainingSeconds).toBe(seconds)
 		}
 

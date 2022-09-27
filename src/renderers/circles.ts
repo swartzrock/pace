@@ -5,6 +5,7 @@ import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Rectangle } from '../common/rectangle'
 import { RenderUtils } from './renderutils'
+import { Point } from '../common/point'
 
 class Circles implements TimerRenderer {
 	readonly CIRCLE_COMPLETE_CHAR = '\u2588'
@@ -21,12 +22,12 @@ class Circles implements TimerRenderer {
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
 	 */
-	render(details: TimerDetails): StringMatrix {
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const boxMargin = 1
 		const horizMargin = 4 // include room for the box
 		const vertMargin = 3 // include room for the box
 
-		const cols = process.stdout.columns - horizMargin * 2 - boxMargin * 2
+		const cols = terminalDims.col - horizMargin * 2 - boxMargin * 2
 
 		const maxRows = process.stdout.rows / 2 - vertMargin * 2 - boxMargin * 2
 		let rows = Math.floor(details.totalIterations / cols)

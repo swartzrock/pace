@@ -49,7 +49,7 @@ class ColorWheel implements TimerRenderer {
 
 	pieChart = new SquarePieChart()
 
-	render(details: TimerDetails): StringMatrix {
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		let gradient = this.GREEN_GRADIENT
 		if (details.percentDone() > 0.9) {
 			gradient = this.RED_GRADIENT
@@ -59,7 +59,7 @@ class ColorWheel implements TimerRenderer {
 
 		Utils.rotateRight(gradient)
 
-		const radius = Math.floor(Math.min(process.stdout.rows, process.stdout.columns / 2) / 2) - 2
+		const radius = Math.floor(Math.min(process.stdout.rows, terminalDims.col / 2) / 2) - 2
 
 		const pieDetails: SquarePieChartDetails = {
 			symbols: this.ALPHABET,

@@ -4,6 +4,7 @@ import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
 import { Rectangle } from '../common/rectangle'
+import { Point } from '../common/point'
 
 class Slant implements TimerRenderer {
 	private static TIME_REMAINING_FONT = FigletFonts.SLANT_RELIEF
@@ -14,10 +15,10 @@ class Slant implements TimerRenderer {
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
 	 */
-	render(details: TimerDetails): StringMatrix {
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const timeRemaining = Slant.renderTimeRemainingFiglet(details)
 		const maxRowWidth = TextBlocks.maxRowWidth(timeRemaining)
-		const terminalWidth = process.stdout.columns
+		const terminalWidth = terminalDims.col
 
 		const leftPadding = Math.floor((terminalWidth - Slant.MAX_SLANT_WIDTH) / 2)
 		const rightPadding = terminalWidth - leftPadding - maxRowWidth

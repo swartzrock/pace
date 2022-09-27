@@ -3,6 +3,7 @@ import { Colors, Xterm256 } from '../common/colors'
 import { TimerDetails, TimerRenderer } from './timer-renderer'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
+import { Point } from '../common/point'
 
 class Bar implements TimerRenderer {
 	readonly BAR_COMPLETE_CHAR = '\u2588'
@@ -14,21 +15,22 @@ class Bar implements TimerRenderer {
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
+	 * @param terminalDims the current terminal dimensions
 	 */
-	render(details: TimerDetails): StringMatrix {
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const fgColor: Xterm256 = this.fgColor(details.percentDone())
 		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
 		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
 
-		const matrix = StringMatrix.createFromMultilineMonoString(this.renderMonoProgressBar(details))
+		const matrix = StringMatrix.createFromMultilineMonoString(this.renderMonoProgressBar(details, terminalDims))
 		matrix.replaceAll(this.BAR_COMPLETE_CHAR, colorBarComplete)
 		matrix.replaceAll(this.BAR_INCOMPLETE_CHAR, colorBarIncomplete)
 		return matrix
 	}
 
-	private renderMonoProgressBar(details: TimerDetails): string {
+	private renderMonoProgressBar(details: TimerDetails, terminalDims: Point): string {
 		const progressBarDetailLength = Bar.renderBar('', '', '000:00', '99.9').length
-		const progressBarLength = process.stdout.columns - progressBarDetailLength - this.RIGHT_MARGIN
+		const progressBarLength = terminalDims.col - progressBarDetailLength - this.RIGHT_MARGIN
 
 		const barCompleteLen = Math.round(details.percentDone() * progressBarLength)
 		const barEmptyLen = progressBarLength - barCompleteLen

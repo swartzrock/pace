@@ -5,6 +5,7 @@ import { Circles } from './circles'
 import { Colossal } from './colossal'
 import { Slant } from './slant'
 import { ColorWheel } from './colorwheel'
+import { Point } from '../common/point'
 
 class TimerDetails {
 	constructor(
@@ -13,6 +14,25 @@ class TimerDetails {
 		public elapsedSeconds: number,
 		public remainingSeconds: number
 	) {}
+
+	/**
+	 * Returns a new TimerDetails based on iterations
+	 * @param iteration the current 1-based iteration
+	 * @param totalIterations total number of iterations in the timer
+	 * @param callbackIntervalMs the callback interval for rendering the timer
+	 */
+	static newTimerDetails(iteration: number, totalIterations: number, callbackIntervalMs: number): TimerDetails {
+		const iterationsPerSecond = 1000 / callbackIntervalMs
+
+		const totalSeconds = totalIterations / iterationsPerSecond
+		const elapsedSecondsF = (iteration - 1) / iterationsPerSecond
+		const remainingSecondsF = totalSeconds - elapsedSecondsF
+
+		const elapsedSeconds = Math.floor(elapsedSecondsF)
+		const remainingSeconds = Math.floor(remainingSecondsF)
+
+		return new TimerDetails(iteration, totalIterations, elapsedSeconds, remainingSeconds)
+	}
 
 	timeRemainingText(): string {
 		const remainingMinutes: number = Math.floor(this.remainingSeconds / 60)
@@ -31,8 +51,9 @@ class TimerDetails {
 	}
 }
 
+// todo take screen size for use in preview?
 interface TimerRenderer {
-	render(details: TimerDetails): StringMatrix
+	render(details: TimerDetails, terminalDims: Point): StringMatrix
 }
 
 const ALL_RENDERERS = {

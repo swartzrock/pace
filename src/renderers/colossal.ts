@@ -6,6 +6,7 @@ import { XtermGradients } from '../common/xtermgradients'
 import { Rectangle } from '../common/rectangle'
 import { RenderUtils } from './renderutils'
 import { Utils } from '../common/utils'
+import { Point } from '../common/point'
 
 class Colossal implements TimerRenderer {
 	readonly timeRemainingGradient = Utils.concatReversed(XtermGradients.DOUBLE_COLOR_GRADIENTS.BLUEVIOLET_TO_BLUE_1)
@@ -15,7 +16,8 @@ class Colossal implements TimerRenderer {
 	 * This renderer displays a large countdown timer in the Colossal Figlet font
 	 * @param details information about the current timer in-progress
 	 */
-	render(details: TimerDetails): StringMatrix {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const horizPadding = 1
 		const vertPadding = 1
 
