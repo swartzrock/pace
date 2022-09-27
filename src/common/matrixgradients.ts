@@ -1,6 +1,5 @@
 import { Xterm256 } from './colors'
 import { Utils } from './utils'
-import { XtermGradients } from './xtermgradients'
 
 enum MatrixStart {
 	TOP,

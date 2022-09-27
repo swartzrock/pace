@@ -1,6 +1,4 @@
 import * as _ from 'lodash'
-import { Loggy } from './loggy'
-import { Xterm256 } from './colors'
 
 class Utils {
 	static halfInt = (n: number): number => Math.floor(n / 2)
