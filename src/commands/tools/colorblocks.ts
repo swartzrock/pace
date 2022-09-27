@@ -9,11 +9,7 @@ import { MatrixGradient } from '../../common/matrixgradients'
 
 export default class ColorBlocks extends Command {
 	static description = 'Displays an xterm color block pattern'
-
-	static examples = [
-		`pace colorblocks
-`,
-	]
+	static examples = ['pace tools colorblocks']
 
 	static flags = {}
 	static args = []

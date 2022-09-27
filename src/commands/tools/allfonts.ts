@@ -6,11 +6,7 @@ import { TextBlocks } from '../../common/textblocks'
 
 export default class AllFonts extends Command {
 	static description = 'Displays all Figlet Fonts with the given input'
-
-	static examples = [
-		`pace allfonts
-`,
-	]
+	static examples = ['pace tools allfonts']
 
 	static flags = {}
 	static args = []
