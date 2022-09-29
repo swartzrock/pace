@@ -1,34 +1,46 @@
 import { Command } from '@oclif/core'
-import { ALL_RENDERERS, TimerDetails } from '../../renderers/timer-renderer'
 import { Timer } from '../timer'
-import { PieChart } from '../../renderers/pie'
-import { Loggy } from '../../common/loggy'
 import { Point } from '../../common/point'
 import { Utils } from '../../common/utils'
+import { Xterm256 } from '../../common/colors'
+import { Rectangle } from '../../common/rectangle'
+import { TimerDetails } from '../../renderers/timerDetails'
+import { AllRenderers, TimerRenderer } from '../../renderers/timerRenderer'
+import { StringUtils } from '../../common/stringutils'
+import { StringMatrix } from '../../common/stringmatrix'
 
-export default class ColorBlocks extends Command {
+class Preview extends Command {
 	static description = 'Preview the Pace renderers'
 	static examples = ['pace tools preview']
 
-	static flags = {}
-	static args = []
 	static strict = true
 
+	readonly DETAILS = TimerDetails.newTimerDetails(2000, 3000, Timer.TIMER_CALLBACK_INTERVAL_MS)
+	readonly RENDER_DIMENSION = new Point(
+		Utils.halfInt(process.stdout.columns) - 1,
+		Utils.halfInt(process.stdout.rows) - 1
+	)
+
+	render(name: string, r: TimerRenderer): StringMatrix {
+		const matrix = r.render(this.DETAILS, this.RENDER_DIMENSION)
+		matrix.addDoubleLineBox(new Rectangle(0, 0, matrix.cols() - 1, matrix.rows() - 1), Xterm256.GREY_089)
+		const title = ` ${StringUtils.capitalize(name)} `
+		matrix.setHorizontallyCenteredMonochromeString(title, 0)
+		return matrix
+	}
+
 	async run(): Promise<void> {
-		console.log('in preview')
+		Utils.grouped(Object.entries(AllRenderers), 2).forEach((pair) => {
+			const leftMatrix = this.render(pair[0][0], pair[0][1])
+			const rightMatrix = pair.length == 2 ? this.render(pair[1][0], pair[1][1]) : null
+			const combinedRows = rightMatrix ? Math.max(leftMatrix.rows(), rightMatrix.rows()) : leftMatrix.rows()
+			const outMatrix = StringMatrix.createUniformMatrix(process.stdout.columns, combinedRows, ' ')
+			outMatrix.overlayAt(leftMatrix, new Point(0, 0))
+			if (rightMatrix) outMatrix.overlayAt(rightMatrix, new Point(leftMatrix.cols() + 1, 0))
 
-		const totalSecs = 300
-		const elapsedSecs = 40
-		const remainingSecs = totalSecs - elapsedSecs
-		const totalIterations = totalSecs * Timer.TIMER_CALLBACK_INTERVAL_MS
-		const iteration = elapsedSecs * Timer.TIMER_CALLBACK_INTERVAL_MS
-		const details = new TimerDetails(iteration, totalIterations, elapsedSecs, remainingSecs)
-		const terminalDims = new Point(Utils.halfInt(process.stdout.columns), Utils.halfInt(process.stdout.rows))
-		const matrix = new PieChart().render(details, terminalDims)
-		Loggy.raw(matrix)
-
-		// for (const [k, v] of Object.entries(ALL_RENDERERS)) {
-		// 	console.log(`renderer ${k} is at ${v}`)
-		// }
+			console.log(outMatrix.toString())
+		})
 	}
 }
+
+export { Preview }
