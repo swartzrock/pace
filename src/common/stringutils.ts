@@ -17,6 +17,7 @@ class StringUtils {
 	static containsPrintableChar = (s: string): boolean => StringUtils.firstPrintableChar(s) != -1
 	static reverse = (s: string): string => s.split('').reverse().join('')
 	static takeRight = (s: string, n: number) => s.substring(s.length - n)
+	static capitalize = (s: string) => s[0].toUpperCase() + s.substring(1)
 
 	static setCharAt(s: string, c: string, i: number): string {
 		if (i < 0 || i >= s.length) return s

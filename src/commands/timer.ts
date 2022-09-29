@@ -1,5 +1,5 @@
 import { Command } from '@oclif/core'
-import { ALL_RENDERERS, TimerDetails, TimerRenderer } from '../renderers/timer-renderer'
+import { AllRenderers, TimerRenderer } from '../renderers/timerRenderer'
 import { StringMatrix } from '../common/stringmatrix'
 import onExit from 'signal-exit'
 import { AnsiCursor } from '../common/ansicursor'
@@ -10,6 +10,7 @@ import { IntervalIterator } from '../common/intervalIterator'
 import { Utils } from '../common/utils'
 import { XtermGradients } from '../common/xtermgradients'
 import { Point } from '../common/point'
+import { TimerDetails } from '../renderers/timerDetails'
 
 /**
  * Timer is the main entrypoint for the pace timer
@@ -209,9 +210,7 @@ class Timer extends Command {
 	 * @private
 	 */
 	private static getAvailableRenderNamesText(): string {
-		const rendererKeys: string[] = <string[]>Object.keys(ALL_RENDERERS)
-		rendererKeys.sort()
-		return rendererKeys.join(', ')
+		return (<string[]>Object.keys(AllRenderers)).sort().join(', ')
 	}
 
 	/**
@@ -220,21 +219,9 @@ class Timer extends Command {
 	 * @private
 	 */
 	getRenderer(rendererArg?: string): TimerRenderer | null {
-		if (!rendererArg) {
-			const renderKey = Utils.randomElement(Object.keys(ALL_RENDERERS))
-			const rendererClass = ALL_RENDERERS[renderKey as keyof typeof ALL_RENDERERS]
-			if (renderKey && rendererClass) {
-				this.rendererName = renderKey
-				return new rendererClass()
-			}
-		}
-		if (rendererArg && rendererArg in ALL_RENDERERS) {
-			this.rendererName = rendererArg
-			const rendererClass = ALL_RENDERERS[rendererArg as keyof typeof ALL_RENDERERS]
-			return new rendererClass()
-		}
-
-		return null
+		this.rendererName = rendererArg ?? Utils.randomElementNonEmpty(Object.keys(AllRenderers))
+		const entries: [string, TimerRenderer][] = <[string, TimerRenderer][]>Object.entries(AllRenderers)
+		return Utils.head(entries.filter((a) => a[0] === this.rendererName).map((a) => a[1]))
 	}
 
 	/**

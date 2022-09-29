@@ -13,4 +13,8 @@ describe('utils', () => {
 		expect(matrix[0][0]).toBe('a')
 		expect(matrix[1][0]).toBe(' ')
 	})
+	test('grouped', () => {
+		const a = Utils.grouped([1, 2, 3, 4, 5], 2)
+		expect(a).toStrictEqual([[1, 2], [3, 4], [5]])
+	})
 })

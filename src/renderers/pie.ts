@@ -1,10 +1,10 @@
 import { Colors, Xterm256 } from '../common/colors'
 import { SquarePieChart, SquarePieChartDetails } from '../common/squarepiechart'
 import { StringMatrix } from '../common/stringmatrix'
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
-import { RenderUtils } from './renderutils'
 import { Point } from '../common/point'
 import { UnicodeChars } from '../common/unicodechars'
 import { XtermGradients } from '../common/xtermgradients'
@@ -26,9 +26,10 @@ class PieChart implements TimerRenderer {
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
+	 * @param terminalDims the current terminal dimensions
 	 */
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
-		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
+		const fillColor = TimerRenderer.getGreenYellowRedColor(details.percentDone())
 		const coloredFillChar = Colors.foregroundColor(this.CHART_FILL_CHAR, fillColor)
 		const coloredEmptyChar = Colors.foregroundColor(this.CHART_FILL_CHAR, this.CHART_EMPTY_COLOR)
 
@@ -56,15 +57,14 @@ class PieChart implements TimerRenderer {
 	}
 
 	private renderMonochromeCenteredPieChart(percentDone: number, terminalDims: Point): string {
-		const radius = Math.floor(Math.min(process.stdout.rows, terminalDims.col / 2) / 2) - 2
+		const radius = Math.floor(Math.min(terminalDims.row, terminalDims.col / 2) / 2) - 2
 		const symbols: string[] = [this.CHART_FILL_CHAR, this.CHART_EMPTY_CHAR]
 		const pieDetails: SquarePieChartDetails = {
 			symbols: symbols,
 			percentages: [percentDone, 1.0],
 		}
 		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
-		const pieChartTxt = TextBlocks.horizontallyDouble(squarePieChartTxt)
-		return TextBlocks.centerHorizontallyOnScreen(pieChartTxt)
+		return TextBlocks.horizontallyDouble(squarePieChartTxt)
 	}
 }
 

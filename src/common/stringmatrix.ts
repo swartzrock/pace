@@ -17,7 +17,7 @@ class StringMatrix {
 		return new StringMatrix(TextBlocks.toString2dArray(s))
 	}
 
-	static createUniformMatrix(cols: number, rows: number, fillChar: string): StringMatrix {
+	static createUniformMatrix(cols: number, rows: number, fillChar = ' '): StringMatrix {
 		return new StringMatrix(Utils.fill(Utils.fill(fillChar, cols), rows))
 	}
 
@@ -257,6 +257,18 @@ class StringMatrix {
 	padBottom(padding: number, fillChar = ' ') {
 		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), padding)
 		this.matrix = this.matrix.concat(bottomPadding)
+	}
+
+	/**
+	 * Add padding to the matrix
+	 * @param padding the padding dimensions as a rectangle
+	 * @param fillChar the fill character
+	 */
+	pad(padding: Rectangle, fillChar = ' ') {
+		this.padLeft(padding.left, fillChar)
+		this.padTop(padding.top, fillChar)
+		this.padRight(padding.right, fillChar)
+		this.padBottom(padding.bottom, fillChar)
 	}
 
 	/**

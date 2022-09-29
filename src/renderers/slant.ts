@@ -1,6 +1,7 @@
 import { Colors, Xterm256 } from '../common/colors'
 import { StringMatrix } from '../common/stringmatrix'
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
 import { Rectangle } from '../common/rectangle'
@@ -14,6 +15,7 @@ class Slant implements TimerRenderer {
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
+	 * @param terminalDims the current terminal dimensions
 	 */
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const timeRemaining = Slant.renderTimeRemainingFiglet(details)

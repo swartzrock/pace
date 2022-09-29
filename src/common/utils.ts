@@ -8,10 +8,15 @@ class Utils {
 		return Array.from(Array(total)).map((_, i) => start + i)
 	}
 
-	static randomElement<T>(a: Array<T>): T | null {
-		if (a.length == 0) {
-			return null
-		}
+	static isEmpty<A>(a: Array<A>): boolean {
+		return a != null && a.length > 0
+	}
+
+	static randomElement<A>(a: Array<A>): A | null {
+		return this.isEmpty(a) ? null : this.randomElementNonEmpty(a)
+	}
+
+	static randomElementNonEmpty<A>(a: Array<A>): A {
 		return a[Math.floor(Math.random() * a.length)]
 	}
 
@@ -55,6 +60,10 @@ class Utils {
 		a.reverse()
 		Utils.rotateLeft(a)
 		a.reverse()
+	}
+
+	static head<A>(a: Array<A>): A | null {
+		return a === null || a.length == 0 ? null : a[0]
 	}
 }
 

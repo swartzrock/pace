@@ -1,12 +1,3 @@
-import { Bar } from './bar'
-import { PieChart } from './pie'
-import { StringMatrix } from '../common/stringmatrix'
-import { Circles } from './circles'
-import { Colossal } from './colossal'
-import { Slant } from './slant'
-import { ColorWheel } from './colorwheel'
-import { Point } from '../common/point'
-
 class TimerDetails {
 	constructor(
 		public iteration: number,
@@ -51,18 +42,4 @@ class TimerDetails {
 	}
 }
 
-// todo take screen size for use in preview?
-interface TimerRenderer {
-	render(details: TimerDetails, terminalDims: Point): StringMatrix
-}
-
-const ALL_RENDERERS = {
-	pie: PieChart,
-	bar: Bar,
-	circles: Circles,
-	colossal: Colossal,
-	slant: Slant,
-	colorwheel: ColorWheel,
-}
-
-export { TimerDetails, TimerRenderer, ALL_RENDERERS }
+export { TimerDetails }

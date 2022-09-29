@@ -1,6 +1,7 @@
 import { Colors, Xterm256 } from '../common/colors'
 
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { StringMatrix } from '../common/stringmatrix'
 import { UnicodeChars } from '../common/unicodechars'
 import { XtermGradients } from '../common/xtermgradients'
@@ -10,7 +11,6 @@ import { Utils } from '../common/utils'
 import _ from 'lodash'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { Point } from '../common/point'
-import { RenderUtils } from './renderutils'
 
 /**
  * Displays a green, yellow, and then red color wheel
@@ -59,7 +59,7 @@ class ColorWheel implements TimerRenderer {
 
 		Utils.rotateRight(gradient)
 
-		const radius = Math.floor(Math.min(process.stdout.rows, terminalDims.col / 2) / 2) - 2
+		const radius = Math.floor(Math.min(terminalDims.row, terminalDims.col / 2) / 2) - 2
 
 		const pieDetails: SquarePieChartDetails = {
 			symbols: this.ALPHABET,
@@ -67,8 +67,7 @@ class ColorWheel implements TimerRenderer {
 		}
 		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
 		const pieChartTxt = TextBlocks.horizontallyDouble(squarePieChartTxt)
-		const centeredMonoChart = TextBlocks.centerHorizontallyOnScreen(pieChartTxt)
-		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(centeredMonoChart)
+		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(pieChartTxt)
 
 		// Replace the alphabet pie slices with colored blocks
 		for (let i = 0; i < Math.min(this.SLICES, this.ALPHABET.length); i++) {
@@ -90,7 +89,7 @@ class ColorWheel implements TimerRenderer {
 		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
 		const colorBlock = Colors.foregroundColor(
 			UnicodeChars.BLOCK_FULL,
-			RenderUtils.getGreenYellowRedColor(details.percentDone())
+			TimerRenderer.getGreenYellowRedColor(details.percentDone())
 		)
 		timeRemainingMatrix.replaceAll(UnicodeChars.BLOCK_FULL, colorBlock)
 		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)

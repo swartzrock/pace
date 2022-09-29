@@ -1,9 +1,11 @@
 import { Colors, Xterm256 } from '../common/colors'
 
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Point } from '../common/point'
+import { Rectangle } from '../common/rectangle'
 
 class Bar implements TimerRenderer {
 	readonly BAR_COMPLETE_CHAR = '\u2588'
@@ -11,6 +13,7 @@ class Bar implements TimerRenderer {
 	readonly BAR_COMPLETE_START_CHAR = '\u25d6'
 	readonly BAR_COMPLETE_END_CHAR = '\u25d7'
 	readonly RIGHT_MARGIN = 2
+	readonly PADDING = new Rectangle(2, 4, 2, 4)
 
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
@@ -25,6 +28,7 @@ class Bar implements TimerRenderer {
 		const matrix = StringMatrix.createFromMultilineMonoString(this.renderMonoProgressBar(details, terminalDims))
 		matrix.replaceAll(this.BAR_COMPLETE_CHAR, colorBarComplete)
 		matrix.replaceAll(this.BAR_INCOMPLETE_CHAR, colorBarIncomplete)
+		matrix.pad(this.PADDING)
 		return matrix
 	}
 

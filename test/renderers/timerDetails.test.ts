@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals'
-import { TimerDetails } from '../../src/renderers/timer-renderer'
+import { TimerDetails } from '../../src/renderers/timerDetails'
 
 describe('timerdetails', () => {
 	test('timer details shows remaining seconds as floor', () => {

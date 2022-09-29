@@ -1,10 +1,10 @@
 import { Colors, Xterm256 } from '../common/colors'
 
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Rectangle } from '../common/rectangle'
-import { RenderUtils } from './renderutils'
 import { Point } from '../common/point'
 
 class Circles implements TimerRenderer {
@@ -21,6 +21,7 @@ class Circles implements TimerRenderer {
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
 	 * @param details information about the current timer in-progress
+	 * @param terminalDims the current terminal dimensions
 	 */
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 		const boxMargin = 1
@@ -29,7 +30,7 @@ class Circles implements TimerRenderer {
 
 		const cols = terminalDims.col - horizMargin * 2 - boxMargin * 2
 
-		const maxRows = process.stdout.rows / 2 - vertMargin * 2 - boxMargin * 2
+		const maxRows = terminalDims.row / 2 - vertMargin * 2 - boxMargin * 2
 		let rows = Math.floor(details.totalIterations / cols)
 		if (rows * cols < details.totalIterations) rows++
 		rows = Math.min(rows, maxRows)
@@ -51,7 +52,7 @@ class Circles implements TimerRenderer {
 			' '
 		)
 		const stringMatrix = StringMatrix.createFromMultilineMonoString(newlineText)
-		const fillColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
+		const fillColor = TimerRenderer.getGreenYellowRedColor(details.percentDone())
 		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
 		stringMatrix.replaceAll(
 			this.CIRCLE_INCOMPLETE_CHAR,

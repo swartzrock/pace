@@ -1,10 +1,10 @@
 import { StringMatrix } from '../common/stringmatrix'
-import { TimerDetails, TimerRenderer } from './timer-renderer'
+import { TimerRenderer } from './timerRenderer'
+import { TimerDetails } from './timerDetails'
 import { FigletFonts, Fonts } from '../common/fonts'
 import { TextBlocks } from '../common/textblocks'
 import { XtermGradients } from '../common/xtermgradients'
 import { Rectangle } from '../common/rectangle'
-import { RenderUtils } from './renderutils'
 import { Utils } from '../common/utils'
 import { Point } from '../common/point'
 
@@ -15,6 +15,7 @@ class Colossal implements TimerRenderer {
 	/**
 	 * This renderer displays a large countdown timer in the Colossal Figlet font
 	 * @param details information about the current timer in-progress
+	 * @param terminalDims the current terminal dimensions
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
@@ -35,7 +36,7 @@ class Colossal implements TimerRenderer {
 		timeRemainingMatrix.setVerticalGradient(gradient)
 
 		const boxBounds = new Rectangle(0, 0, timeRemainingMatrix.cols() - 1, timeRemainingMatrix.rows() - 1)
-		const boxColor = RenderUtils.getGreenYellowRedColor(details.percentDone())
+		const boxColor = TimerRenderer.getGreenYellowRedColor(details.percentDone())
 		timeRemainingMatrix.addDoubleLineBox(boxBounds, boxColor)
 
 		return timeRemainingMatrix
