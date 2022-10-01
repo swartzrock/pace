@@ -1079,9 +1079,9 @@
     tslib "^2"
 
 "@oclif/core@^1", "@oclif/core@^1.0.8", "@oclif/core@^1.2.0", "@oclif/core@^1.2.1", "@oclif/core@^1.3.1", "@oclif/core@^1.3.6", "@oclif/core@^1.6.4":
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.9.0.tgz#bb2a7820a9176f28921f449c0f577d39c15e74d0"
-  integrity sha512-duvlaRQf4JM+mKuwwos1DNa/Q9x6tnF3khV5RU0fy5hhETF7THlTmxioKlIvKMyQDVpySqtZXZ0OKHeCi2EWuQ==
+  version "1.16.4"
+  resolved "https://registry.yarnpkg.com/@oclif/core/-/core-1.16.4.tgz#fafa338ada0624d7f1adac036302b05a37cd96d0"
+  integrity sha512-l+xHtVMteJWeTZZ+f2yLyNjf69X0mhAH8GILXnmoAGAemXbc1DVstvloxOouarvm9xyHHhquzO1Qg5l6xa1VIw==
   dependencies:
     "@oclif/linewrap" "^1.0.0"
     "@oclif/screen" "^3.0.2"
@@ -5937,18 +5937,10 @@ supports-color@^8.0.0, supports-color@^8.1.0, supports-color@^8.1.1:
   dependencies:
     has-flag "^4.0.0"
 
-supports-hyperlinks@^2.0.0:
+supports-hyperlinks@^2.0.0, supports-hyperlinks@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/supports-hyperlinks/-/supports-hyperlinks-2.3.0.tgz#3943544347c1ff90b15effb03fc14ae45ec10624"
   integrity sha512-RpsAZlpWcDwOPQA22aCH4J0t7L8JmAvsCxfOSEwm7cQs3LshN36QaTkwd70DnBOXDWGssw2eUoc8CaRWT0XunA==
-  dependencies:
-    has-flag "^4.0.0"
-    supports-color "^7.0.0"
-
-supports-hyperlinks@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/supports-hyperlinks/-/supports-hyperlinks-2.2.0.tgz#4f77b42488765891774b70c79babd87f9bd594bb"
-  integrity sha512-6sXEzV5+I5j8Bmq9/vUphGRM/RJNT9SCURJLjwfOg51heRtguGWDzcaBlgAzKhQa0EVNpPEKzQuBwZ8S8WaCeQ==
   dependencies:
     has-flag "^4.0.0"
     supports-color "^7.0.0"
