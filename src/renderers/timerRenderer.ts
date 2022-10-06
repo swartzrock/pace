@@ -8,6 +8,8 @@ import { ColorWheel } from './colorWheel'
 import { Point } from '../common/point'
 import { TimerDetails } from './timerDetails'
 import { Xterm256 } from '../common/colors'
+import { Sweep } from './sweep'
+import { BigText } from './bigtext'
 
 abstract class TimerRenderer {
 	/**
@@ -40,9 +42,11 @@ class AllRenderers {
 	static bar: TimerRenderer = new Bar()
 
 	static circles: TimerRenderer = new Circles()
-	static colossal2: TimerRenderer = new Colossal()
+	static colossal: TimerRenderer = new Colossal()
 	static slant: TimerRenderer = new Slant()
 	static colorwheel: TimerRenderer = new ColorWheel()
+	static sweep: TimerRenderer = new Sweep()
+	static bigtext: TimerRenderer = new BigText()
 }
 
 export { TimerRenderer, AllRenderers }
