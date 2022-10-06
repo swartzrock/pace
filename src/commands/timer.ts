@@ -14,13 +14,6 @@ import { TimerDetails } from '../renderers/timerDetails'
 
 /**
  * Timer is the main entrypoint for the pace timer
- * TODO create a clock w/ one hand showing remaining time... minutes and seconds?
- * TODO preview mode shows all renderers at 66%.... if they support isPreviewable(), eg a sandglass renderer
- * TODO preview mode shows mini versions, shrunk, with 1px boxes?
- * TODO move the main body to a TimerApp class that can be well tested and used for a preview command
- * TODO use color blocks COLOR PALETTES font and coloring to display time remaining as text, eg "EIGHT MIN..."
- * TODO biggest text possible! ***
- * may require all previous iterations
  */
 class Timer extends Command {
 	static description = 'Displays a progress timer'
@@ -45,7 +38,7 @@ class Timer extends Command {
 	static strict = true
 
 	static TIMER_CALLBACK_INTERVAL_MS = 100
-	static STATUS_BAR_ITERATIONS = 100 // ten seconds
+	static STATUS_BAR_ITERATIONS = 100
 	static STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
@@ -75,10 +68,9 @@ class Timer extends Command {
 		// Set the status bar message
 		const durationMinutes = Math.floor(this.durationSeconds / 60)
 		const durationMinSeconds = this.durationSeconds - durationMinutes * 60
-		const totalDuration =
-			durationMinutes > 0
-				? `${durationMinutes}-minute-${durationMinSeconds}-seconds`
-				: `${durationMinSeconds}-second`
+		let totalDuration = `${durationMinutes}-minute-${durationMinSeconds}-second`
+		if (durationMinutes < 1) totalDuration = `${durationMinSeconds}-second`
+		else if (durationMinSeconds == 0) totalDuration = `${durationMinutes}-minute`
 		this.statusBarMsg = `Starting a ${totalDuration} timer with the '${this.rendererName}' renderer. Press <space> to pause. `
 
 		// Hide the cursor now and restore it when the program exits
