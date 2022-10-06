@@ -21,7 +21,10 @@ class StringMatrix {
 		return new StringMatrix(Utils.fill(Utils.fill(fillChar, cols), rows))
 	}
 
-	toString = () => this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
+	public toString = (): string => {
+		return this.matrix.map((row) => row.join('')).join(StringUtils.NEWLINE)
+	}
+
 	rows = () => this.matrix.length
 	cols = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
 	size = () => new Point(this.cols(), this.rows())
@@ -180,18 +183,43 @@ class StringMatrix {
 	}
 
 	/**
+	 * Draw a single-line (unicode) box on this matrix
+	 * @param bounds the bounds of the box
+	 * @param fg the foreground color of the box
+	 */
+	addSingleLineBox(bounds: Rectangle, fg: Xterm256): void {
+		const topLeft = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_TOP_LEFT, fg)
+		const topRight = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_TOP_RIGHT, fg)
+		const bottomLeft = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_BOTTOM_LEFT, fg)
+		const bottomRight = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_BOTTOM_RIGHT, fg)
+
+		const horizontal = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_HORIZONTAL, fg)
+		const vertical = Colors.foregroundColor(UnicodeChars.SINGLE_BOX_DRAWING_VERTICAL, fg)
+
+		this.fill(horizontal, new Rectangle(bounds.left, bounds.top, bounds.right, bounds.top))
+		this.fill(horizontal, new Rectangle(bounds.left, bounds.bottom, bounds.right, bounds.bottom))
+		this.fill(vertical, new Rectangle(bounds.left, bounds.top, bounds.left, bounds.bottom))
+		this.fill(vertical, new Rectangle(bounds.right, bounds.top, bounds.right, bounds.bottom))
+
+		this.setCell(topLeft, bounds.left, bounds.top)
+		this.setCell(topRight, bounds.right, bounds.top)
+		this.setCell(bottomLeft, bounds.left, bounds.bottom)
+		this.setCell(bottomRight, bounds.right, bounds.bottom)
+	}
+
+	/**
 	 * Draw a double-line (unicode) box on this matrix
 	 * @param bounds the bounds of the box
 	 * @param fg the foreground color of the box
 	 */
 	addDoubleLineBox(bounds: Rectangle, fg: Xterm256): void {
-		const topLeft = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_TOP_LEFT, fg)
-		const topRight = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_TOP_RIGHT, fg)
-		const bottomLeft = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_BOTTOM_LEFT, fg)
-		const bottomRight = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_BOTTOM_RIGHT, fg)
+		const topLeft = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_TOP_LEFT, fg)
+		const topRight = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_TOP_RIGHT, fg)
+		const bottomLeft = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_BOTTOM_LEFT, fg)
+		const bottomRight = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_BOTTOM_RIGHT, fg)
 
-		const horizontal = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_HORIZONTAL, fg)
-		const vertical = Colors.foregroundColor(UnicodeChars.BOX_DRAWING_VERTICAL, fg)
+		const horizontal = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_HORIZONTAL, fg)
+		const vertical = Colors.foregroundColor(UnicodeChars.DOUBLE_BOX_DRAWING_VERTICAL, fg)
 
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.top, bounds.right, bounds.top))
 		this.fill(horizontal, new Rectangle(bounds.left, bounds.bottom, bounds.right, bounds.bottom))
@@ -215,6 +243,12 @@ class StringMatrix {
 				this.setCell(s, col, row)
 			}
 		}
+	}
+
+	addVertPadding(top: number, bottom: number, fillChar = ' ') {
+		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), top)
+		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), bottom)
+		this.matrix = topPadding.concat(this.matrix, bottomPadding)
 	}
 
 	/**
@@ -289,12 +323,6 @@ class StringMatrix {
 			this.padLeft(leftPadding, fillChar)
 			this.padRight(rightPadding, fillChar)
 		}
-	}
-
-	addVertPadding(top: number, bottom: number, fillChar = ' ') {
-		const topPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), top)
-		const bottomPadding: string[][] = Utils.fill(Utils.fill(fillChar, this.cols()), bottom)
-		this.matrix = topPadding.concat(this.matrix, bottomPadding)
 	}
 
 	// fit the matrix to fit the current terminal window
