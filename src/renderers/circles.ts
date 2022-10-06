@@ -6,10 +6,11 @@ import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Rectangle } from '../common/rectangle'
 import { Point } from '../common/point'
+import { UnicodeChars } from '../common/unicodechars'
 
 class Circles implements TimerRenderer {
-	readonly CIRCLE_COMPLETE_CHAR = '\u2588'
-	readonly CIRCLE_INCOMPLETE_CHAR = '\u2591'
+	readonly CIRCLE_COMPLETE_CHAR = UnicodeChars.BLOCK_FULL
+	readonly CIRCLE_INCOMPLETE_CHAR = UnicodeChars.SHADE_MEDIUM
 
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_003
 	readonly CHART_FILL_COLORS = [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1]
@@ -33,7 +34,7 @@ class Circles implements TimerRenderer {
 		const maxRows = terminalDims.row / 2 - vertMargin * 2 - boxMargin * 2
 		let rows = Math.floor(details.totalIterations / cols)
 		if (rows * cols < details.totalIterations) rows++
-		rows = Math.min(rows, maxRows)
+		rows = Math.floor(Math.min(rows, maxRows))
 
 		const total = rows * cols
 
