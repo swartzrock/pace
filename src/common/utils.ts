@@ -29,6 +29,10 @@ class Utils {
 		return result
 	}
 
+	static double<A>(a: Array<A>): Array<A> {
+		return a.flatMap((c) => [c, _.clone(c)])
+	}
+
 	static transpose<A>(matrix: Array<Array<A>>): Array<Array<A>> {
 		return matrix[0].map((col, i) => matrix.map((row) => row[i]))
 	}
