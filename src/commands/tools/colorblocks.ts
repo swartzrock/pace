@@ -7,7 +7,7 @@ import { XtermGradients } from '../../common/xtermgradients'
 import { FigletFonts, Fonts } from '../../common/fonts'
 import { MatrixGradient } from '../../common/matrixgradients'
 
-export default class ColorBlocks extends Command {
+class ColorBlocks extends Command {
 	static description = 'Displays an xterm color block pattern'
 	static examples = ['pace tools colorblocks']
 
@@ -147,3 +147,5 @@ export default class ColorBlocks extends Command {
 		console.log('\n')
 	}
 }
+
+export { ColorBlocks }
