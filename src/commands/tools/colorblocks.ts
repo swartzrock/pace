@@ -15,8 +15,8 @@ class ColorBlocks extends Command {
 	static args = []
 	static strict = true
 
-	static readonly H1_GRADIENT = XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLEB_TO_PURPLEA
-	static readonly H2_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1
+	private readonly H1_GRADIENT = XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLEB_TO_PURPLEA
+	private readonly H2_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1
 
 	async run(): Promise<void> {
 		this.displayAllGradients()
@@ -65,16 +65,14 @@ class ColorBlocks extends Command {
 		console.log('')
 		console.log('')
 		console.log(
-			Colors.setVerticalGradient(
-				Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Gradients'),
-				ColorBlocks.H1_GRADIENT
-			) + '\n'
+			Colors.setVerticalGradient(Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Gradients'), this.H1_GRADIENT) +
+				'\n'
 		)
 
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'SINGLE COLOR GRADIENTS'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			) + '\n'
 		)
 
@@ -83,7 +81,7 @@ class ColorBlocks extends Command {
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'DOUBLE COLOR GRADIENTS'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			) + '\n'
 		)
 
@@ -93,17 +91,15 @@ class ColorBlocks extends Command {
 	displayAllPalettes() {
 		console.log('\n\n\n')
 		console.log(
-			Colors.setVerticalGradient(
-				Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Palettes'),
-				ColorBlocks.H1_GRADIENT
-			) + '\n'
+			Colors.setVerticalGradient(Fonts.render(FigletFonts.ANSI_REGULAR, 'Color Palettes'), this.H1_GRADIENT) +
+				'\n'
 		)
 
 		console.log('')
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'BLUE-GREEN PALETTE'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			)
 		)
 		console.log('')
@@ -114,7 +110,7 @@ class ColorBlocks extends Command {
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'PURPLE-GREEN PALETTE'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			)
 		)
 		console.log('')
@@ -125,7 +121,7 @@ class ColorBlocks extends Command {
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'RED-YELLOW PALETTE'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			)
 		)
 		console.log('')
@@ -136,7 +132,7 @@ class ColorBlocks extends Command {
 		console.log(
 			Colors.setVerticalGradient(
 				Fonts.render(FigletFonts.JS_STICK_LETTERS, 'MONOCHROME PALETTE'),
-				ColorBlocks.H2_GRADIENT
+				this.H2_GRADIENT
 			)
 		)
 		console.log('')

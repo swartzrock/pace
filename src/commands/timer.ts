@@ -37,9 +37,9 @@ class Timer extends Command {
 	]
 	static strict = true
 
-	static TIMER_CALLBACK_INTERVAL_MS = 100
-	static STATUS_BAR_ITERATIONS = 100
-	static STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
+	readonly TIMER_CALLBACK_INTERVAL_MS = 100
+	readonly STATUS_BAR_ITERATIONS = 100
+	readonly STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
 	intervalIterator?: IntervalIterator
@@ -63,7 +63,7 @@ class Timer extends Command {
 		}
 
 		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
-		this.totalIterations = this.durationSeconds * (1000 / Timer.TIMER_CALLBACK_INTERVAL_MS) + 1
+		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS) + 1
 
 		// Set the status bar message
 		const durationMinutes = Math.floor(this.durationSeconds / 60)
@@ -80,7 +80,7 @@ class Timer extends Command {
 		this.listenForKeyEvents()
 
 		this.intervalIterator = new IntervalIterator(
-			Timer.TIMER_CALLBACK_INTERVAL_MS,
+			this.TIMER_CALLBACK_INTERVAL_MS,
 			this.totalIterations,
 			(iteration: number) => this.timerCallback(iteration),
 			() => Timer.finish()
@@ -129,7 +129,7 @@ class Timer extends Command {
 		const details: TimerDetails = TimerDetails.newTimerDetails(
 			iteration,
 			this.totalIterations,
-			Timer.TIMER_CALLBACK_INTERVAL_MS
+			this.TIMER_CALLBACK_INTERVAL_MS
 		)
 		const terminalDims = new Point(process.stdout.columns, process.stdout.rows)
 		this.matrix = this.renderer.render(details, terminalDims)
@@ -146,19 +146,19 @@ class Timer extends Command {
 	 * @private
 	 */
 	private writeStatusBarMsg(iteration: number) {
-		if (iteration >= Timer.STATUS_BAR_ITERATIONS) {
+		if (iteration >= this.STATUS_BAR_ITERATIONS) {
 			return
 		}
 
 		const statusFg = Xterm256.SKYBLUE_1
-		let statusBg: Xterm256 = Timer.STATUS_BAR_BG_GRADIENT[0]
+		let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
 
 		// If the status bar is more than half over, use a darkening gradient bg
-		if (iteration > Timer.STATUS_BAR_ITERATIONS / 2) {
-			const statusBarPctDone = iteration / (Timer.STATUS_BAR_ITERATIONS / 2) - 1
+		if (iteration > this.STATUS_BAR_ITERATIONS / 2) {
+			const statusBarPctDone = iteration / (this.STATUS_BAR_ITERATIONS / 2) - 1
 
-			const bgIndex = Math.floor(statusBarPctDone * Timer.STATUS_BAR_BG_GRADIENT.length)
-			statusBg = Timer.STATUS_BAR_BG_GRADIENT[bgIndex]
+			const bgIndex = Math.floor(statusBarPctDone * this.STATUS_BAR_BG_GRADIENT.length)
+			statusBg = this.STATUS_BAR_BG_GRADIENT[bgIndex]
 		}
 
 		// Add the status bar background to the matrix
@@ -240,7 +240,6 @@ class Timer extends Command {
 	 * `process.exit` is required since we're monitoring readline for pausing
 	 */
 	private static finish(): void {
-		// console.log('')
 		process.exit(0)
 	}
 }

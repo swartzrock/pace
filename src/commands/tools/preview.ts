@@ -18,7 +18,7 @@ class Preview extends Command {
 
 	static strict = true
 
-	readonly DETAILS = TimerDetails.newTimerDetails(2000, 3000, Timer.TIMER_CALLBACK_INTERVAL_MS)
+	readonly DETAILS = TimerDetails.newTimerDetails(2000, 3000, 100)
 	readonly RENDER_DIMENSION = new Point(
 		Utils.halfInt(process.stdout.columns) - 1,
 		Utils.halfInt(process.stdout.rows) - 1
