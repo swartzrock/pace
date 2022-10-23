@@ -10,6 +10,7 @@ import { TimerDetails } from './timerDetails'
 import { Xterm256 } from '../common/colors'
 import { Sweep } from './sweep'
 import { BigText } from './bigtext'
+import { Shuffle } from './shuffle'
 
 abstract class TimerRenderer {
 	/**
@@ -37,6 +38,10 @@ abstract class TimerRenderer {
 	}
 }
 
+class RendererInfo {
+	constructor(public name: string, public renderer: TimerRenderer) {}
+}
+
 class AllRenderers {
 	static pie: TimerRenderer = new PieChart()
 	static bar: TimerRenderer = new Bar()
@@ -47,6 +52,9 @@ class AllRenderers {
 	static colorwheel: TimerRenderer = new ColorWheel()
 	static sweep: TimerRenderer = new Sweep()
 	static bigtext: TimerRenderer = new BigText()
+	static shuffle: TimerRenderer = new Shuffle()
+
+	static renderers: Array<RendererInfo> = Object.entries(AllRenderers).map((a) => new RendererInfo(a[0], a[1]))
 }
 
-export { TimerRenderer, AllRenderers }
+export { TimerRenderer, RendererInfo, AllRenderers }

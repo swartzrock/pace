@@ -1,16 +1,15 @@
-import { Command } from '@oclif/core'
-import { Timer } from '../timer'
-import { Point } from '../../common/point'
-import { Utils } from '../../common/utils'
-import { Colors, Xterm256 } from '../../common/colors'
-import { Rectangle } from '../../common/rectangle'
-import { TimerDetails } from '../../renderers/timerDetails'
-import { AllRenderers, TimerRenderer } from '../../renderers/timerRenderer'
-import { StringUtils } from '../../common/stringutils'
-import { StringMatrix } from '../../common/stringmatrix'
-import { FigletFonts, Fonts } from '../../common/fonts'
-import { XtermGradients } from '../../common/xtermgradients'
-import { TextBlocks } from '../../common/textblocks'
+import {Command} from '@oclif/core'
+import {Point} from '../../common/point'
+import {Utils} from '../../common/utils'
+import {Colors, Xterm256} from '../../common/colors'
+import {Rectangle} from '../../common/rectangle'
+import {TimerDetails} from '../../renderers/timerDetails'
+import {AllRenderers, TimerRenderer} from '../../renderers/timerRenderer'
+import {StringUtils} from '../../common/stringutils'
+import {StringMatrix} from '../../common/stringmatrix'
+import {FigletFonts, Fonts} from '../../common/fonts'
+import {XtermGradients} from '../../common/xtermgradients'
+import {TextBlocks} from '../../common/textblocks'
 
 class Preview extends Command {
 	static description = 'Preview the Pace renderers'
@@ -49,7 +48,7 @@ class Preview extends Command {
 		console.log('')
 		console.log(Colors.setVerticalGradient(titleBlock, XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLEB_TO_PURPLEA))
 
-		const matrixes: Array<StringMatrix> = Object.entries(AllRenderers).map((a) => this.render(a[0], a[1]))
+		const matrixes: Array<StringMatrix> = AllRenderers.renderers.filter((r) => r.name != "shuffle").map((r) => this.render(r.name, r.renderer))
 		const matrixPairs: Array<Array<StringMatrix>> = Utils.grouped(matrixes, 2)
 		matrixPairs.filter((a) => a.length == 2).forEach((a) => this.printMatrixPair(a[0], a[1]))
 		matrixPairs.filter((a) => a.length == 1).forEach((a) => console.log(`${a[0]}`))

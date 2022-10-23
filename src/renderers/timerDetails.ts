@@ -1,4 +1,6 @@
 class TimerDetails {
+	public statusBarMessage = ''
+
 	constructor(
 		public iteration: number,
 		public totalIterations: number,

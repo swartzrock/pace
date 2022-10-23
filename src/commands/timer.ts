@@ -38,7 +38,7 @@ class Timer extends Command {
 	static strict = true
 
 	readonly TIMER_CALLBACK_INTERVAL_MS = 100
-	readonly STATUS_BAR_ITERATIONS = 100
+	readonly STATUS_BAR_ITERATIONS = 70
 	readonly STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
 	renderer: TimerRenderer | null = null
@@ -49,6 +49,7 @@ class Timer extends Command {
 	isPaused = false
 	statusBarMsg = ''
 	rendererName = ''
+	statusBarBgColor = this.STATUS_BAR_BG_GRADIENT[0]
 
 	/**
 	 * Entry point for the timer command
@@ -134,7 +135,7 @@ class Timer extends Command {
 		const terminalDims = new Point(process.stdout.columns, process.stdout.rows)
 		this.matrix = this.renderer.render(details, terminalDims)
 		this.matrix.fitToWindow()
-		this.writeStatusBarMsg(iteration)
+		this.writeStatusBarMsg(details)
 		AnsiCursor.renderTopLeft(this.matrix.toString())
 	}
 
@@ -142,27 +143,26 @@ class Timer extends Command {
 	 * Adds a bar at the bottom of the screen with a status message, if
 	 * the status message exists and the current iteration is less than the max iterations for showing this.
 	 *
-	 * @param iteration the current iteration
-	 * @private
+	 * @param details the current timer details
 	 */
-	private writeStatusBarMsg(iteration: number) {
-		if (iteration >= this.STATUS_BAR_ITERATIONS) {
+	private writeStatusBarMsg(details: TimerDetails) {
+		if (details.iteration >= this.STATUS_BAR_ITERATIONS && details.statusBarMessage == '') {
 			return
 		}
 
 		const statusFg = Xterm256.SKYBLUE_1
-		let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
+		// let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
 
 		// If the status bar is more than half over, use a darkening gradient bg
-		if (iteration > this.STATUS_BAR_ITERATIONS / 2) {
-			const statusBarPctDone = iteration / (this.STATUS_BAR_ITERATIONS / 2) - 1
+		if (details.iteration > this.STATUS_BAR_ITERATIONS / 2 && details.iteration < this.STATUS_BAR_ITERATIONS) {
+			const statusBarPctDone = details.iteration / (this.STATUS_BAR_ITERATIONS / 2) - 1
 
 			const bgIndex = Math.floor(statusBarPctDone * this.STATUS_BAR_BG_GRADIENT.length)
-			statusBg = this.STATUS_BAR_BG_GRADIENT[bgIndex]
+			this.statusBarBgColor = this.STATUS_BAR_BG_GRADIENT[bgIndex]
 		}
 
 		// Add the status bar background to the matrix
-		const statusBgFillChar = Colors.backgroundColor(' ', statusBg)
+		const statusBgFillChar = Colors.backgroundColor(' ', this.statusBarBgColor)
 		const rows = this.matrix.rows()
 		if (rows < process.stdout.rows) {
 			this.matrix.padBottom(1, statusBgFillChar)
@@ -171,12 +171,11 @@ class Timer extends Command {
 			this.matrix.fill(statusBgFillChar, bounds)
 		}
 
-		const startLoc = new Point(
-			Math.floor((this.matrix.cols() - this.statusBarMsg.length) / 2),
-			this.matrix.rows() - 1
-		)
+		const message = details.statusBarMessage ?? this.statusBarMsg
 
-		this.matrix.colorAndSetString(this.statusBarMsg, statusFg, statusBg, startLoc)
+		const startLoc = new Point(Math.floor((this.matrix.cols() - message.length) / 2), this.matrix.rows() - 1)
+
+		this.matrix.colorAndSetString(message, statusFg, this.statusBarBgColor, startLoc)
 	}
 
 	/**
