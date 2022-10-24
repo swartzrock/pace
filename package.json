@@ -1,13 +1,13 @@
 {
 	"name": "pace",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Pace yourself with this command line timer",
 	"author": "Jason Swartz @swartzrock",
 	"bin": {
 		"pace": "./bin/run"
 	},
 	"homepage": "https://github.com/swartzrock/pace",
-	"license": "MIT",
+	"license": "ISC",
 	"main": "dist/index.js",
 	"repository": "swartzrock/pace",
 	"files": [
@@ -76,7 +76,7 @@
 	},
 	"bugs": "https://github.com/swartzrock/pace/issues",
 	"keywords": [
-		"oclif"
+		"timer", "ansi"
 	],
 	"types": "dist/index.d.ts",
 	"jest": {
