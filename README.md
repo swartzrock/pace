@@ -1,19 +1,19 @@
 
 <p align="center">
-  <img width="400" height="381" src="media/logo.png" alt="logo"><br>
-	<h1></h1>
-
+  <img width="400" height="381" src="media/logo.png" alt="logo"><br><h1></h1>
 <p align="center">Typescript app with multiple visual countdown timers</p>
 
+
 <p align="center">
-  <a href="#about">About</a> •
-  <a href="#about">About</a> •
-  <a href="#about">About</a> •
-  <a href="#about">About</a> •
+  <a href="#about-pace">About Pace</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#built-with">Built With</a>
 </p>
 
 <p align="center">
-![screenshot](media/pace-renderers.gif)
+	
+![demo](media/pace-renderers.gif)
 </p>
 
 ## About Pace
