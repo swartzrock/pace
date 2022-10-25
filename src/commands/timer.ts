@@ -171,7 +171,7 @@ class Timer extends Command {
 			this.matrix.fill(statusBgFillChar, bounds)
 		}
 
-		const message = details.statusBarMessage ?? this.statusBarMsg
+		const message = details.statusBarMessage || this.statusBarMsg
 
 		const startLoc = new Point(Math.floor((this.matrix.cols() - message.length) / 2), this.matrix.rows() - 1)
 
