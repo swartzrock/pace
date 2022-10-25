@@ -37,7 +37,7 @@ class Timer extends Command {
 	]
 	static strict = true
 
-	readonly TIMER_CALLBACK_INTERVAL_MS = 100
+	static TIMER_CALLBACK_INTERVAL_MS = 100
 	readonly STATUS_BAR_ITERATIONS = 70
 	readonly STATUS_BAR_BG_GRADIENT = XtermGradients.MONOCHROME_GRADIENT.slice(0, 4).reverse()
 
@@ -64,7 +64,7 @@ class Timer extends Command {
 		}
 
 		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
-		this.totalIterations = this.durationSeconds * (1000 / this.TIMER_CALLBACK_INTERVAL_MS) + 1
+		this.totalIterations = this.durationSeconds * (1000 / Timer.TIMER_CALLBACK_INTERVAL_MS) + 1
 
 		// Set the status bar message
 		const durationMinutes = Math.floor(this.durationSeconds / 60)
@@ -81,7 +81,7 @@ class Timer extends Command {
 		this.listenForKeyEvents()
 
 		this.intervalIterator = new IntervalIterator(
-			this.TIMER_CALLBACK_INTERVAL_MS,
+			Timer.TIMER_CALLBACK_INTERVAL_MS,
 			this.totalIterations,
 			(iteration: number) => this.timerCallback(iteration),
 			() => Timer.finish()
@@ -130,7 +130,7 @@ class Timer extends Command {
 		const details: TimerDetails = TimerDetails.newTimerDetails(
 			iteration,
 			this.totalIterations,
-			this.TIMER_CALLBACK_INTERVAL_MS
+			Timer.TIMER_CALLBACK_INTERVAL_MS
 		)
 		const terminalDims = new Point(process.stdout.columns, process.stdout.rows)
 		this.matrix = this.renderer.render(details, terminalDims)
