@@ -52,6 +52,7 @@
 	"oclif": {
 		"bin": "pace",
 		"dirname": "pace",
+		"default": "timer",
 		"commands": "./dist/commands",
 		"plugins": [
 			"@oclif/plugin-help"
