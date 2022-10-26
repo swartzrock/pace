@@ -1,4 +1,4 @@
-import {Colors} from '../common/colors'
+import {Colors, Xterm256} from '../common/colors'
 
 import {TimerRenderer} from './timerRenderer'
 import {TimerDetails} from './timerDetails'
@@ -24,31 +24,37 @@ class ColorWheel implements TimerRenderer {
 	readonly SLICE_PERCENT = 0.0417
 	readonly PERCENTAGES = Utils.fill(this.SLICE_PERCENT, this.SLICES)
 
-	GREEN_GRADIENT = _.concat(
+	readonly GREEN_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_4_TO_DODGERBLUE_1,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3A_TO_DEEPSKYBLUE_1),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3B_TO_TURQUOISE_2,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1),
 	)
 
-	YELLOW_GRADIENT = _.concat(
+	readonly YELLOW_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_3B_TO_LIGHTSTEELBLUE_1,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_2_TO_LIGHTCYAN_1),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_1_TO_GREY_100,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GOLD_1_TO_THISTLE_1),
 	)
 
-	RED_GRADIENT = _.concat(
+	readonly RED_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.RED_3B_TO_MAGENTA_2A,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.DARKORANGE_3B_TO_MEDIUMORCHID_1A),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.ORANGERED_1_TO_MEDIUMORCHID_1B,
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.RED_1_TO_MAGENTA_1),
 	)
 
-	pieChart = new SquarePieChart()
+	readonly GRADIENT_TO_COLOR_MAP: Map<Array<number>,number> = new Map([
+		[this.GREEN_GRADIENT, Xterm256.WHITE],
+		[this.YELLOW_GRADIENT, Xterm256.CHARTREUSE_2B],
+		[this.RED_GRADIENT, Xterm256.DARKORANGE_3A]
+	])
+
+	readonly pieChart = new SquarePieChart()
 
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
-		let gradient = this.GREEN_GRADIENT
+		let gradient: number[] = this.GREEN_GRADIENT
 		if (details.percentDone() > 0.9) {
 			gradient = this.RED_GRADIENT
 		} else if (details.percentDone() > 0.7) {
@@ -85,9 +91,10 @@ class ColorWheel implements TimerRenderer {
 
 		// render the time-remaining text
 		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
+		const fgColor = this.GRADIENT_TO_COLOR_MAP.get(gradient) ?? Xterm256.WHITE
 		const colorBlock = Colors.foregroundColor(
 			UnicodeChars.BLOCK_FULL,
-			TimerRenderer.getGreenYellowRedColor(details.percentDone())
+			fgColor
 		)
 		timeRemainingMatrix.replaceAll(UnicodeChars.BLOCK_FULL, colorBlock)
 		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)
