@@ -1,5 +1,4 @@
-import { Xterm256 } from './colors'
-import { Utils } from './utils'
+import {Xterm256} from './colors'
 
 enum MatrixStart {
 	TOP,
@@ -14,23 +13,6 @@ enum MatrixStart {
  */
 class MatrixGradient {
 	constructor(public matrix: Xterm256[][], public start: MatrixStart, public index: number, public len: number) {}
-
-	/**
-	 * Returns the gradient as an array of colors
-	 */
-	get(): Xterm256[] {
-		switch (this.start) {
-			case MatrixStart.TOP:
-				return Utils.transpose(this.matrix)[this.index].slice(0, this.len)
-			case MatrixStart.LEFT:
-				return this.matrix[this.index].slice(0, this.len)
-			case MatrixStart.BOTTOM:
-				return Utils.transpose(this.matrix)[this.index].reverse().slice(0, this.len)
-			case MatrixStart.RIGHT:
-				return this.matrix[this.index].reverse().slice(0, this.len)
-		}
-		return this.start
-	}
 
 	static readonly BLUE_GREEN_PALETTE: Xterm256[][] = [
 		[

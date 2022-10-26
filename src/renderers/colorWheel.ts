@@ -1,16 +1,16 @@
-import { Colors, Xterm256 } from '../common/colors'
+import {Colors} from '../common/colors'
 
-import { TimerRenderer } from './timerRenderer'
-import { TimerDetails } from './timerDetails'
-import { StringMatrix } from '../common/stringmatrix'
-import { UnicodeChars } from '../common/unicodechars'
-import { XtermGradients } from '../common/xtermgradients'
-import { SquarePieChart, SquarePieChartDetails } from '../common/squarepiechart'
-import { TextBlocks } from '../common/textblocks'
-import { Utils } from '../common/utils'
+import {TimerRenderer} from './timerRenderer'
+import {TimerDetails} from './timerDetails'
+import {StringMatrix} from '../common/stringmatrix'
+import {UnicodeChars} from '../common/unicodechars'
+import {XtermGradients} from '../common/xtermgradients'
+import {SquarePieChart, SquarePieChartDetails} from '../common/squarepiechart'
+import {TextBlocks} from '../common/textblocks'
+import {Utils} from '../common/utils'
 import _ from 'lodash'
-import { FigletFonts, Fonts } from '../common/fonts'
-import { Point } from '../common/point'
+import {FigletFonts, Fonts} from '../common/fonts'
+import {Point} from '../common/point'
 
 /**
  * Displays a green, yellow, and then red color wheel
@@ -20,31 +20,29 @@ class ColorWheel implements TimerRenderer {
 	readonly CHART_SHADOW_CHAR = UnicodeChars.SHADE_DARK
 	readonly ALPHABET = Array.from('abcdefghijklmnopqrstuvwxyz')
 
-	readonly CHART_EMPTY_CHAR = 'z'
-	readonly CHART_EMPTY_COLOR = Xterm256.GREY_007
 	readonly SLICES = 24
 	readonly SLICE_PERCENT = 0.0417
 	readonly PERCENTAGES = Utils.fill(this.SLICE_PERCENT, this.SLICES)
 
 	GREEN_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_4_TO_DODGERBLUE_1,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3A_TO_DEEPSKYBLUE_1.reverse(),
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3A_TO_DEEPSKYBLUE_1),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3B_TO_TURQUOISE_2,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1.reverse()
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_1_TO_CYAN_1),
 	)
 
 	YELLOW_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_3B_TO_LIGHTSTEELBLUE_1,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_2_TO_LIGHTCYAN_1.reverse(),
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_2_TO_LIGHTCYAN_1),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_1_TO_GREY_100,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.GOLD_1_TO_THISTLE_1.reverse()
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.GOLD_1_TO_THISTLE_1),
 	)
 
 	RED_GRADIENT = _.concat(
 		XtermGradients.SINGLE_COLOR_GRADIENTS.RED_3B_TO_MAGENTA_2A,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.DARKORANGE_3B_TO_MEDIUMORCHID_1A.reverse(),
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.DARKORANGE_3B_TO_MEDIUMORCHID_1A),
 		XtermGradients.SINGLE_COLOR_GRADIENTS.ORANGERED_1_TO_MEDIUMORCHID_1B,
-		XtermGradients.SINGLE_COLOR_GRADIENTS.RED_1_TO_MAGENTA_1.reverse()
+		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.RED_1_TO_MAGENTA_1),
 	)
 
 	pieChart = new SquarePieChart()
