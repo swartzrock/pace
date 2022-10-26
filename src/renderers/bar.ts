@@ -6,12 +6,11 @@ import { StringUtils } from '../common/stringutils'
 import { StringMatrix } from '../common/stringmatrix'
 import { Point } from '../common/point'
 import { Rectangle } from '../common/rectangle'
+import {UnicodeChars} from "../common/unicodechars";
 
 class Bar implements TimerRenderer {
-	readonly BAR_COMPLETE_CHAR = '\u2588'
-	readonly BAR_INCOMPLETE_CHAR = '\u2591'
-	readonly BAR_COMPLETE_START_CHAR = '\u25d6'
-	readonly BAR_COMPLETE_END_CHAR = '\u25d7'
+	readonly BAR_COMPLETE_CHAR = UnicodeChars.BLOCK_FULL
+	readonly BAR_INCOMPLETE_CHAR = UnicodeChars.SHADE_DARK
 	readonly RIGHT_MARGIN = 2
 	readonly PADDING = new Rectangle(2, 4, 2, 4)
 
