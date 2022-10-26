@@ -42,7 +42,15 @@ class Utils {
 	 * @param a the array to duplicate
 	 */
 	static concatReversed<A>(a: Array<A>): Array<A> {
-		return a.concat(a.reverse())
+		return a.concat(Utils.reverse(a))
+	}
+
+	/**
+	 * Returns the array, reversed. The original array is not mutated.
+	 * @param a the array to reverse
+	 */
+	static reverse<A>(a: Array<A>): Array<A> {
+		return [...a].reverse()
 	}
 
 	static fill<A>(a: A, count: number): Array<A> {
