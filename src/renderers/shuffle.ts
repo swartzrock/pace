@@ -4,10 +4,19 @@ import {TimerDetails} from './timerDetails'
 import {Point} from '../common/point'
 import {Timer} from "../commands/timer";
 import * as _ from 'lodash'
+import {UnicodeChars} from "../common/unicodechars";
+import {XtermGradients} from "../common/xtermgradients";
+import {Colors} from "../common/colors";
+import {Utils} from "../common/utils";
 
 class Shuffle implements TimerRenderer {
 	readonly ITERATIONS_PER_RENDERER = 100
-	readonly SHOW_NEXT_RENDERER_PERCENT = 0.8
+	readonly SHOW_NEXT_RENDERER_PERCENT = 0.75
+
+	readonly BORDER_CHAR = UnicodeChars.SHADE_LIGHT
+	readonly BORDER_GRADIENT = Utils.reverse(XtermGradients.DOUBLE_COLOR_GRADIENTS.PURPLE_4B_TO_BLUE_3A)
+
+	readonly SHOW_NEXT_RENDERER_NAME_SECONDS = 2
 
 	renderers: Array<RendererInfo> = []
 
@@ -37,18 +46,16 @@ class Shuffle implements TimerRenderer {
 			const nextMatrix = this.renderers[nextIndex].renderer.render(details, terminalDims)
 			nextMatrix.fitToWindow()
 
-			const cols = Math.min(nextColumns, nextMatrix.cols())
-			const rows = Math.min(currentMatrix.rows(), nextMatrix.rows())
-			for (let row = 0; row < rows; row++) {
-				for (let col = 0; col < cols; col++) {
-					currentMatrix.setCell(nextMatrix.getCell(col, row), col, row)
-				}
-			}
+			const borderColor = this.BORDER_GRADIENT[Math.floor(pctDone * this.BORDER_GRADIENT.length)]
+			const borderLine = [Colors.foregroundColor(this.BORDER_CHAR, borderColor)]
+			currentMatrix.matrix = currentMatrix.matrix.map((row, i) =>
+				_.concat(_.clone(nextMatrix.matrix[i].slice(0, nextColumns - 1)), borderLine, row.slice(nextColumns))
+			)
 		}
 
 		const INTERVALS_PER_SECOND = 1000 / Timer.TIMER_CALLBACK_INTERVAL_MS
 		const remainingSeconds = Math.floor((this.ITERATIONS_PER_RENDERER - details.iteration % this.ITERATIONS_PER_RENDERER) / INTERVALS_PER_SECOND)
-		if (remainingSeconds > 1) {
+		if (remainingSeconds > this.SHOW_NEXT_RENDERER_NAME_SECONDS) {
 			details.statusBarMessage = `Shuffle: showing the "${this.renderers[currentIndex].name}" renderer for ${remainingSeconds} more seconds...`
 		} else {
 			details.statusBarMessage = `Shuffle: loading the "${this.renderers[nextIndex].name}" renderer...`
