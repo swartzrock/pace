@@ -23,7 +23,7 @@ Choose a renderer when you run the app, or run preview to see a representation o
 ## Usage
 ```sh
 USAGE
-  $ pace timer [DURATION] [RENDERER]
+  $ pace [DURATION] [RENDERER]
 
 ARGUMENTS
   DURATION  duration in (m)inutes and (s)seconds (eg 3m10s = 190 seconds)
@@ -34,8 +34,19 @@ DESCRIPTION
   Displays a progress timer
 
 EXAMPLES
-  $ pace timer 2.5m pie
+  $ pace 2.5m pie
 ```
+
+### The Shuffle Renderer
+
+![demo](media/pace-shuffle.gif)
+
+Use the `shuffle` renderer to preview all renderers in action. This renderer switches to another renderer every 10 seconds.
+
+```sh 
+pace 5m shuffle
+```
+
 
 ### Preview All Renderers
 ```sh 
