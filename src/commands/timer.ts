@@ -1,16 +1,15 @@
-import { Command } from '@oclif/core'
-import { AllRenderers, TimerRenderer } from '../renderers/timerRenderer'
-import { StringMatrix } from '../common/stringmatrix'
+import {Command} from '@oclif/core'
+import {AllRenderers, TimerRenderer} from '../renderers/timerRenderer'
+import {StringMatrix} from '../common/stringmatrix'
 import onExit from 'signal-exit'
-import { AnsiCursor } from '../common/ansicursor'
-import { Colors, Xterm256 } from '../common/colors'
-import { Rectangle } from '../common/rectangle'
+import {AnsiCursor} from '../common/ansicursor'
+import {Colors, Xterm256} from '../common/colors'
+import {Rectangle} from '../common/rectangle'
 import * as readline from 'readline'
-import { IntervalIterator } from '../common/intervalIterator'
-import { Utils } from '../common/utils'
-import { XtermGradients } from '../common/xtermgradients'
-import { Point } from '../common/point'
-import { TimerDetails } from '../renderers/timerDetails'
+import {IntervalIterator} from '../common/intervalIterator'
+import {XtermGradients} from '../common/xtermgradients'
+import {Point} from '../common/point'
+import {TimerDetails} from '../renderers/timerDetails'
 
 /**
  * Timer is the main entrypoint for the pace timer
@@ -31,6 +30,7 @@ class Timer extends Command {
 		{
 			name: 'renderer',
 			required: false,
+			default: 'shuffle',
 			description: `the timer renderer:\n ${Timer.getAvailableRenderNamesText()}`,
 			hidden: false,
 		},
@@ -57,13 +57,23 @@ class Timer extends Command {
 	async run(): Promise<void> {
 		const { args } = await this.parse(Timer)
 
-		this.renderer = this.getRenderer(args.renderer)
+		// Parse the duration and renderer argument, which may be combined in the duration argument
+		// if the optional 'timer' command was left out
+		let durationArg: string = args.duration
+		let rendererArg: string = args.renderer
+		const durationAndRenderer = durationArg.split(':')
+		if (durationAndRenderer.length == 2) {
+			durationArg = durationAndRenderer[0]
+			rendererArg = durationAndRenderer[1]
+		}
+
+		this.renderer = this.getRenderer(rendererArg)
 		if (!this.renderer || !this.rendererName) {
 			this.log(`Please select one of these renderers: ${Timer.getAvailableRenderNamesText()}`)
 			this.exit(1)
 		}
 
-		this.durationSeconds = Timer.parseDurationFlagToSeconds(args.duration)
+		this.durationSeconds = Timer.parseDurationFlagToSeconds(durationArg)
 		this.totalIterations = this.durationSeconds * (1000 / Timer.TIMER_CALLBACK_INTERVAL_MS) + 1
 
 		// Set the status bar message
@@ -205,14 +215,14 @@ class Timer extends Command {
 	}
 
 	/**
-	 * Returns the selected pace renderer, or a random one if the argument is missing
+	 * Returns the selected pace renderer, or shuffle if the argument is missing
 	 * @param rendererArg the renderer argument from the command line
 	 * @private
 	 */
-	getRenderer(rendererArg?: string): TimerRenderer | null {
-		this.rendererName = rendererArg ?? Utils.randomElementNonEmpty(Object.keys(AllRenderers))
-		const entries: [string, TimerRenderer][] = <[string, TimerRenderer][]>Object.entries(AllRenderers)
-		return Utils.head(entries.filter((a) => a[0] === this.rendererName).map((a) => a[1]))
+	getRenderer(rendererArg: string): TimerRenderer | null {
+		this.rendererName = rendererArg
+		const matchingRenderers = AllRenderers.renderers.filter((i) => i.name == rendererArg)
+		return matchingRenderers.length == 1 ? matchingRenderers[0].renderer : null
 	}
 
 	/**
