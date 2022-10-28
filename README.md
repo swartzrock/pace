@@ -13,7 +13,7 @@
 
 <p align="center">
 	
-![demo](media/pace-renderers.gif)
+![demo](media/all_renderers.gif)
 </p>
 
 ## About Pace
