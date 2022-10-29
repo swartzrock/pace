@@ -23,7 +23,7 @@ Choose a renderer when you run the app, or run preview to see a representation o
 ## Usage
 ```sh
 USAGE
-  $ pace [DURATION] [RENDERER]
+  $ bin/dev [DURATION] [RENDERER]
 
 ARGUMENTS
   DURATION  duration in (m)inutes and (s)seconds (eg 3m10s = 190 seconds)
@@ -34,8 +34,15 @@ DESCRIPTION
   Displays a progress timer
 
 EXAMPLES
-  $ pace 2.5m pie
+  $ bin/dev 5m pie
 ```
+
+You can also build the project and run the transpiled Javascript:
+```sh
+$ yarn build && bin/run 5m pie
+```
+
+
 
 ### The Shuffle Renderer
 
@@ -44,13 +51,13 @@ EXAMPLES
 Use the `shuffle` renderer to preview all renderers in action. This renderer switches to another renderer every 10 seconds.
 
 ```sh 
-pace 5m shuffle
+bin/dev 5m shuffle
 ```
 
 
 ### Preview All Renderers
 ```sh 
-pace tools preview
+bin/dev tools preview
 ```
 
 
@@ -58,15 +65,18 @@ pace tools preview
 It would be great to see more renderers! To write a new renderer add a subclass of `src/renderers/TimerRenderer` and register it with
 a short name in `src/renderers/AllRenderers`. 
 
-### Preview All Available Figlet Fonts
-```sh 
-pace tools allfonts
-```
-
 ### Preview All Available Colors and Gradients
 ```sh 
-pace tools colorblocks
+bin/dev tools colorblocks
 ```
+
+![demo](media/colorblocks-gradients.png) ![demo](media/colorblocks-palettes.png)
+
+### Preview All Available Figlet Fonts
+```sh 
+bin/dev tools allfonts
+```
+
 
 ### Notes
 * Renderers should not store state between callbacks, since the `shuffle` renderer and `tools preview` command depend on calling renderers at selected intervals.
