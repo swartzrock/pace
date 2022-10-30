@@ -1,11 +1,11 @@
-import { Colors, Xterm256 } from '../common/colors'
+import {Colors, Xterm256} from '../common/colors'
 
-import { TimerRenderer } from './timerRenderer'
-import { TimerDetails } from './timerDetails'
-import { StringUtils } from '../common/stringutils'
-import { StringMatrix } from '../common/stringmatrix'
-import { Point } from '../common/point'
-import { Rectangle } from '../common/rectangle'
+import {TimerRenderer} from './timerRenderer'
+import {TimerDetails} from './timerDetails'
+import {StringUtils} from '../common/stringutils'
+import {StringMatrix} from '../common/stringmatrix'
+import {Point} from '../common/point'
+import {Rectangle} from '../common/rectangle'
 import {UnicodeChars} from "../common/unicodechars";
 
 class Bar implements TimerRenderer {
@@ -20,7 +20,7 @@ class Bar implements TimerRenderer {
 	 * @param terminalDims the current terminal dimensions
 	 */
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
-		const fgColor: Xterm256 = this.fgColor(details.percentDone())
+		const fgColor: Xterm256 = TimerRenderer.getGreenYellowRedColor(details.percentDone())//  this.fgColor(details.percentDone())
 		const colorBarComplete = Colors.foregroundColor(this.BAR_COMPLETE_CHAR, fgColor)
 		const colorBarIncomplete = Colors.foregroundColor(this.BAR_INCOMPLETE_CHAR, Xterm256.GREY_030)
 
@@ -42,7 +42,7 @@ class Bar implements TimerRenderer {
 		const barIncompleteStr = StringUtils.fillString(this.BAR_INCOMPLETE_CHAR, barEmptyLen)
 
 		const timeElapsed = this.renderTimeElapsed(details)
-		const timeRemaining = this.renderTimeRemaining(details)
+		const timeRemaining = details.timeRemainingText()
 
 		return Bar.renderBar(barCompleteStr, barIncompleteStr, timeElapsed, timeRemaining)
 	}
@@ -56,27 +56,12 @@ class Bar implements TimerRenderer {
 		return `${timeElapsed} | ${barComplete}${barIncomplete} | ${timeRemaining} `
 	}
 
-	private fgColor(percentDone: number): Xterm256 {
-		if (percentDone > 0.9) {
-			return Xterm256.ORANGERED_1
-		}
-		if (percentDone > 0.7) {
-			return Xterm256.GREENYELLOW
-		}
-		return Xterm256.CHARTREUSE_2A
-	}
-
 	private renderTimeElapsed(details: TimerDetails): string {
 		const elapsedMinutes: number = Math.floor(details.elapsedSeconds / 60)
 		const elapsedSecondsInMinute: number = details.elapsedSeconds - elapsedMinutes * 60
 		return `${elapsedMinutes}:` + `${elapsedSecondsInMinute}`.padStart(2, '0')
 	}
 
-	private renderTimeRemaining(details: TimerDetails): string {
-		const remainingMinutes: number = Math.floor(details.remainingSeconds / 60)
-		const remainingSecondsInMinute: number = details.remainingSeconds - remainingMinutes * 60
-		return `${remainingMinutes}:` + `${remainingSecondsInMinute}`.padStart(2, '0')
-	}
 }
 
 export { Bar }
