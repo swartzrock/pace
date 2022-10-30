@@ -12,6 +12,10 @@ class BigText implements TimerRenderer {
 
 	readonly FONT = FigletFonts.ANSI_REGULAR
 
+	readonly GREEN_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.BLUE_1_TO_CYAN_1
+	readonly YELLOW_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_3B_TO_LIGHTSTEELBLUE_1
+	readonly RED_GRADIENT = XtermGradients.SINGLE_COLOR_GRADIENTS.RED_3B_TO_MAGENTA_2A
+
 	cachedDoubler: number | undefined
 	cachedTerminalDims: Point | undefined
 
@@ -25,9 +29,17 @@ class BigText implements TimerRenderer {
 			timeRemainingMatrix.matrix = Utils.double(timeRemainingMatrix.matrix)
 		}
 
-		timeRemainingMatrix.setVerticalGradient(XtermGradients.SINGLE_COLOR_GRADIENTS.BLUE_1_TO_CYAN_1)
+		timeRemainingMatrix.setVerticalGradient(this.getGradient(details))
 
 		return timeRemainingMatrix
+	}
+
+	getGradient(details: TimerDetails): number[] {
+		switch(true) {
+			case (details.percentDone() > 0.9): return this.RED_GRADIENT
+			case (details.percentDone() > 0.7): return this.YELLOW_GRADIENT
+			default: return this.GREEN_GRADIENT
+		}
 	}
 
 	/**
