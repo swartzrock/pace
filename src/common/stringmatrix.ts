@@ -30,6 +30,7 @@ class StringMatrix {
 	size = () => new Point(this.cols(), this.rows())
 	getCell = (col: number, row: number) => this.matrix[row][col]
 	setCell = (s: string, col: number, row: number) => (this.matrix[row][col] = s)
+	double = () => this.matrix = Utils.doubleMatrix(this.matrix)
 
 	/**
 	 * Overlay a monochrome string onto the matrix at the specified start location

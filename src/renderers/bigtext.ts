@@ -25,8 +25,8 @@ class BigText implements TimerRenderer {
 		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemainingFiglet)
 
 		for (let i = 0; i < this.getDoubler(terminalDims); i++) {
-			timeRemainingMatrix.matrix = timeRemainingMatrix.matrix.map((row) => Utils.double(row))
-			timeRemainingMatrix.matrix = Utils.double(timeRemainingMatrix.matrix)
+			timeRemainingMatrix.matrix = timeRemainingMatrix.matrix.map((row) => Utils.doubleArray(row))
+			timeRemainingMatrix.matrix = Utils.doubleArray(timeRemainingMatrix.matrix)
 		}
 
 		timeRemainingMatrix.setVerticalGradient(this.getGradient(details))
@@ -60,8 +60,7 @@ class BigText implements TimerRenderer {
 
 		let doubler = 0
 		while (timeRemainingMatrix.cols() * 2 < maxCols && timeRemainingMatrix.rows() * 2 < maxRows) {
-			timeRemainingMatrix.matrix = timeRemainingMatrix.matrix.map((row) => Utils.double(row))
-			timeRemainingMatrix.matrix = Utils.double(timeRemainingMatrix.matrix)
+			timeRemainingMatrix.double()
 			doubler = doubler + 1
 		}
 
