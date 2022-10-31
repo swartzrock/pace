@@ -11,6 +11,7 @@ import { Xterm256 } from '../common/colors'
 import { Sweep } from './sweep'
 import { BigText } from './bigtext'
 import { Shuffle } from './shuffle'
+import {Sine} from "./sine";
 
 abstract class TimerRenderer {
 	/**
@@ -52,6 +53,7 @@ class AllRenderers {
 	static colorwheel: TimerRenderer = new ColorWheel()
 	static sweep: TimerRenderer = new Sweep()
 	static bigtext: TimerRenderer = new BigText()
+	static sine: TimerRenderer = new Sine()
 	static shuffle: TimerRenderer = new Shuffle()
 
 	static renderers: Array<RendererInfo> = Object.entries(AllRenderers).map((a) => new RendererInfo(a[0], a[1]))
