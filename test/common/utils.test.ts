@@ -17,4 +17,11 @@ describe('utils', () => {
 		const a = Utils.grouped([1, 2, 3, 4, 5], 2)
 		expect(a).toStrictEqual([[1, 2], [3, 4], [5]])
 	})
+	test('range', () => {
+		expect(Utils.createArrayRange(3, 6)).toStrictEqual([3, 4, 5, 6])
+		expect(Utils.createArrayRange(6, 3)).toStrictEqual([6, 5, 4, 3])
+	})
+	test('concat', () => {
+		expect(Utils.concat([1, 2], [3, 4], [5])).toStrictEqual([1, 2, 3, 4, 5])
+	})
 })

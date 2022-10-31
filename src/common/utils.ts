@@ -3,9 +3,17 @@ import * as _ from 'lodash'
 class Utils {
 	static halfInt = (n: number): number => Math.floor(n / 2)
 
+	/**
+	 * Returns an array of the start and end numbers
+	 * @param start the start number, inclusive
+	 * @param end the end number, inclusive
+	 */
 	static createArrayRange(start: number, end: number): number[] {
-		const total = end - start + 1
-		return Array.from(Array(total)).map((_, i) => start + i)
+		const total = Math.abs(end - start) + 1
+		const lower = Math.min(start, end)
+		const result: number[] = Array.from(Array(total)).map((_, i) => lower + i)
+		if (start > end) result.reverse()
+		return result
 	}
 
 	static isEmpty<A>(a: Array<A>): boolean {
@@ -35,6 +43,10 @@ class Utils {
 
 	static transpose<A>(matrix: Array<Array<A>>): Array<Array<A>> {
 		return matrix[0].map((col, i) => matrix.map((row) => row[i]))
+	}
+
+	static concat<A>(...a: Array<Array<A>>): Array<A> {
+		return new Array<A>().concat(...a)
 	}
 
 	/**
