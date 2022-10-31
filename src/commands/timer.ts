@@ -162,7 +162,6 @@ class Timer extends Command {
 		}
 
 		const statusFg = Xterm256.SKYBLUE_1
-		// let statusBg: Xterm256 = this.STATUS_BAR_BG_GRADIENT[0]
 
 		// If the status bar is more than half over, use a darkening gradient bg
 		if (details.iteration > this.STATUS_BAR_ITERATIONS / 2 && details.iteration < this.STATUS_BAR_ITERATIONS) {
@@ -182,7 +181,10 @@ class Timer extends Command {
 			this.matrix.fill(statusBgFillChar, bounds)
 		}
 
-		const message = details.statusBarMessage || this.statusBarMsg
+		let message = this.statusBarMsg
+		if (details.statusBarMessage) {
+			message = (message + details.statusBarMessage).slice(0, process.stdout.columns)
+		}
 
 		const startLoc = new Point(Math.floor((this.matrix.cols() - message.length) / 2), this.matrix.rows() - 1)
 
