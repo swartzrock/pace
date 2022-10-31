@@ -1,13 +1,41 @@
 import winston from 'winston'
-import { StringMatrix } from './stringmatrix'
-import { StringUtils } from './stringutils'
+import {StringMatrix} from './stringmatrix'
 
+/**
+ * Logging class, really useful for debugging
+ */
 class Loggy {
-	static readonly ERROR_LOG_FILE = 'logs/error.log'
-	static readonly COMBINED_LOG_FILE = 'logs/combined.log'
-	static readonly RAW_LOG_FILE = 'logs/raw.log'
+	private static readonly ERROR_LOG_FILE = 'logs/error.log'
+	private static readonly COMBINED_LOG_FILE = 'logs/combined.log'
+	private static readonly RAW_LOG_FILE = 'logs/raw.log'
 
-	static mainLog = winston.createLogger({
+	private static enabled = false
+
+	static enable() {
+		Loggy.enabled = true
+	}
+
+	static info = (a: unknown) => Loggy.enabled && Loggy.mainLog.info(a)
+	static warn = (a: unknown) => Loggy.enabled && Loggy.mainLog.warn(a)
+	static error = (a: unknown) => Loggy.enabled && Loggy.mainLog.error(a)
+
+	/**
+	 * A great utility for printing directly to the raw log. If a StringMatrix is passed, additional
+	 * info about the matrix will be printed
+	 * @param a
+	 */
+	static raw(a: unknown) {
+		if (!Loggy.enabled) return
+		if (a instanceof StringMatrix) {
+			const m: StringMatrix = a as StringMatrix
+			Loggy.rawLog.info(`Displaying ${m.cols()} x ${m.rows()} matrix:`)
+			Loggy.rawLog.info('          1         2         3         4         5         6')
+			Loggy.rawLog.info('01234567890123456789012345678901234567890123456789012345678901234567890123456789')
+		}
+		Loggy.rawLog.info(a)
+	}
+
+	private static mainLog = winston.createLogger({
 		level: 'info',
 		format: winston.format.json(),
 		transports: [
@@ -19,7 +47,8 @@ class Loggy {
 			new winston.transports.File({ filename: Loggy.COMBINED_LOG_FILE, format: winston.format.simple() }),
 		],
 	})
-	static rawLog = winston.createLogger({
+
+	private static rawLog = winston.createLogger({
 		level: 'info',
 		format: winston.format.printf(({ message }) => {
 			return message
@@ -27,26 +56,6 @@ class Loggy {
 		transports: [new winston.transports.File({ filename: Loggy.RAW_LOG_FILE })],
 	})
 
-	static info = (a: unknown) => Loggy.mainLog.info(a)
-	static warn = (a: unknown) => Loggy.mainLog.warn(a)
-	static error = (a: unknown) => Loggy.mainLog.error(a)
-
-	static linefill = StringUtils.fillString('=', 20)
-
-	/**
-	 * A great utility for printing directly to the raw log. If a StringMatrix is passed, additional
-	 * info about the matrix will be printed
-	 * @param a
-	 */
-	static raw(a: unknown) {
-		if (a instanceof StringMatrix) {
-			const m: StringMatrix = a as StringMatrix
-			Loggy.rawLog.info(`Displaying ${m.cols()} x ${m.rows()} matrix:`)
-			Loggy.rawLog.info('          1         2         3         4         5         6')
-			Loggy.rawLog.info('01234567890123456789012345678901234567890123456789012345678901234567890123456789')
-		}
-		Loggy.rawLog.info(a)
-	}
 }
 
 export { Loggy }

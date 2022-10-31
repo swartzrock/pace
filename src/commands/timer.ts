@@ -10,6 +10,7 @@ import {IntervalIterator} from '../common/intervalIterator'
 import {XtermGradients} from '../common/xtermgradients'
 import {Point} from '../common/point'
 import {TimerDetails} from '../renderers/timerDetails'
+import {Loggy} from "../common/loggy";
 
 /**
  * Timer is the main entrypoint for the pace timer
@@ -56,6 +57,9 @@ class Timer extends Command {
 	 */
 	async run(): Promise<void> {
 		const { args } = await this.parse(Timer)
+
+		// Enable the logger for development mode
+		if (this.config.options.root.endsWith("dev")) Loggy.enable()
 
 		// Parse the duration and renderer argument, which may be combined in the duration argument
 		// if the optional 'timer' command was left out
