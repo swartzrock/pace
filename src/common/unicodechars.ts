@@ -4,6 +4,10 @@ class UnicodeChars {
 	static readonly SHADE_MEDIUM = '▒'
 	static readonly SHADE_DARK = '░'
 
+	static readonly QUARTER_CIRCLE = '•'
+	static readonly HALF_CIRCLE = '●'
+	static readonly FULL_CIRCLE = '⬤'
+
 	static readonly SINGLE_BOX_DRAWING_TOP_LEFT = '┌'
 	static readonly SINGLE_BOX_DRAWING_TOP_RIGHT = '┐'
 	static readonly SINGLE_BOX_DRAWING_BOTTOM_LEFT = '└'
