@@ -11,6 +11,7 @@ import {XtermGradients} from '../common/xtermgradients'
 import {Point} from '../common/point'
 import {TimerDetails} from '../renderers/timerDetails'
 import {Loggy} from "../common/loggy";
+import {StringUtils} from "../common/stringutils";
 
 /**
  * Timer is the main entrypoint for the pace timer
@@ -81,12 +82,8 @@ class Timer extends Command {
 		this.totalIterations = this.durationSeconds * (1000 / Timer.TIMER_CALLBACK_INTERVAL_MS) + 1
 
 		// Set the status bar message
-		const durationMinutes = Math.floor(this.durationSeconds / 60)
-		const durationMinSeconds = this.durationSeconds - durationMinutes * 60
-		let totalDuration = `${durationMinutes}-minute-${durationMinSeconds}-second`
-		if (durationMinutes < 1) totalDuration = `${durationMinSeconds}-second`
-		else if (durationMinSeconds == 0) totalDuration = `${durationMinutes}-minute`
-		this.statusBarMsg = `Starting a ${totalDuration} timer with the '${this.rendererName}' renderer. Press <space> to pause. `
+		const durationText = StringUtils.formatMinutesSecondsShowUnits(this.durationSeconds)
+		this.statusBarMsg = `Starting a ${durationText} timer with the '${this.rendererName}' renderer. Press <space> to pause. `
 
 		// Hide the cursor now and restore it when the program exits
 		AnsiCursor.hideCursor()

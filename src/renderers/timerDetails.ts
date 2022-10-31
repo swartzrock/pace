@@ -1,3 +1,5 @@
+import {StringUtils} from "../common/stringutils";
+
 class TimerDetails {
 	public statusBarMessage = ''
 
@@ -28,9 +30,7 @@ class TimerDetails {
 	}
 
 	timeRemainingText(): string {
-		const remainingMinutes: number = Math.floor(this.remainingSeconds / 60)
-		const remainingSecondsInMinute: number = this.remainingSeconds - remainingMinutes * 60
-		return `${remainingMinutes}:`.padStart(3, '0') + `${remainingSecondsInMinute}`.padStart(2, '0')
+		return StringUtils.formatMinutesSecondsShort(this.remainingSeconds)
 	}
 
 	percentDone() {

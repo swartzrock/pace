@@ -117,6 +117,21 @@ class StringUtils {
 
 		return buf
 	}
+
+	static formatMinutesSecondsShort(seconds: number): string {
+		const remainingMinutes: number = Math.floor(seconds / 60)
+		const remainingSecondsInMinute: number = seconds - remainingMinutes * 60
+		return `${remainingMinutes}:`.padStart(3, '0') + `${remainingSecondsInMinute}`.padStart(2, '0')
+	}
+
+	static formatMinutesSecondsShowUnits(seconds: number): string {
+		const durationMinutes = Math.floor(seconds / 60)
+		const durationMinSeconds = seconds - durationMinutes * 60
+		let totalDuration = `${durationMinutes}-minute-${durationMinSeconds}-second`
+		if (durationMinutes < 1) totalDuration = `${durationMinSeconds}-second`
+		else if (durationMinSeconds == 0) totalDuration = `${durationMinutes}-minute`
+		return totalDuration
+	}
 }
 
 export { StringUtils }
