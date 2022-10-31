@@ -1,20 +1,23 @@
-import { StringUtils } from './stringutils'
-import { isNaN, parseInt } from 'lodash'
+import {StringUtils} from './stringutils'
+import {isNaN, parseInt} from 'lodash'
 
 class Colors {
 	static readonly ANSI_RESET_COLOR = '\u001b[0m'
 
 	static foregroundColor(s: string, fg: Xterm256): string {
+		if (!(fg in Xterm256)) return s
 		const colorIndex = fg.valueOf()
 		return `${Colors.createForegroundColorCode(colorIndex)}${s}${Colors.ANSI_RESET_COLOR}`
 	}
 
-	static backgroundColor(s: string, fg: Xterm256): string {
-		const colorIndex = fg.valueOf()
+	static backgroundColor(s: string, bg: Xterm256): string {
+		if (!(bg in Xterm256)) return s
+		const colorIndex = bg.valueOf()
 		return `${Colors.createBackgroundColorCode(colorIndex)}${s}${Colors.ANSI_RESET_COLOR}`
 	}
 
 	static foregroundAndBackgroundColor(s: string, fg: Xterm256, bg: Xterm256): string {
+		if (!(fg in Xterm256) || !(bg in Xterm256)) return s
 		const fgIndex = fg.valueOf()
 		const bgIndex = bg.valueOf()
 		return `${Colors.createForegroundColorCode(fgIndex)}${Colors.createBackgroundColorCode(bgIndex)}${s}${
