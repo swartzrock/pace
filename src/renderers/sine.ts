@@ -30,8 +30,9 @@ class Sine implements TimerRenderer {
 
 		const progressBarLength = terminalDims.col - 8
 		const barCompleteLen = Math.max(this.MIN_COLUMN, Math.floor(details.percentDone() * progressBarLength))
-		const graphHeight = terminalDims.row / 2
 		const gradient = this.getGradient(details)
+
+		const graphHeight = Math.floor(terminalDims.row / 4) * 2 + 1
 
 		const matrix = StringMatrix.createUniformMatrix(terminalDims.col, graphHeight)
 		for (let col = 0 - 1; col < barCompleteLen; col++) {
@@ -63,7 +64,7 @@ class Sine implements TimerRenderer {
 	plotSine(matrix: StringMatrix, col: number, sineValue: number, gradient: number[]) {
 		const originY = Utils.halfInt(matrix.rows())
 		const vertMargin = 2
-		const maxPositiveY = Utils.halfInt(matrix.rows() - vertMargin * 2)
+		const maxPositiveY = Utils.halfInt(matrix.rows() - vertMargin)
 		const waveRow = Math.floor(originY - (sineValue * maxPositiveY))
 
 		const rows = Utils.createArrayRange(originY, waveRow)
