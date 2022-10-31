@@ -37,8 +37,12 @@ class Utils {
 		return result
 	}
 
-	static double<A>(a: Array<A>): Array<A> {
+	static doubleArray<A>(a: Array<A>): Array<A> {
 		return a.flatMap((c) => [c, _.clone(c)])
+	}
+
+	static doubleMatrix<A>(a: Array<Array<A>>): Array<Array<A>> {
+		return Utils.doubleArray(a.map((row) => Utils.doubleArray(row)))
 	}
 
 	static transpose<A>(matrix: Array<Array<A>>): Array<Array<A>> {

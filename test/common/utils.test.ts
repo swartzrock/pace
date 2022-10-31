@@ -24,4 +24,12 @@ describe('utils', () => {
 	test('concat', () => {
 		expect(Utils.concat([1, 2], [3, 4], [5])).toStrictEqual([1, 2, 3, 4, 5])
 	})
+	test('double', () => {
+		const a = ['h','e','l','l','o']
+		expect(Utils.doubleArray(a)).toStrictEqual(['h','h','e','e','l','l','l','l','o','o'])
+
+		const m = [[7,8,9],[4,5,6],[1,2,3]]
+		expect(Utils.doubleMatrix(m)).toStrictEqual([[7,7,8,8,9,9],[7,7,8,8,9,9],[4,4,5,5,6,6],[4,4,5,5,6,6],[1,1,2,2,3,3],[1,1,2,2,3,3]])
+
+	})
 })
