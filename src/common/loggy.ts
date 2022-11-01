@@ -15,9 +15,9 @@ class Loggy {
 		Loggy.enabled = true
 	}
 
-	static info = (a: unknown) => Loggy.enabled && Loggy.mainLog.info(a)
-	static warn = (a: unknown) => Loggy.enabled && Loggy.mainLog.warn(a)
-	static error = (a: unknown) => Loggy.enabled && Loggy.mainLog.error(a)
+	static info = (a: unknown) => Loggy.enabled && Loggy.getMainLogger().info(a)
+	static warn = (a: unknown) => Loggy.enabled && Loggy.getMainLogger().warn(a)
+	static error = (a: unknown) => Loggy.enabled && Loggy.getMainLogger().error(a)
 
 	/**
 	 * A great utility for printing directly to the raw log. If a StringMatrix is passed, additional
@@ -28,33 +28,45 @@ class Loggy {
 		if (!Loggy.enabled) return
 		if (a instanceof StringMatrix) {
 			const m: StringMatrix = a as StringMatrix
-			Loggy.rawLog.info(`Displaying ${m.cols()} x ${m.rows()} matrix:`)
-			Loggy.rawLog.info('          1         2         3         4         5         6')
-			Loggy.rawLog.info('01234567890123456789012345678901234567890123456789012345678901234567890123456789')
+			Loggy.getRawLogger().info(`Displaying ${m.cols()} x ${m.rows()} matrix:`)
+			Loggy.getRawLogger().info('          1         2         3         4         5         6')
+			Loggy.getRawLogger().info('01234567890123456789012345678901234567890123456789012345678901234567890123456789')
 		}
-		Loggy.rawLog.info(a)
+		Loggy.getRawLogger().info(a)
 	}
 
-	private static mainLog = winston.createLogger({
-		level: 'info',
-		format: winston.format.json(),
-		transports: [
-			//
-			// - Write all logs with importance level of `error` or less to `error.log`
-			// - Write all logs with importance level of `info` or less to `combined.log`
-			//
-			new winston.transports.File({ filename: Loggy.ERROR_LOG_FILE, level: 'error' }),
-			new winston.transports.File({ filename: Loggy.COMBINED_LOG_FILE, format: winston.format.simple() }),
-		],
-	})
+	private static _mainLog: winston.Logger
+	private static _rawLog: winston.Logger
 
-	private static rawLog = winston.createLogger({
-		level: 'info',
-		format: winston.format.printf(({ message }) => {
-			return message
-		}),
-		transports: [new winston.transports.File({ filename: Loggy.RAW_LOG_FILE })],
-	})
+	private static getMainLogger(): winston.Logger {
+		if (!this._mainLog) {
+			this._mainLog = winston.createLogger({
+				level: 'info',
+				format: winston.format.json(),
+				transports: [
+					new winston.transports.File({ filename: Loggy.ERROR_LOG_FILE, level: 'error' }),
+					new winston.transports.File({ filename: Loggy.COMBINED_LOG_FILE, format: winston.format.simple() }),
+				],
+			})
+		}
+
+		return this._mainLog
+	}
+
+	private static getRawLogger(): winston.Logger {
+		if (!this._rawLog) {
+			this._rawLog = winston.createLogger({
+				level: 'info',
+				format: winston.format.printf(({ message }) => {
+					return message
+				}),
+				transports: [new winston.transports.File({ filename: Loggy.RAW_LOG_FILE })],
+			})
+		}
+
+		return this._rawLog
+	}
+
 
 }
 
