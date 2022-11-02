@@ -23,3 +23,5 @@ jobs:
         cache: 'npm'
     - run: yarn install --frozen-lockfile
     - run: yarn jest
+    - run: yarn lint
+    - run: yarn pkg
