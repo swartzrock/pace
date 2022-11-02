@@ -1,7 +1,15 @@
 
 <p align="center">
   <img width="400" height="381" src="media/logo.png" alt="logo"><br><h1></h1>
+
+[![latest-version](https://img.shields.io/github/v/release/swartzrock/pace?label=Latest%20Version)](https://github.com/swartzrock/pace/releases/latest)
+[![build](https://img.shields.io/github/workflow/status/swartzrock/pace/Yarn%20Test)](https://github.com/swartzrock/pace/actions/workflows/yarn-test.yml)
+[![license](https://img.shields.io/badge/license-ISC-informational)](https://github.com/swartzrock/pace/blob/main/LICENSE)
+[![typescript](https://img.shields.io/badge/Language-Typescript-blue)](https://www.typescriptlang.org/)
+[![issues](https://img.shields.io/github/issues/swartzrock/pace)](https://github.com/swartzrock/pace/issues)
+
 <p align="center">Typescript app with multiple visual countdown timers</p>
+
 
 
 <p align="center">
