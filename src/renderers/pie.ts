@@ -9,7 +9,7 @@ import { Point } from '../common/point'
 import { UnicodeChars } from '../common/unicodechars'
 import { XtermGradients } from '../common/xtermgradients'
 
-class PieChart implements TimerRenderer {
+class Pie implements TimerRenderer {
 	readonly CHART_FILL_CHAR = UnicodeChars.BLOCK_FULL
 	readonly CHART_SHADOW_CHAR = UnicodeChars.SHADE_DARK
 
@@ -50,7 +50,7 @@ class PieChart implements TimerRenderer {
 
 		// render the time-remaining text
 		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		timeRemainingMatrix.setVerticalGradient(PieChart.TIME_REMAINING_GRADIENT)
+		timeRemainingMatrix.setVerticalGradient(Pie.TIME_REMAINING_GRADIENT)
 		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)
 
 		return centeredMonoChartMatrix
@@ -68,4 +68,4 @@ class PieChart implements TimerRenderer {
 	}
 }
 
-export { PieChart }
+export { Pie }
