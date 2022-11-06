@@ -4,7 +4,7 @@ import { Colors, Xterm256 } from '../../common/colors'
 import { XtermGradients } from '../../common/xtermgradients'
 import { TextBlocks } from '../../common/textblocks'
 
-export default class AllFonts extends Command {
+class AllFonts extends Command {
 	static description = 'Displays all Figlet Fonts with the given input'
 	static examples = ['pace tools allfonts']
 
@@ -45,3 +45,5 @@ export default class AllFonts extends Command {
 		return maxWidth
 	}
 }
+
+export { AllFonts }
