@@ -10,13 +10,12 @@
 
 <p align="center">Typescript app with multiple visual countdown timers</p>
 
-
-
 <p align="center">
   <a href="#about-pace">About Pace</a> •
+  <a href="#how-do-I-install-pace">Installation</a> •
   <a href="#usage">Usage</a> •
   <a href="#contributing">Contributing</a> •
-  <a href="#built-with">Built With</a>
+  <a href="#faq">FAQ</a>
 </p>
 
 <p align="center">
@@ -28,10 +27,47 @@
 Pace is a Typescript app that performs a countdown timer using a visual renderer on the command line. 
 Choose a renderer when you run the app, or run preview to see a representation of all the renderers.
 
+## How do I install Pace?
+
+### Install Pace With Homebrew
+
+If you're on macOS use [Homebrew](brew.sh) to install the latest `pace`. 
+
+```shell
+brew install swartzrock/tap/pace
+```
+
+Run `brew upgrade` to keep up to date with the latest version.
+
+### Download A Release
+
+See the [Pace Releases](https://github.com/swartzrock/pace/releases) page for the latest macOS (ARM and Intel), Windows (Intel), and Linux (Intel) binaries.
+
+### Build The Native Executables
+
+You can build the releases yourself by cloning the repository and running the `pkg` command. Requires `yarn`. 
+
+```shell
+git clone git@github.com:swartzrock/pace.git && cd pace && yarn
+yarn pkg
+```
+
+### Run with Node
+
+You can run the Typescript version yourself by cloning the repository and running the dev command. Requires `yarn`.
+
+```shell
+git clone git@github.com:swartzrock/pace.git && cd pace && yarn
+# The bin/dev command runs the Typescript code directly. 
+bin/dev 2m shuffle
+```
+
+
+
 ## Usage
 ```sh
 USAGE
-  $ bin/dev [DURATION] [RENDERER]
+  $ pace [DURATION] [RENDERER]
 
 ARGUMENTS
   DURATION  duration in (m)inutes and (s)seconds (eg 3m10s = 190 seconds)
@@ -42,21 +78,15 @@ DESCRIPTION
   Displays a progress timer
 
 EXAMPLES
-  $ bin/dev 5m pie
+  $ pace 5m pie
 ```
-
-You can also build the project and run the transpiled Javascript:
-```sh
-$ yarn build && bin/run 5m pie
-```
-
 
 
 ### The Shuffle Renderer
 
 ![demo](media/pace-shuffle.gif)
 
-Use the `shuffle` renderer to preview all renderers in action. This renderer switches to another renderer every 10 seconds.
+Use `shuffle` to preview all renderers in action. This renderer switches to another renderer every 10 seconds.
 
 ```sh 
 bin/dev 5m shuffle
@@ -85,13 +115,15 @@ bin/dev tools colorblocks
 bin/dev tools allfonts
 ```
 
+## FAQ
 
-### Notes
-* Renderers should not store state between callbacks, since the `shuffle` renderer and `tools preview` command depend on calling renderers at selected intervals.
+### How did you build Pace?
 
-## Built With
-* Typescript
-* Yarn
-* Oclif
+Pace is written in Typescript using the [oclif](https://oclif.io/) CLI framework, packaged with Yarn, and compiled as native executables with [pkg](https://github.com/vercel/pkg) .
 
+### I'm seeing horizontal lines when I run Pace
+
+![demo](media/horiz-lines.png)
+
+If you see horizontal lines across the screen when you run Pace, you may need to reduce the line height of your Terminal font. If you're using macOS's Terminal.app, you can edit the Font in Settings and choose a smaller line height, eg 0.85.
 
