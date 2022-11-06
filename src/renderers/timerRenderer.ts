@@ -1,7 +1,7 @@
 import { Bar } from './bar'
-import { PieChart } from './pie'
+import { Pie } from './pie'
 import { StringMatrix } from '../common/stringmatrix'
-import { Circles } from './circles'
+import { Dots } from './dots'
 import { Colossal } from './colossal'
 import { Slant } from './slant'
 import { ColorWheel } from './colorWheel'
@@ -12,6 +12,7 @@ import { Sweep } from './sweep'
 import { BigText } from './bigtext'
 import { Shuffle } from './shuffle'
 import {Sine} from "./sine";
+import {Circles} from "./circles";
 
 abstract class TimerRenderer {
 	/**
@@ -44,10 +45,11 @@ class RendererInfo {
 }
 
 class AllRenderers {
-	static pie: TimerRenderer = new PieChart()
+	static pie: TimerRenderer = new Pie()
 	static bar: TimerRenderer = new Bar()
 
 	static circles: TimerRenderer = new Circles()
+	static dots: TimerRenderer = new Dots()
 	static colossal: TimerRenderer = new Colossal()
 	static slant: TimerRenderer = new Slant()
 	static colorwheel: TimerRenderer = new ColorWheel()
