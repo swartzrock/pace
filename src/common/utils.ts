@@ -28,6 +28,15 @@ class Utils {
 		return a[Math.floor(Math.random() * a.length)]
 	}
 
+	/**
+	 * Return a random int >= start and <= end
+	 * @param start bottom range, inclusive
+	 * @param end top range, inclusive
+	 */
+	static randomInt(start: number, end: number): number {
+		return Math.floor(Math.random() * (end - start))
+	}
+
 	static grouped<A>(a: Array<A>, groupSize: number): Array<Array<A>> {
 		const result = new Array<Array<A>>()
 		for (let i = 0; i < a.length; i += groupSize) {
@@ -93,6 +102,21 @@ class Utils {
 	static head<A>(a: Array<A>): A | null {
 		return a === null || a.length == 0 ? null : a[0]
 	}
+
+
+	static between(check: number, low: number, high: number): boolean {
+		return check >= low && check <= high
+	}
+
+	/**
+	 * Given a non empty array, returns the item at the index modulus the array's length
+	 * @param a
+	 * @param index
+	 */
+	static getModulusNonEmpty<A>(a: Array<A>, index: number): A {
+		return a[index % a.length]
+	}
+
 }
 
 export { Utils }
