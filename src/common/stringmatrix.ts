@@ -1,11 +1,11 @@
-import { StringUtils } from './stringutils'
-import { Colors, Xterm256 } from './colors'
-import { Utils } from './utils'
-import { Rectangle } from './rectangle'
-import { TextBlocks } from './textblocks'
-import { Loggy } from './loggy'
-import { Point } from './point'
-import { UnicodeChars } from './unicodechars'
+import {StringUtils} from './stringutils'
+import {Colors, Xterm256} from './colors'
+import {Utils} from './utils'
+import {Rectangle} from './rectangle'
+import {TextBlocks} from './textblocks'
+import {Point} from './point'
+import {UnicodeChars} from './unicodechars'
+import {SquarePieChart, SquarePieChartDetails} from "./squarepiechart";
 
 /**
  * A drawing canvas for rendering ansi displays, wrapping a string[][]
@@ -28,6 +28,7 @@ class StringMatrix {
 	rows = () => this.matrix.length
 	cols = () => (this.matrix.length > 0 ? this.matrix[0].length : 0)
 	size = () => new Point(this.cols(), this.rows())
+	bounds = () => new Rectangle(0, 0, this.cols() - 1, this.rows() - 1)
 	getCell = (col: number, row: number) => this.matrix[row][col]
 	setCell = (s: string, col: number, row: number) => (this.matrix[row][col] = s)
 	double = () => this.matrix = Utils.doubleMatrix(this.matrix)
@@ -92,11 +93,6 @@ class StringMatrix {
 	 * @param offset  if specified, offset the centered matrix by this amount
 	 */
 	overlayCentered(overlay: StringMatrix, transparentChar = ' ', retainColor = false, offset = new Point(0, 0)) {
-		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
-			Loggy.warn(`overlayCentered(), overlay is bigger than this matrix`)
-			return
-		}
-
 		const topLeft = new Point(
 			Utils.halfInt(this.cols()) - Utils.halfInt(overlay.cols()) + offset.col,
 			Utils.halfInt(this.rows()) - Utils.halfInt(overlay.rows()) + offset.row
@@ -113,27 +109,32 @@ class StringMatrix {
 	 * @param retainColor if specified, the current color of this matrix will be retrained (requres overlay be monochromatic)
 	 */
 	overlayAt(overlay: StringMatrix, topLeft: Point, transparentChar = ' ', retainColor = false) {
-		if (this.rows() < overlay.rows() || this.cols() < overlay.cols()) {
-			Loggy.warn(`overlayAt(), overlay is bigger than this matrix`)
-			return
-		}
 
 		for (let fgRow = 0; fgRow < overlay.rows(); fgRow++) {
 			for (let fgCol = 0; fgCol < overlay.cols(); fgCol++) {
 				let overlayCell = overlay.getCell(fgCol, fgRow)
-				if (overlayCell !== transparentChar) {
-					// If retaining color, detect the color of this matrix's cell and color the overlay cell
-					if (retainColor) {
-						const previousColorIndex = Colors.detectFgColor(
-							this.getCell(fgCol + topLeft.col, fgRow + topLeft.row)
-						)
-						if (previousColorIndex != null) {
-							overlayCell = Colors.foregroundColor(overlayCell, previousColorIndex)
-						}
-					}
-
-					this.setCell(overlayCell, fgCol + topLeft.col, fgRow + topLeft.row)
+				if (overlayCell == transparentChar) {
+					continue
 				}
+
+				const thisCol = fgCol + topLeft.col
+				const thisRow = fgRow + topLeft.row
+				if (!this.bounds().contains(new Point(thisCol, thisRow))) {
+					continue
+				}
+
+				// If retaining color, detect the color of this matrix's cell and color the overlay cell
+				if (retainColor) {
+					const previousColorIndex = Colors.detectFgColor(
+						this.getCell(thisCol, thisRow)
+					)
+					if (previousColorIndex != null) {
+						overlayCell = Colors.foregroundColor(overlayCell, previousColorIndex)
+					}
+				}
+
+				this.setCell(overlayCell, thisCol, thisRow)
+
 			}
 		}
 	}
@@ -347,6 +348,25 @@ class StringMatrix {
 			const bottomMargin = diffRows - topMargin
 			this.addVertPadding(topMargin, bottomMargin, fillChar)
 		}
+	}
+
+	/**
+	 * Returns a new matrix with a plotted circle
+	 * @param radius
+	 * @param fg
+	 * @param bg
+	 */
+	static createCircleMatrix(radius: number, fg: string, bg: string): StringMatrix {
+		const pieDetails: SquarePieChartDetails = {
+			symbols: ['a'],
+			percentages: [1.0],
+		}
+
+		const squarePieChartTxt = new SquarePieChart().generate(pieDetails, radius, bg, bg)
+		const pieChartTxt = TextBlocks.horizontallyDouble(squarePieChartTxt)
+		const pieChartMatrix = StringMatrix.createFromMultilineMonoString(pieChartTxt)
+		pieChartMatrix.replaceAll('a', fg)
+		return pieChartMatrix
 	}
 
 	rowString: (row: number) => string = (row: number) => this.matrix[row].join('')
