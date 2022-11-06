@@ -32,4 +32,19 @@ describe('utils', () => {
 		expect(Utils.doubleMatrix(m)).toStrictEqual([[7,7,8,8,9,9],[7,7,8,8,9,9],[4,4,5,5,6,6],[4,4,5,5,6,6],[1,1,2,2,3,3],[1,1,2,2,3,3]])
 
 	})
+	test('random', () => {
+		expect(Utils.randomInt(5, 10)).toBeGreaterThanOrEqual(5)
+		expect(Utils.randomInt(5, 10)).toBeLessThanOrEqual(10)
+
+		let count = 0
+		for (let i = 0; i < 50; i++) {
+			count += Utils.randomInt(0, 1)
+		}
+		expect(count).toBeGreaterThan(0)
+		expect(count).toBeLessThan(50)
+
+		expect(Utils.randomElementNonEmpty([1, 2, 3])).toBeGreaterThanOrEqual(1)
+		expect(Utils.randomElementNonEmpty([1, 2, 3])).toBeLessThanOrEqual(3)
+
+	})
 })

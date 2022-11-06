@@ -25,7 +25,7 @@ class Utils {
 	}
 
 	static randomElementNonEmpty<A>(a: Array<A>): A {
-		return a[Math.floor(Math.random() * a.length)]
+		return a[Utils.randomInt(0, a.length - 1)]
 	}
 
 	/**
@@ -34,7 +34,7 @@ class Utils {
 	 * @param end top range, inclusive
 	 */
 	static randomInt(start: number, end: number): number {
-		return Math.floor(Math.random() * (end - start))
+		return Math.floor(Math.random() * (end - start + 1) + start)
 	}
 
 	static grouped<A>(a: Array<A>, groupSize: number): Array<Array<A>> {
