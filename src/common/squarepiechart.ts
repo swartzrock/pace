@@ -6,7 +6,7 @@ type SquarePieChartDetails = {
 }
 
 class SquarePieChart {
-	generate(details: SquarePieChartDetails, radius: number, background: string, emptyPie: string): string {
+	generate(details: SquarePieChartDetails, radius: number, background = ' ', emptyPie = ' '): string {
 		const cells: number[] = Utils.createArrayRange(-radius, radius)
 
 		const matrix: string[][] = new Array(cells.length).fill('').map(() => new Array(cells.length).fill(''))
