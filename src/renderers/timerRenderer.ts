@@ -13,6 +13,7 @@ import { BigText } from './bigtext'
 import { Shuffle } from './shuffle'
 import {Sine} from "./sine";
 import {Circles} from "./circles";
+import {XtermGradients} from "../common/xtermgradients";
 
 abstract class TimerRenderer {
 	/**
@@ -28,15 +29,23 @@ abstract class TimerRenderer {
 	 * @param percentDone the current timer progress
 	 */
 	static getGreenYellowRedColor(percentDone: number): Xterm256 {
-		const GREEN_YELLOW_RED_COLORS = [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1]
+		const index = this.getGreenYellowRedIndex(percentDone)
+		return [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1][index]
+	}
 
-		let index = 0
-		if (percentDone > 0.9) {
-			index = 2
-		} else if (percentDone > 0.7) {
-			index = 1
-		}
-		return GREEN_YELLOW_RED_COLORS[index]
+	static getGreenYellowRedGradient(percentDone: number): Array<Xterm256> {
+		const index = this.getGreenYellowRedIndex(percentDone)
+		return [
+			XtermGradients.SINGLE_COLOR_GRADIENTS.GREEN_3A_TO_DEEPSKYBLUE_1,
+			XtermGradients.SINGLE_COLOR_GRADIENTS.YELLOW_3B_TO_LIGHTSTEELBLUE_1,
+			XtermGradients.SINGLE_COLOR_GRADIENTS.RED_3B_TO_MAGENTA_2A
+		][index]
+	}
+
+	private static getGreenYellowRedIndex(percentDone: number): number {
+		if (percentDone > 0.9) return 2
+		if (percentDone > 0.7) return 1
+		return 0
 	}
 }
 
