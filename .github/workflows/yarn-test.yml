@@ -20,7 +20,12 @@ jobs:
       with:
         node-version: '18.x'
         cache: 'npm'
-    - run: yarn install --frozen-lockfile
-    - run: yarn jest
-    - run: yarn lint
-    - run: yarn pkg
+    - name: setup
+      run: yarn install --frozen-lockfile
+    - name: tests
+      run: yarn jest
+    - name: pkg
+      run: yarn pkg
+
+
+  run: echo "{name}={value}" >> $GITHUB_STATE

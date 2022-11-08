@@ -62,6 +62,9 @@ class Timer extends Command {
 		// Enable the logger for development mode
 		if (this.config.options.root.endsWith("dev")) Loggy.enable()
 
+
+		Loggy.info(this.config.version)
+
 		// Parse the duration and renderer argument, which may be combined in the duration argument
 		// if the optional 'timer' command was left out
 		let durationArg: string = args.duration
