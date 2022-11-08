@@ -6,6 +6,9 @@ import {Point} from '../common/point'
 import {Utils} from "../common/utils";
 import {XtermGradients} from "../common/xtermgradients";
 import {Rectangle} from "../common/rectangle";
+import {FigletFonts, Fonts} from "../common/fonts";
+import {TextBlocks} from "../common/textblocks";
+import {UnicodeChars} from "../common/unicodechars";
 
 class CircleInfo {
 	public constructor(public origin: Point, public radius: number = 5, public color: Xterm256, public increment: Point) {}
@@ -16,10 +19,12 @@ class CircleInfo {
 
 class Circles implements TimerRenderer {
 
-	private readonly BACKGROUND_DOT_COLOR = Xterm256.GREY_007
-
+	private readonly BACKGROUND_COLOR = Xterm256.GREY_007
+	private readonly BACKGROUND_CHAR = '.'
+	private readonly CIRCLE_CHAR = UnicodeChars.QUARTER_CIRCLE
+	private readonly SHADOW_CHAR = Colors.foregroundColor(UnicodeChars.FULL_CIRCLE, Xterm256.GREY_000)
 	private readonly CIRCLE_COLORS = [Xterm256.DARKBLUE, Xterm256.DARKRED_B, Xterm256.GREEN_4, Xterm256.DARKVIOLETA, Xterm256.DARKORANGE_3B, Xterm256.CHARTREUSE_1, Xterm256.CYAN_2]
-	private readonly FADE_TO_BLACK = Utils.fill(this.BACKGROUND_DOT_COLOR, 5).concat(XtermGradients.MONOCHROME_GRADIENT.slice(2, 10))
+	private readonly FADE_TO_BLACK = Utils.fill(this.BACKGROUND_COLOR, 5).concat(XtermGradients.MONOCHROME_GRADIENT.slice(2, 10))
 	private readonly CIRCLE_ITERATIONS = 200
 	private readonly INCREMENTS = [-2, -1, 1, 2]
 	private readonly MIN_CIRCLE_SIZE = 5
@@ -36,7 +41,7 @@ class Circles implements TimerRenderer {
 	 */
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
 
-		const bg = Colors.foregroundColor('.', this.BACKGROUND_DOT_COLOR)
+		const bg = Colors.foregroundColor(this.BACKGROUND_CHAR, this.BACKGROUND_COLOR)
 		const matrix = StringMatrix.createUniformMatrix(terminalDims.col - this.HORIZ_MARGIN, terminalDims.row - this.VERT_MARGIN, bg)
 
 
@@ -57,13 +62,33 @@ class Circles implements TimerRenderer {
 			info.origin.plus(info.increment)
 			Circles.fixOutOfBounds(matrix.bounds(), info)
 
-			const pieChartMatrix = StringMatrix.createCircleMatrix(info.radius, Colors.foregroundColor('.', info.color), ' ')
+			const circleFg =  Colors.foregroundColor(this.CIRCLE_CHAR, info.color)
+			const pieChartMatrix = StringMatrix.createCircleMatrix(info.radius, circleFg, ' ')
 			const circleTopLeft = new Point(
 				info.origin.col - Utils.halfInt(pieChartMatrix.cols()),
 				info.origin.row - Utils.halfInt(pieChartMatrix.rows()),
 			)
 			matrix.overlayAt(pieChartMatrix, circleTopLeft)
 		}
+
+		const timeRemainingFiglet = Fonts.render(FigletFonts.ANSI_REGULAR, details.timeRemainingText())
+		const timeRemaining = TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
+
+		// render the time-remaining shadow
+		const timeRemainingMatrixShadow = StringMatrix.createFromMultilineMonoString(timeRemaining)
+		timeRemainingMatrixShadow.double()
+		const shadowOffset = new Point(1, 1)
+		timeRemainingMatrixShadow.replaceAll(UnicodeChars.BLOCK_FULL, this.SHADOW_CHAR)
+		matrix.overlayCentered(timeRemainingMatrixShadow, undefined, true, shadowOffset)
+
+		// render the time-remaining text
+		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
+		timeRemainingMatrix.double()
+		timeRemainingMatrix.replaceAll(UnicodeChars.BLOCK_FULL, UnicodeChars.HALF_CIRCLE)
+		const timeRemainingGradient = TimerRenderer.getGreenYellowRedGradient(details.percentDone())
+		timeRemainingMatrix.setVerticalGradient(timeRemainingGradient)
+		matrix.overlayCentered(timeRemainingMatrix)
+
 
 		return matrix
 	}
