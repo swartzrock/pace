@@ -1,4 +1,4 @@
-# Tests the push. If package.json version changes, builds and creates a new github release with the artifacts
+# Tests the pushed commit(s). If the package.json version changes, builds and creates a new github release with the artifacts
 
 name: CI
 
@@ -9,7 +9,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -25,21 +25,19 @@ jobs:
       run: yarn jest
     - name: Build
       run: yarn pkg
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: ReleaseVersion
+    - name: CreateReleaseForNewPaceVersion
       uses: justincy/github-action-npm-release@2.0.2
-      id: release
-    - name: ReleaseInfo
-      if: ${{ steps.release.outputs.released == 'true' }}
-      run: |
-        echo release_id = ${{ steps.release.outputs.release_id }}
-        echo release_tag = ${{ steps.release.outputs.release_tag }}
-        echo release_name = ${{ steps.release.outputs.release_name }}
+      id: createrelease
+    - name: AddReleaseArtifacts
+      uses: softprops/action-gh-release@v0.1.14
+      if: ${{ steps.createrelease.outputs.released == 'true' }}
+      with:
+        tag_name: ${{ steps.createrelease.outputs.release_tag }}
+        body: Pace Release
+        generate_release_notes: true
+        fail_on_unmatched_files: true
+        files: |
+          dist/pace-linux-x64.tar.bz2
+          dist/pace-macos-arm64.tar.bz2
+          dist/pace-macos-x64.tar.bz2
+          dist/pace-win-x64.exe.tar.bz2
