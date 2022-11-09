@@ -37,7 +37,7 @@ jobs:
     - name: ReleaseVersion
       uses: justincy/github-action-npm-release@2.0.2
       id: release
-    - name: Print release output
+    - name: ReleaseInfo
       if: ${{ steps.release.outputs.released == 'true' }}
       run: |
         echo release_id = ${{ steps.release.outputs.release_id }}
