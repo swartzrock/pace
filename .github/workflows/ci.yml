@@ -16,6 +16,9 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: CreateReleaseForNewPaceVersion
+      uses: justincy/github-action-npm-release@2.0.2
+      id: createrelease
     - name: SetupNode
       uses: actions/setup-node@v3
       with:
@@ -27,9 +30,6 @@ jobs:
       run: yarn jest
     - name: Build
       run: yarn pkg
-    - name: CreateReleaseForNewPaceVersion
-      uses: justincy/github-action-npm-release@2.0.2
-      id: createrelease
     - name: AddReleaseArtifacts
       uses: softprops/action-gh-release@v0.1.14
       if: ${{ steps.createrelease.outputs.released == 'true' }}
