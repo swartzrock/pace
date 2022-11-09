@@ -39,8 +39,8 @@ jobs:
         generate_release_notes: true
         fail_on_unmatched_files: true
         files: |
-          dist/pace
-#          dist/pace-linux-x64.tar.bz2
-#          dist/pace-macos-arm64.tar.bz2
-#          dist/pace-macos-x64.tar.bz2
-#          dist/pace-win-x64.exe.tar.bz2
+          dist/pace-linux-arm64.tar.bz2
+          dist/pace-linux-x64.tar.bz2
+          dist/pace-macos-arm64.tar.bz2
+          dist/pace-macos-x64.tar.bz2
+          dist/pace-win-x64.exe.tar.bz2
