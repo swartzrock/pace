@@ -41,6 +41,5 @@ jobs:
         files: |
           dist/pace-linux-arm64.tar.bz2
           dist/pace-linux-x64.tar.bz2
-          dist/pace-macos-arm64.tar.bz2
           dist/pace-macos-x64.tar.bz2
           dist/pace-win-x64.exe.tar.bz2

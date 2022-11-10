@@ -1,6 +1,6 @@
 {
 	"name": "pace",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"description": "Pace yourself with this command line timer",
 	"author": "Jason Swartz @swartzrock",
 	"bin": {
@@ -72,10 +72,9 @@
 		"lint": "eslint .",
 		"compress-linux-arm64": "(cd dist && tar cvfj pace-linux-arm64.tar.bz2 pace-linux-arm64)",
 		"compress-linux-x64": "(cd dist && tar cvfj pace-linux-x64.tar.bz2 pace-linux-x64)",
-		"compress-macos-arm64": "(cd dist && tar cvfj pace-macos-arm64.tar.bz2 pace-macos-arm64)",
 		"compress-macos-x64": "(cd dist && tar cvfj pace-macos-x64.tar.bz2 pace-macos-x64)",
 		"compress-win-x64": "(cd dist && tar cvfj pace-win-x64.exe.tar.bz2 pace-win-x64.exe)",
-		"compress-all": "yarn compress-linux-arm64 && yarn compress-linux-x64 && yarn compress-macos-arm64 && yarn compress-macos-x64 && yarn compress-win-x64",
+		"compress-all": "yarn compress-linux-arm64 && yarn compress-linux-x64 &&  yarn compress-macos-x64 && yarn compress-win-x64",
 		"pkg": "yarn build && pkg . -C Brotli && yarn compress-all"
 	},
 	"engines": {
@@ -102,11 +101,10 @@
 			"node_modules/figlet/fonts/**/*"
 		],
 		"targets": [
-			"node14-linux-arm64",
-			"node14-linux-x64",
-			"node14-macos-arm64",
-			"node14-macos-x64",
-			"node14-win-x64"
+			"node18-linux-arm64",
+			"node18-linux-x64",
+			"node18-macos-x64",
+			"node18-win-x64"
 		],
 		"outputPath": "dist"
 	}
