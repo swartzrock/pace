@@ -29,7 +29,13 @@ jobs:
     - name: Test
       run: yarn jest
     - name: Build
-      run: yarn pkg
+      run: |
+        yarn pkg
+        cd dist
+        tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.bz2 pace-linux-arm64
+        "tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-x64.tar.bz2 pace-linux-x64"
+        tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-macos-x64.tar.bz2 pace-macos-x64
+        tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.bz2 pace-win-x64.exe
     - name: AddReleaseArtifacts
       uses: softprops/action-gh-release@v0.1.14
       if: ${{ steps.createrelease.outputs.released == 'true' }}
@@ -39,12 +45,13 @@ jobs:
         generate_release_notes: true
         fail_on_unmatched_files: true
         files: |
-          dist/pace-linux-arm64.tar.bz2
-          dist/pace-linux-x64.tar.bz2
-          dist/pace-macos-x64.tar.bz2
-          dist/pace-win-x64.exe.tar.bz2
+          "dist/pace--${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.bz2"
+          dist/pace--${{ steps.createrelease.outputs.release_tag }}-linux-x64.tar.bz2
+          dist/pace--${{ steps.createrelease.outputs.release_tag }}-macos-x64.tar.bz2
+          dist/pace--${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.bz2
     - name: UpdateHomebrewTap
       uses: Justintime50/homebrew-releaser@v1
+      if: ${{ steps.createrelease.outputs.released == 'true' }}
       with:
         homebrew_owner: swartzrock
         homebrew_tap: homebrew-tap

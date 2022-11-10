@@ -1,6 +1,6 @@
 {
 	"name": "pace",
-	"version": "0.1.7",
+	"version": "0.1.8",
 	"description": "Pace yourself with this command line timer",
 	"author": "Jason Swartz @swartzrock",
 	"bin": {
@@ -75,7 +75,7 @@
 		"compress-macos-x64": "(cd dist && tar cvfj pace-macos-x64.tar.bz2 pace-macos-x64)",
 		"compress-win-x64": "(cd dist && tar cvfj pace-win-x64.exe.tar.bz2 pace-win-x64.exe)",
 		"compress-all": "yarn compress-linux-arm64 && yarn compress-linux-x64 &&  yarn compress-macos-x64 && yarn compress-win-x64",
-		"pkg": "yarn build && pkg . -C Brotli && yarn compress-all"
+		"pkg": "yarn build && pkg . -C Brotli"
 	},
 	"engines": {
 		"node": ">=18.11.0"
