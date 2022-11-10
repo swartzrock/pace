@@ -1,6 +1,6 @@
 {
 	"name": "pace",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"description": "Pace yourself with this command line timer",
 	"author": "Jason Swartz @swartzrock",
 	"bin": {

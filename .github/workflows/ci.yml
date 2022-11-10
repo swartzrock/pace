@@ -33,7 +33,7 @@ jobs:
         yarn pkg
         cd dist
         tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.bz2 pace-linux-arm64
-        "tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-x64.tar.bz2 pace-linux-x64"
+        tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-x64.tar.bz2 pace-linux-x64
         tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-macos-x64.tar.bz2 pace-macos-x64
         tar cvfj pace--${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.bz2 pace-win-x64.exe
     - name: AddReleaseArtifacts
@@ -45,7 +45,7 @@ jobs:
         generate_release_notes: true
         fail_on_unmatched_files: true
         files: |
-          "dist/pace--${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.bz2"
+          dist/pace--${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.bz2
           dist/pace--${{ steps.createrelease.outputs.release_tag }}-linux-x64.tar.bz2
           dist/pace--${{ steps.createrelease.outputs.release_tag }}-macos-x64.tar.bz2
           dist/pace--${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.bz2
