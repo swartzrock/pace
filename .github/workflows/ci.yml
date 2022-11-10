@@ -43,3 +43,31 @@ jobs:
           dist/pace-linux-x64.tar.bz2
           dist/pace-macos-x64.tar.bz2
           dist/pace-win-x64.exe.tar.bz2
+    - name: UpdateHomebrewTap
+      uses: Justintime50/homebrew-releaser@v1
+      with:
+        homebrew_owner: swartzrock
+        homebrew_tap: homebrew-tap
+        formula_folder: Formula
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        commit_owner: swartzrock
+        commit_email: dev@bks2.com
+
+        install: 'bin.install "pace-macos-x64" => "pace"'
+
+        # Adds URL and checksum targets for different OS and architecture pairs. Using this option assumes
+        # a tar archive exists on your GitHub repo with the following URL pattern (this cannot be customized):
+        # https://github.com/{GITHUB_OWNER}/{REPO_NAME}/releases/download/{TAG}/{REPO_NAME}-{VERSION}-{OPERATING_SYSTEM}-{ARCHITECTURE}.tar.gz'
+        # https://github.com/swartzrock/pace/releases/download/0.1.6/pace-linux-arm64.tar.bz2
+
+        # Darwin AMD pre-existing path example: https://github.com/justintime50/myrepo/releases/download/v1.2.0/myrepo-1.2.0-darwin-amd64.tar.gz
+        # Linux ARM pre-existing path example: https://github.com/justintime50/myrepo/releases/download/v1.2.0/myrepo-1.2.0-linux-arm64.tar.gz
+        # Optional - booleans.
+        target_darwin_amd64: true
+        target_darwin_arm64: false
+        target_linux_amd64: true
+        target_linux_arm64: true
+
+        # debug mode
+        skip_commit: true
+        debug: true
