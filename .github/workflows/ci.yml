@@ -49,6 +49,7 @@ jobs:
           dist/pace-${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.gz
           dist/pace-${{ steps.createrelease.outputs.release_tag }}-linux-amd64.tar.gz
           dist/pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz
+          dist/pace-${{ steps.createrelease.outputs.release_tag }}-darwin-arm64.tar.gz
           dist/pace-${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.gz
     - name: UpdateHomebrewTap
       uses: Justintime50/homebrew-releaser@v1
