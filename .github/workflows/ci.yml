@@ -32,10 +32,12 @@ jobs:
       run: |
         yarn pkg
         cd dist
+        # Move each executable to the target `pace` and create a tarball containing the version, OS, and architecture info
         mv pace-linux-arm64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.gz pace; rm pace
         mv pace-linux-x64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-amd64.tar.gz pace; rm pace
         mv pace-macos-x64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz pace; rm pace
         mv pace-win-x64.exe pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.gz pace; rm pace
+        # duplicate the macos-x64 archive so it will be installed on arm64 machines (todo: build arm64 and codesign!)
         cp pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz pace-${{ steps.createrelease.outputs.release_tag }}-darwin-arm64.tar.gz
     - name: AddReleaseArtifacts
       uses: softprops/action-gh-release@v0.1.14
@@ -67,7 +69,6 @@ jobs:
         # Adds URL and checksum targets for different OS and architecture pairs. Using this option assumes
         # a tar archive exists on your GitHub repo with the following URL pattern (this cannot be customized):
         # https://github.com/{GITHUB_OWNER}/{REPO_NAME}/releases/download/{TAG}/{REPO_NAME}-{VERSION}-{OPERATING_SYSTEM}-{ARCHITECTURE}.tar.gz'
-        # https://github.com/swartzrock/pace/releases/download/0.1.6/pace-linux-arm64.tar.gz
 
         # Darwin AMD pre-existing path example: https://github.com/justintime50/myrepo/releases/download/v1.2.0/myrepo-1.2.0-darwin-amd64.tar.gz
         # Linux ARM pre-existing path example: https://github.com/justintime50/myrepo/releases/download/v1.2.0/myrepo-1.2.0-linux-arm64.tar.gz
@@ -77,6 +78,4 @@ jobs:
         target_linux_amd64: true
         target_linux_arm64: true
 
-        # debug mode
-        skip_commit: true
-        debug: true
+        skip_commit: false
