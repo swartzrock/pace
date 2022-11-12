@@ -32,10 +32,11 @@ jobs:
       run: |
         yarn pkg
         cd dist
-        tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.gz pace-linux-arm64
-        tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-amd64.tar.gz pace-linux-x64
-        tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz pace-macos-x64
-        tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.gz pace-win-x64.exe
+        mv pace-linux-arm64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-arm64.tar.gz pace; rm pace
+        mv pace-linux-x64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-linux-amd64.tar.gz pace; rm pace
+        mv pace-macos-x64 pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz pace; rm pace
+        mv pace-win-x64.exe pace; tar cvfj pace-${{ steps.createrelease.outputs.release_tag }}-win-x64.exe.tar.gz pace; rm pace
+        cp pace-${{ steps.createrelease.outputs.release_tag }}-darwin-amd64.tar.gz pace-${{ steps.createrelease.outputs.release_tag }}-darwin-arm64.tar.gz
     - name: AddReleaseArtifacts
       uses: softprops/action-gh-release@v0.1.14
       if: ${{ steps.createrelease.outputs.released == 'true' }}
@@ -60,7 +61,7 @@ jobs:
         commit_owner: swartzrock
         commit_email: dev@bks2.com
 
-        install: 'bin.install "pace-macos-x64" => "pace"'
+        install: 'bin.install "pace"'
 
         # Adds URL and checksum targets for different OS and architecture pairs. Using this option assumes
         # a tar archive exists on your GitHub repo with the following URL pattern (this cannot be customized):
@@ -71,7 +72,7 @@ jobs:
         # Linux ARM pre-existing path example: https://github.com/justintime50/myrepo/releases/download/v1.2.0/myrepo-1.2.0-linux-arm64.tar.gz
         # Optional - booleans.
         target_darwin_amd64: true
-        target_darwin_arm64: false
+        target_darwin_arm64: true
         target_linux_amd64: true
         target_linux_arm64: true
 
