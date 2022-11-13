@@ -60,7 +60,7 @@ jobs:
         homebrew_owner: swartzrock
         homebrew_tap: homebrew-tap
         formula_folder: Formula
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.REPOACCESS_TOKEN }}
         commit_owner: swartzrock
         commit_email: dev@bks2.com
 
