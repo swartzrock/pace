@@ -1,13 +1,13 @@
-import { Colors, Xterm256 } from '../common/colors'
-import { SquarePieChart, SquarePieChartDetails } from '../common/squarepiechart'
-import { StringMatrix } from '../common/stringmatrix'
-import { TimerRenderer } from './timerRenderer'
-import { TimerDetails } from './timerDetails'
-import { FigletFonts, Fonts } from '../common/fonts'
-import { TextBlocks } from '../common/textblocks'
-import { Point } from '../common/point'
-import { UnicodeChars } from '../common/unicodechars'
-import { XtermGradients } from '../common/xtermgradients'
+import {Colors, Xterm256} from '../common/colors'
+import {SquarePieChart, SquarePieChartDetails} from '../common/squarepiechart'
+import {StringMatrix} from '../common/stringmatrix'
+import {TimerRenderer} from './timerRenderer'
+import {TimerDetails} from './timerDetails'
+import {TextBlocks} from '../common/textblocks'
+import {Point} from '../common/point'
+import {UnicodeChars} from '../common/unicodechars'
+import {XtermGradients} from '../common/xtermgradients'
+import {TextEffects} from "../common/textEffects";
 
 class Pie implements TimerRenderer {
 	readonly CHART_FILL_CHAR = UnicodeChars.BLOCK_FULL
@@ -35,25 +35,13 @@ class Pie implements TimerRenderer {
 
 		// render the main pie chart
 		const centeredMonoChart: string = this.renderMonochromeCenteredPieChart(details.percentDone(), terminalDims)
-		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(centeredMonoChart)
-		centeredMonoChartMatrix.replaceAll(this.CHART_FILL_CHAR, coloredFillChar)
-		centeredMonoChartMatrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
+		const matrix = StringMatrix.createFromMultilineMonoString(centeredMonoChart)
+		matrix.replaceAll(this.CHART_FILL_CHAR, coloredFillChar)
+		matrix.replaceAll(this.CHART_EMPTY_CHAR, coloredEmptyChar)
 
-		const timeRemainingFiglet = Fonts.render(FigletFonts.ANSI_REGULAR, details.timeRemainingText())
-		const timeRemaining = TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
+		TextEffects.renderShadowedText(details.timeRemainingText(), matrix, Pie.TIME_REMAINING_GRADIENT, UnicodeChars.BLOCK_FULL, this.CHART_SHADOW_CHAR, false)
 
-		// render the time-remaining shadow
-		const timeRemainingMatrixShadow = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		const shadowOffset = new Point(1, 1)
-		timeRemainingMatrixShadow.replaceAll('█', this.CHART_SHADOW_CHAR)
-		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrixShadow, undefined, true, shadowOffset)
-
-		// render the time-remaining text
-		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		timeRemainingMatrix.setVerticalGradient(Pie.TIME_REMAINING_GRADIENT)
-		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)
-
-		return centeredMonoChartMatrix
+		return matrix
 	}
 
 	private renderMonochromeCenteredPieChart(percentDone: number, terminalDims: Point): string {

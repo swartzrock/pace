@@ -6,9 +6,8 @@ import {Point} from '../common/point'
 import {Utils} from "../common/utils";
 import {XtermGradients} from "../common/xtermgradients";
 import {Rectangle} from "../common/rectangle";
-import {FigletFonts, Fonts} from "../common/fonts";
-import {TextBlocks} from "../common/textblocks";
 import {UnicodeChars} from "../common/unicodechars";
+import {TextEffects} from "../common/textEffects";
 
 class CircleInfo {
 	public constructor(public origin: Point, public radius: number = 5, public color: Xterm256, public increment: Point) {}
@@ -71,24 +70,8 @@ class Circles implements TimerRenderer {
 			matrix.overlayAt(pieChartMatrix, circleTopLeft)
 		}
 
-		const timeRemainingFiglet = Fonts.render(FigletFonts.ANSI_REGULAR, details.timeRemainingText())
-		const timeRemaining = TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
-
-		// render the time-remaining shadow
-		const timeRemainingMatrixShadow = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		timeRemainingMatrixShadow.double()
-		const shadowOffset = new Point(1, 1)
-		timeRemainingMatrixShadow.replaceAll(UnicodeChars.BLOCK_FULL, this.SHADOW_CHAR)
-		matrix.overlayCentered(timeRemainingMatrixShadow, undefined, true, shadowOffset)
-
-		// render the time-remaining text
-		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		timeRemainingMatrix.double()
-		timeRemainingMatrix.replaceAll(UnicodeChars.BLOCK_FULL, UnicodeChars.HALF_CIRCLE)
-		const timeRemainingGradient = TimerRenderer.getGreenYellowRedGradient(details.percentDone())
-		timeRemainingMatrix.setVerticalGradient(timeRemainingGradient)
-		matrix.overlayCentered(timeRemainingMatrix)
-
+		const gradient = TimerRenderer.getGreenYellowRedGradient(details.percentDone())
+		TextEffects.renderShadowedText(details.timeRemainingText(), matrix, gradient, UnicodeChars.HALF_CIRCLE, this.SHADOW_CHAR)
 
 		return matrix
 	}

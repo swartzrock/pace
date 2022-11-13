@@ -9,8 +9,8 @@ import {SquarePieChart, SquarePieChartDetails} from '../common/squarepiechart'
 import {TextBlocks} from '../common/textblocks'
 import {Utils} from '../common/utils'
 import _ from 'lodash'
-import {FigletFonts, Fonts} from '../common/fonts'
 import {Point} from '../common/point'
+import {TextEffects} from "../common/textEffects";
 
 /**
  * Displays a green, yellow, and then red color wheel
@@ -19,6 +19,7 @@ class ColorWheel implements TimerRenderer {
 	readonly CHART_FILL_CHAR = UnicodeChars.BLOCK_FULL
 	readonly CHART_SHADOW_CHAR = UnicodeChars.SHADE_DARK
 	readonly ALPHABET = Array.from('abcdefghijklmnopqrstuvwxyz')
+	readonly TEXT_GRADIENT = [Xterm256.WHITE]
 
 	readonly SLICES = 24
 	readonly SLICE_PERCENT = 0.0417
@@ -45,12 +46,6 @@ class ColorWheel implements TimerRenderer {
 		Utils.reverse(XtermGradients.SINGLE_COLOR_GRADIENTS.RED_1_TO_MAGENTA_1),
 	)
 
-	readonly GRADIENT_TO_COLOR_MAP: Map<Array<number>,number> = new Map([
-		[this.GREEN_GRADIENT, Xterm256.WHITE],
-		[this.YELLOW_GRADIENT, Xterm256.CHARTREUSE_2B],
-		[this.RED_GRADIENT, Xterm256.DARKORANGE_3A]
-	])
-
 	readonly pieChart = new SquarePieChart()
 
 	render(details: TimerDetails, terminalDims: Point): StringMatrix {
@@ -71,35 +66,19 @@ class ColorWheel implements TimerRenderer {
 		}
 		const squarePieChartTxt = this.pieChart.generate(pieDetails, radius, ' ', ' ')
 		const pieChartTxt = TextBlocks.horizontallyDouble(squarePieChartTxt)
-		const centeredMonoChartMatrix = StringMatrix.createFromMultilineMonoString(pieChartTxt)
+		const matrix = StringMatrix.createFromMultilineMonoString(pieChartTxt)
 
 		// Replace the alphabet pie slices with colored blocks
 		for (let i = 0; i < Math.min(this.SLICES, this.ALPHABET.length); i++) {
 			const color = gradient[i % gradient.length]
 			const fill = Colors.foregroundColor(this.CHART_FILL_CHAR, color)
-			centeredMonoChartMatrix.replaceAll(this.ALPHABET[i], fill)
+			matrix.replaceAll(this.ALPHABET[i], fill)
 		}
 
-		const timeRemainingFiglet = Fonts.render(FigletFonts.ANSI_REGULAR, details.timeRemainingText())
-		const timeRemaining = TextBlocks.setPadding(timeRemainingFiglet, 1, 1, ' ')
+		TextEffects.renderShadowedText(details.timeRemainingText(), matrix, this.TEXT_GRADIENT, UnicodeChars.BLOCK_FULL,
+			this.CHART_SHADOW_CHAR, false)
 
-		// render the time-remaining shadow
-		const timeRemainingMatrixShadow = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		const shadowOffset = new Point(1, 1)
-		timeRemainingMatrixShadow.replaceAll('█', this.CHART_SHADOW_CHAR)
-		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrixShadow, undefined, true, shadowOffset)
-
-		// render the time-remaining text
-		const timeRemainingMatrix = StringMatrix.createFromMultilineMonoString(timeRemaining)
-		const fgColor = this.GRADIENT_TO_COLOR_MAP.get(gradient) ?? Xterm256.WHITE
-		const colorBlock = Colors.foregroundColor(
-			UnicodeChars.BLOCK_FULL,
-			fgColor
-		)
-		timeRemainingMatrix.replaceAll(UnicodeChars.BLOCK_FULL, colorBlock)
-		centeredMonoChartMatrix.overlayCentered(timeRemainingMatrix)
-
-		return centeredMonoChartMatrix
+		return matrix
 	}
 }
 
