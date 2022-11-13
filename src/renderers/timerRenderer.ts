@@ -14,6 +14,7 @@ import { Shuffle } from './shuffle'
 import {Sine} from "./sine";
 import {Circles} from "./circles";
 import {XtermGradients} from "../common/xtermgradients";
+import {Lava} from "./lava";
 
 abstract class TimerRenderer {
 	/**
@@ -57,15 +58,16 @@ class AllRenderers {
 	static pie: TimerRenderer = new Pie()
 	static bar: TimerRenderer = new Bar()
 
-	static circles: TimerRenderer = new Circles()
-	static dots: TimerRenderer = new Dots()
-	static colossal: TimerRenderer = new Colossal()
-	static slant: TimerRenderer = new Slant()
-	static colorwheel: TimerRenderer = new ColorWheel()
-	static sweep: TimerRenderer = new Sweep()
 	static bigtext: TimerRenderer = new BigText()
-	static sine: TimerRenderer = new Sine()
+	static circles: TimerRenderer = new Circles()
+	static colorwheel: TimerRenderer = new ColorWheel()
+	static colossal: TimerRenderer = new Colossal()
+	static dots: TimerRenderer = new Dots()
+	static lava: TimerRenderer = new Lava()
 	static shuffle: TimerRenderer = new Shuffle()
+	static sine: TimerRenderer = new Sine()
+	static slant: TimerRenderer = new Slant()
+	static sweep: TimerRenderer = new Sweep()
 
 	static renderers: Array<RendererInfo> = Object.entries(AllRenderers).map((a) => new RendererInfo(a[0], a[1]))
 }
