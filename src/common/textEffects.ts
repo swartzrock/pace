@@ -16,19 +16,20 @@ class TextEffects {
 		const shadowOffset = new Point(1, 1)
 		let figletText = Fonts.render(FigletFonts.ANSI_REGULAR, text)
 		figletText = TextBlocks.setPadding(figletText, 1, 1, ' ')
+		const figletMatrix = StringMatrix.createFromMultilineMonoString(figletText)
+		if (doubleText && figletMatrix.cols() * 2 < matrix.cols()) {
+			figletMatrix.double()
+		}
 
 		// render the time-remaining shadow
-		const matrixShadow = StringMatrix.createFromMultilineMonoString(figletText)
-		if (doubleText) matrixShadow.double()
+		const matrixShadow = figletMatrix.clone()
 		matrixShadow.replaceAll(UnicodeChars.BLOCK_FULL, shadowChar)
 		matrix.overlayCentered(matrixShadow, undefined, true, shadowOffset)
 
 		// render the time-remaining text
-		const matrixText = StringMatrix.createFromMultilineMonoString(figletText)
-		if (doubleText) matrixText.double()
-		matrixText.replaceAll(UnicodeChars.BLOCK_FULL, fillChar)
-		matrixText.setVerticalGradient(gradient)
-		matrix.overlayCentered(matrixText)
+		figletMatrix.replaceAll(UnicodeChars.BLOCK_FULL, fillChar)
+		figletMatrix.setVerticalGradient(gradient)
+		matrix.overlayCentered(figletMatrix)
 	}
 
 
