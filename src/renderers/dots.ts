@@ -13,11 +13,6 @@ class Dots implements TimerRenderer {
 	readonly CIRCLE_INCOMPLETE_CHAR = UnicodeChars.SHADE_MEDIUM
 
 	readonly CHART_EMPTY_COLOR = Xterm256.GREY_003
-	readonly CHART_FILL_COLORS = [Xterm256.GREEN_1, Xterm256.GREENYELLOW, Xterm256.RED_1]
-
-	readonly QUARTER_CIRCLE = '•'
-	readonly HALF_CIRCLE = '●'
-	readonly FULL_CIRCLE = '⬤'
 
 	/**
 	 * Entrypoint - renders this pie chart to a StringMatrix for later printing to the console
@@ -54,10 +49,10 @@ class Dots implements TimerRenderer {
 		)
 		const stringMatrix = StringMatrix.createFromMultilineMonoString(newlineText)
 		const fillColor = TimerRenderer.getGreenYellowRedColor(details.percentDone())
-		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(this.HALF_CIRCLE, fillColor))
+		stringMatrix.replaceAll(this.CIRCLE_COMPLETE_CHAR, Colors.foregroundColor(UnicodeChars.HALF_CIRCLE, fillColor))
 		stringMatrix.replaceAll(
 			this.CIRCLE_INCOMPLETE_CHAR,
-			Colors.foregroundColor(this.HALF_CIRCLE, this.CHART_EMPTY_COLOR)
+			Colors.foregroundColor(UnicodeChars.HALF_CIRCLE, this.CHART_EMPTY_COLOR)
 		)
 
 		const boxRect = new Rectangle(
