@@ -6,6 +6,7 @@ import {TextBlocks} from './textblocks'
 import {Point} from './point'
 import {UnicodeChars} from './unicodechars'
 import {SquarePieChart, SquarePieChartDetails} from "./squarepiechart";
+import * as _ from 'lodash'
 
 /**
  * A drawing canvas for rendering ansi displays, wrapping a string[][]
@@ -19,6 +20,10 @@ class StringMatrix {
 
 	static createUniformMatrix(cols: number, rows: number, fillChar = ' '): StringMatrix {
 		return new StringMatrix(Utils.fill(Utils.fill(fillChar, cols), rows))
+	}
+
+	public clone(): StringMatrix {
+		return new StringMatrix(_.cloneDeep(this.matrix))
 	}
 
 	public toString = (): string => {
