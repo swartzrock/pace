@@ -40,7 +40,7 @@
 		"mem-fs": "^2.2.1",
 		"mem-fs-editor": "^9.5.0",
 		"pkg": "^5.8.0",
-		"prettier": "2.7.1",
+		"prettier": "2.8.3",
 		"shx": "^0.3.3",
 		"signal-exit": "^3.0.7",
 		"ts-jest": "^29.0.3",
