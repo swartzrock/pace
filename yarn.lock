@@ -2956,10 +2956,10 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-mem-fs-editor@^9.5.0:
-  version "9.5.0"
-  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-9.5.0.tgz#9368724bd37f76eebfcf24d71fc6624b01588969"
-  integrity sha512-7p+bBDqsSisO20YIZf2ntYvST27fFJINn7CKE21XdPUQDcLV62b/yB5sTOooQeEoiZ3rldZQ+4RfONgL/gbRoA==
+mem-fs-editor@^9.6.0:
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/mem-fs-editor/-/mem-fs-editor-9.6.0.tgz#a867377737b12c0d02ca756d90bc70c51883aa38"
+  integrity sha512-CsuAd+s0UPZnGzm3kQ5X7gGmVmwiX9XXRAmXj9Mbq0CJa8YWUkPqneelp0aG2g+7uiwCBHlJbl30FYtToLT3VQ==
   dependencies:
     binaryextensions "^4.16.0"
     commondir "^1.0.1"
