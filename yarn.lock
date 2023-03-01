@@ -914,7 +914,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
   integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
 
-"@types/node@^15.6.1":
+"@types/node@^15.6.2":
   version "15.14.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-15.14.9.tgz#bc43c990c3c9be7281868bbc7b8fdd6e2b57adfa"
   integrity sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==
@@ -2972,12 +2972,12 @@ mem-fs-editor@^9.5.0:
     normalize-path "^3.0.0"
     textextensions "^5.13.0"
 
-mem-fs@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/mem-fs/-/mem-fs-2.2.1.tgz#c87bc8a53fb17971b129d4bcd59a9149fb78c5b1"
-  integrity sha512-yiAivd4xFOH/WXlUi6v/nKopBh1QLzwjFi36NK88cGt/PRXI8WeBASqY+YSjIVWvQTx3hR8zHKDBMV6hWmglNA==
+mem-fs@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/mem-fs/-/mem-fs-2.3.0.tgz#d38bdd729ab0316bfb56d0d0ff669f91e7078463"
+  integrity sha512-GftCCBs6EN8sz3BoWO1bCj8t7YBtT713d8bUgbhg9Iel5kFSqnSvCK06TYIDJAtJ51cSiWkM/YemlT0dfoFycw==
   dependencies:
-    "@types/node" "^15.6.1"
+    "@types/node" "^15.6.2"
     "@types/vinyl" "^2.0.4"
     vinyl "^2.0.1"
     vinyl-file "^3.0.0"
