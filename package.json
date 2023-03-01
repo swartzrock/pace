@@ -27,7 +27,7 @@
 		"@types/figlet": "^1.5.4",
 		"@types/jest": "^29.2.1",
 		"@types/lodash": "^4.14.187",
-		"@types/node": "^18.11.9",
+		"@types/node": "^18.14.2",
 		"@types/signal-exit": "^3.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.42.0",
 		"@typescript-eslint/parser": "^5.42.0",
